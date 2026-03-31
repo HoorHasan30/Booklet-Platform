@@ -1,0 +1,40 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# NetBeans
+nbproject/private/
+build/
+dist/
+
+# Composer
+/vendor/
+
+# Node
+node_modules/
+
+# Environment files
+.env
+
+# Database dumps
+*.sql
+
+# Uploaded images (optional)
+images/uploads/
+
+# Cache
+cache/
+tmp/
