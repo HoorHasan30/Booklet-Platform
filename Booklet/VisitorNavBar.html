@@ -1,0 +1,71 @@
+
+<?php
+    //Check for seesions
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+?>
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Navbar</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <style>
+
+            .navbar {
+                background-color: #483434;
+                color: #FFF7EE;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 30px;
+            }
+            
+            .logo a {
+                color: white;
+                text-decoration: none;
+                font-size: 22px;
+                font-weight: bold;
+            }
+            
+            .navlinks {
+                list-style: none;
+                display: flex;
+                gap: 20px;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .nav-links li a {
+                color: white;
+                text-decoration: none;
+                font-size: 16px;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <nav class="navbar">  
+            
+           <div class="logo">
+                <img src="images/Logo.png" alt="Booklet Logo">
+            </div>
+            
+            <ul class="navLinks">
+                <li><a href="">Home</a></li>
+                <li><a href="">All Books</a></li>
+                <li><a href="">About Us</a></li>
+            </ul>
+            
+            <div class="auth">
+                <a href="login.php">Register/Login</a>
+            </div>
+  
+        </nav>
+    </body>
+</html>
+
