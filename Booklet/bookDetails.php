@@ -1,168 +1,263 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 session_start();
 include("DBConnection.php");
-$conn = getConnection();
+$dbc = getConnection();
 
-if(!isset($_GET['id'])){
-    die("Book not found");
-}
+if(!isset($_GET['id'])) die("Book not found");
 
 $bookId = $_GET['id'];
+
+// BOOK
+$book = mysqli_fetch_assoc(mysqli_query($dbc,"
+SELECT * FROM dbProj_books WHERE bookId = $bookId
+"));
+
+// AVG RATING
+$avg = mysqli_fetch_assoc(mysqli_query($dbc,"
+SELECT AVG(rating) as avgRating FROM dbProj_reviews WHERE bookId = $bookId
+"));
+$avgRating = round($avg['avgRating'],1);
+
+// REVIEWS
+$reviews = mysqli_query($dbc,"
+SELECT r.*, u.firstName
+FROM dbProj_reviews r
+JOIN dbProj_users u ON r.userId = u.userId
+WHERE r.bookId = $bookId
+ORDER BY r.createdAt DESC
+");
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Book Details</title>
+<title>Book Details</title>
 
-    <style>
-        body {
-            background-color: #FFF7EE;
-            font-family: Arial;
-        }
+<style>
+body { background:#F5EDE6; font-family:Arial; }
 
-        .container {
-            width: 80%;
-            margin: auto;
-        }
+.container {
+    width:65%;
+    margin:auto;
+}
 
-        .book-box {
-            display: flex;
-            gap: 20px;
-            background: #D3C1B4;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+/* BACK BUTTON */
+.back-btn {
+    font-size:25px;
+    text-decoration:none;
+    color:black;
+}
 
-        .book-box img {
-            width: 150px;
-            height: 200px;
-        }
+/* HEADER */
+.top {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-        .main-btn {
-            background: #483434;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            margin: 20px 0;
-            cursor: pointer;
-        }
+/* BOOK */
+.book-box {
+    display:flex;
+    gap:30px;
+    margin-top:20px;
+}
 
-        .review-card {
-            background: #D3C1B4;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 10px;
-        }
+.book-img {
+    width:150px;
+    height:200px;
+    border-radius:12px;
+    object-fit:cover;
+}
 
-        .hidden {
-            display: none;
-        }
+/* BUTTON */
+.review-btn {
+    background:#CBB6A6;
+    border:none;
+    padding:10px 25px;
+    border-radius:20px;
+    cursor:pointer;
+}
 
-        textarea, select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 10px;
-        }
+/* RATING */
+.avg-rating {
+    margin-top:10px;
+    font-size:18px;
+}
 
-        .delete-btn {
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px;
-            margin-top: 10px;
-        }
-    </style>
+/* REVIEW CARD */
+.review-card {
+    background:#EFE7DF;
+    border-radius:25px;
+    padding:25px;
+    margin-top:25px;
+}
+
+/* STARS */
+.stars { color:gold; }
+
+/* MODAL */
+.modal {
+    display:none;
+    position:fixed;
+    top:0; left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.4);
+
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content {
+    background:#F5EDE6;
+    width:400px;
+    padding:25px;
+    border-radius:25px;
+    position:relative;
+}
+
+.close {
+    position:absolute;
+    top:10px;
+    left:10px;
+    cursor:pointer;
+}
+
+.star-input span {
+    font-size:25px;
+    cursor:pointer;
+    color:lightgray;
+}
+
+.star-input .active { color:gold; }
+
+textarea {
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border-radius:12px;
+}
+
+.save-btn {
+    background:#CBB6A6;
+    border:none;
+    padding:10px 25px;
+    border-radius:20px;
+    margin-top:15px;
+    float:right;
+}
+</style>
 </head>
 
 <body>
-
+<?php
+if(isset($_SESSION['role'])){
+    if($_SESSION['role'] == 'Creator'){
+        include("CreatorNavBar.php");
+    } else {
+        include("VisitorNavBar.php");
+    }
+} else {
+    include("VisitorNavBar.php");
+}
+?>
 <div class="container">
 
-<?php
-$book = $conn->query("
-    SELECT b.*, g.genreName 
-    FROM dbProj_books b
-    JOIN dbProj_Genres g ON b.genreId = g.genreId
-    WHERE b.bookId = $bookId
-")->fetch_assoc();
-?>
+<a href="javascript:history.back()" class="back-btn">←</a>
+
+<div class="top">
+    <h2><?= $book['title'] ?></h2>
+    <button class="review-btn" onclick="openReviewModal()">Add Review</button>
+</div>
 
 <div class="book-box">
-    <img src="<?= $book['bookCover'] ?>">
+
+    <!-- IMAGE -->
+    <img src="BookCovers/<?= $book['bookCovers'] ?>" class="book-img">
+
     <div>
-        <h2><?= $book['title'] ?></h2>
-        <p><?= $book['author'] ?></p>
-        <p><?= $book['genreName'] ?></p>
-        <p><?= $book['description'] ?></p>
+        <p><b>Author:</b> <?= $book['author'] ?></p>
+        <p><b>Pages:</b> <?= $book['noPages'] ?></p>
+
+        <div class="avg-rating">
+            Rating: <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐
+        </div>
+
+        <p style="margin-top:15px;">
+            <?= $book['description'] ?>
+        </p>
     </div>
+
 </div>
-
-<!-- ADD REVIEW BUTTON -->
-<?php if(isset($_SESSION['userId'])){ ?>
-<button class="main-btn" onclick="toggleReview()">+ Add Review</button>
-
-<div id="reviewForm" class="hidden">
-    <form method="POST" action="action/addReview.php">
-        <input type="hidden" name="bookId" value="<?= $bookId ?>">
-
-        <select name="rating">
-            <option value="5">★★★★★</option>
-            <option value="4">★★★★</option>
-            <option value="3">★★★</option>
-            <option value="2">★★</option>
-            <option value="1">★</option>
-        </select>
-
-        <textarea name="reviewText" required></textarea>
-        <button>Submit</button>
-    </form>
-</div>
-<?php } ?>
 
 <!-- REVIEWS -->
-<h3>Reviews</h3>
-
-<?php
-$reviews = $conn->query("
-    SELECT r.*, u.firstName 
-    FROM dbProj_reviews r
-    JOIN dbProj_users u ON r.userId = u.userId
-    WHERE r.bookId = $bookId
-");
-
-while($r = $reviews->fetch_assoc()){
-?>
-
+<?php while($r = mysqli_fetch_assoc($reviews)){ ?>
 <div class="review-card">
-    <b><?= $r['firstName'] ?></b>
-    <p>⭐ <?= $r['rating'] ?></p>
+
+    <div class="stars">
+        <?= str_repeat("★",$r['rating']) ?>
+    </div>
+
     <p><?= $r['reviewText'] ?></p>
+    <small>By: <?= $r['firstName'] ?></small><br>
 
-    <a href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">View</a>
-
-    <!-- ADMIN DELETE -->
-    <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'admin'){ ?>
-        <form method="POST" action="action/deleteReview.php">
-            <input type="hidden" name="reviewId" value="<?= $r['reviewId'] ?>">
-            <button class="delete-btn">Delete</button>
-        </form>
-    <?php } ?>
+    <a href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">Comments</a>
 </div>
-
 <?php } ?>
 
+</div>
+
+<!-- MODAL -->
+<div id="reviewModal" class="modal">
+<div class="modal-content">
+
+<span class="close" onclick="closeReviewModal()">✖</span>
+
+<form method="POST" action="action/addReview.php">
+
+<input type="hidden" name="bookId" value="<?= $bookId ?>">
+<input type="hidden" name="rating" id="ratingValue">
+
+<div class="star-input">
+    <span onclick="setRating(1)">★</span>
+    <span onclick="setRating(2)">★</span>
+    <span onclick="setRating(3)">★</span>
+    <span onclick="setRating(4)">★</span>
+    <span onclick="setRating(5)">★</span>
+</div>
+
+<textarea name="reviewText" required placeholder="Write a review"></textarea>
+
+<div style="overflow:hidden;">
+    <button class="save-btn">Save</button>
+</div>
+
+</form>
+
+</div>
 </div>
 
 <script>
-function toggleReview(){
-    let f = document.getElementById("reviewForm");
-    f.style.display = f.style.display === "block" ? "none" : "block";
+function openReviewModal(){
+    document.getElementById("reviewModal").style.display="flex";
+}
+function closeReviewModal(){
+    document.getElementById("reviewModal").style.display="none";
+}
+
+function setRating(value){
+    document.getElementById("ratingValue").value=value;
+    let stars=document.querySelectorAll(".star-input span");
+
+    stars.forEach((s,i)=>{
+        if(i<value) s.classList.add("active");
+        else s.classList.remove("active");
+    });
+}
+
+window.onclick=function(e){
+let m=document.getElementById("reviewModal");
+if(e.target==m) m.style.display="none";
 }
 </script>
 
