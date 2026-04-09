@@ -1,0 +1,135 @@
+/*Global*/
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Alice;
+}
+ 
+/*Navbar*/
+nav {
+    width: 100%;
+    background: #483434; 
+    padding: 0.5rem;
+    margin-bottom: 2rem;
+                
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+            
+img {
+    height: 12%;
+    width: 12%;
+}
+
+/*Visitor*/
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+}
+            
+.nav-links li a {
+    position: relative;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #FFF7EE;
+    transition: 0.3s;
+}
+            
+.nav-links li a:hover {
+    color: #D3C1B4;            
+}
+
+.navBtn {
+    display: flex;
+    margin-left: auto;
+}
+            
+.LoginRegBtn  {
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 1.05rem;
+    background: #D3C1B4;
+    color: #483434; 
+    border: none;
+    transition: 0.3s;
+    cursor: pointer;
+}
+            
+.LoginRegBtn:hover {
+    color: #483434;
+    background: #FFF7EE;
+}
+
+/*Creator - Admin*/
+
+.nav-links2 {
+    list-style: none;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    width: 100%
+}
+            
+.nav-links2 li a {
+    position: relative;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #FFF7EE;
+    transition: 0.3s;
+}
+            
+.nav-links2 li a:hover {
+    color: #D3C1B4;            
+}
+     
+
+.userInfo{
+    position: relative;
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #FFF7EE;
+    transition: 0.3s;
+    cursor: pointer;
+    
+    margin-left: auto;
+    margin-right: 15px
+}
+
+.Logout{
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: #D3C1B4;
+    list-style: none;
+    padding: 0;
+    border-radius: 20px;
+    overflow: hidden;
+    min-width: 120px; 
+    text-align: center;
+}
+
+.Logout li a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #483434;
+}
+
+.userInfo:hover .Logout {
+    display: block;
+}
+
+.Logout li a:hover{
+    color: #FFF7EE;
+}
+
+
+/*Footer*/    

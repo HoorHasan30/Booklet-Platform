@@ -8,7 +8,7 @@ session_start();
 </head>
 <body>
 
-<?php include("VisitorNavBar.html"); ?>
+<?php include("CreatorNavBar.php"); ?>
 
 <h1>Welcome to Booklet</h1>
 
