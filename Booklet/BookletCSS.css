@@ -156,6 +156,13 @@ nav {
 }
 
 /*Login Form & Register Form*/
+.authBody{
+    background-image: url("images/header.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 .login-page {
     flex: 1;
     display: flex;

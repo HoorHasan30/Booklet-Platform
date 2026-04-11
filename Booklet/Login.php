@@ -20,13 +20,15 @@
         $email = trim($_POST["email"]);
         $password = $_POST["password"];
         
-        $errors = araay();
+        $errors = array();
+        
         // Check if fields are empty
         if (empty($email) || empty($password)) {
-            $message = "Please fill in all fields.";
+            $error[] = "Please fill in all fields.";
         } 
+        
         //if not empty --> validate
-        else {
+        if(empty($errors)){
             //Find user
             $sql = "SELECT * FROM dbProj_users WHERE email = ?";
             $stmt = mysqli_prepare($dbc, $sql);
@@ -65,6 +67,9 @@
                 $message = "Email not found";
             }    
         }
+        else {
+            $message = implode("<br>", $errors);
+        }
     }
 ?>
 
@@ -99,16 +104,21 @@
                 }
             }
         </script>
+        
     </head>
     
-    <body>
+    <body class="authBody">
         <?php include("VisitorNavBar.php");?>
         <div class="login-page">
             <div class="login-container">
                 <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
 
                 <h2>Login</h2>
-
+                
+                <?php if (!empty($message)) { ?>
+                <p class="error"><?php echo $message; ?></p>
+                <?php } ?>
+            
                 <form id="loginForm" method="POST" action="Login.php" onsubmit="return validateForm()">
                     <!-- email -->
                     <input type="email" id="email" name="email" placeholder="Enter Your Email">
