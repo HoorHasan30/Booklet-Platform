@@ -5,22 +5,28 @@
     box-sizing: border-box;
     font-family: Alice;
 }
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    background: #FFF7EE;
+}
  
 /*Navbar*/
 nav {
     width: 100%;
     background: #483434; 
-    padding: 0.5rem;
-    margin-bottom: 2rem;
-                
+    padding: 0.5rem;     
     display: flex;
     align-items: center;
     justify-content: flex-start;
 }
             
-img {
-    height: 12%;
-    width: 12%;
+.logo {
+    height: 50px;
+    width: auto;
+    margin-right: 20px;
 }
 
 /*Visitor*/
@@ -131,5 +137,202 @@ img {
     color: #FFF7EE;
 }
 
+/*Footer --> in style tag in the Foter.php*/    
+#pageFooter{
+    background: #483434;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    margin-top: auto;
+}
 
-/*Footer*/    
+#footer-text{
+    font-size: 1rem;
+    color: #FFF7EE;
+}
+
+/*Login Form & Register Form*/
+.authBody{
+    background-image: url("images/header.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.login-page {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+        
+.login-container{
+    width: 600px;
+    background: #FFF7EE;
+    border: 3px solid #483434;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 30px 20px;
+    text-align: center;
+                
+}
+            
+.formLogo{
+    height: auto; 
+    width: 400px;
+    isplay: block;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.login-container h2{
+    margin-bottom: 20px;
+    color: #483434;
+}
+
+.error {
+    color: red;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+input{
+    width: 400px;
+    padding: 10px;
+    margin: 5px 0px;
+    border: 2px solid #D3C1B4;
+    border-radius: 20px; 
+    background: #FFF7EE;
+}
+
+.passBox{
+    position: relative;
+    width: 400px;
+    margin: 0 auto;
+}
+            
+.passBox input {
+        margin: 5px 0;
+        padding-right: 40px;
+}
+
+.passEye{
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #483434;
+    cursor: pointer;
+}
+
+.formBtn{
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 1.05rem;
+    background: #D3C1B4;
+    color: #483434; 
+    border: 2px solid #483434;
+    width: 400px;
+    margin: 5px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.formBtn:hover{
+    background: #FFF7EE;
+    color: #483434;
+    border: 1px solid #483434;
+}
+
+.regLink{
+    margin-top:15px;
+    margin-bottom: 15px
+    font-size: 14px;
+    color: #D3C1B4;
+}
+
+.regLink a {
+    color: #483434;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/*About us*/
+.about{
+    width: 100%;
+    flex: 1;
+    display: flex;
+    min-height: 80vh;
+}
+
+.logoBackground {
+    width: 45%;
+    background-image: url("images/header.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.aboutLogo {
+    width: 70%;
+    opacity: 0.9;
+}
+
+.about-content {
+    width: 55%;
+    padding: 80px 60px;
+    color: #483434;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    
+    text-align: center;
+}
+
+.about-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 25px;
+}
+
+.about-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 40px;
+}
+
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.contact-Item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.1rem;
+}
+
+.contactImg {
+    width: 24px;
+    height: 24px;
+    display: block; 
+}
+
+.contact-Item p {
+    margin:0;
+    line-height: 1;
+}
