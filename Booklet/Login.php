@@ -12,13 +12,53 @@
     if(isset($_POST["btnLogin"])){
         
         //get values
+        $email = trim($_POST["email"]);
+        $password = $POST["password"];
+        
+        // Check if fields are empty
+        if (empty($email) || empty($password)) {
+            $message = "Please fill in all fields.";
+        } 
+        //if not empty --> validate
+        else {
+            //Find user
+            $sql = "SELECT * FROM dbProj_users WHERE email = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $email);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
+            //check if email existed
+            if($row = mysqli_fetch_assoc($result)){
+                // if existed -> verify password (hashed)
+                if(password_verify($password, $row["password"])){
+                    // Save user data in session
+                    $_SESSION["userId"] = $row["userId"];
+                    $_SESSION["firstName"] = $row["firstName"];
+                    $_SESSION["lastName"] = $row["lastName"];
+                    $_SESSION["role"] = $row["role"];
+                    
+                    //redirect to home page
+                    header("Location: HomePage.php");
+                    exit();
+                }
+                //worng password 
+                else {
+                  $message = "Incorrect Passwor";  
+                } 
+            }
+            //user not found
+            else{
+                $message = "Email not found";
+            }    
+        }
     }
 ?>
 
 <html>
     <head>
         <title>Login</title>
-        <link rel="stylesheet" href="BookletCSS.css">
+        <link rel="stylesheet" href="/BookletCSS.css">
         
         <script>
             //Form JS Validation
@@ -46,130 +86,32 @@
                 }
             }
         </script>
-        
-        <style>
-            
-            body{
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh; 
-                background: #FFF7EE;
-            }
-            
-            .login-container{
-                width: 600px;
-                background: #FFF7EE;
-                border: 3px solid #483434;
-                border-radius: 20px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                margin: 12px;
-                padding: 10px;
-                
-                display: flex;
-                flex: 1;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-            }
-            
-            .formLogo{
-                height: 40%; 
-                width: 40%;
-                display: block;
-                margin: 15px auto 15px auto;
-            }
-
-            .login-container h2{
-                margin-bottom: 20px;
-                color: #483434;
-            }
-
-            .error {
-                color: red;
-                margin-bottom: 10px;
-                font-size: 14px;
-            }
-
-            input{
-               width: 400px;
-               padding: 10px;
-               margin: 5px;
-               border: 1px solid #D3C1B4;
-               border-radius: 20px; 
-            }
-
-            .passBox{
-                position: relative;
-            }
-
-            .passEye{
-                position: absolute;
-                right: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                color: #483434;
-                cursor: pointer;
-            }
-
-            .formBtn{
-                padding: 0.5rem 1.5rem;
-                border-radius: 20px;
-                font-weight: 500;
-                font-size: 1.05rem;
-                background: #D3C1B4;
-                color: #483434; 
-                border: 1px solid #483434;
-                width: 400px;
-                transition: 0.3s;
-                margin: 5px;
-                cursor: pointer;
-            }
-
-            .formBtn:hover{
-                background: #FFF7EE;
-                color: #483434;
-                border: 1px solid #483434;
-            }
-
-            .regLink p{
-                margin-top:15px;
-                margin-bottom: 15px
-                font-size: 14px;
-                color: #D3C1B4;
-            }
-
-            .regLink a {
-                color: #483434;
-                text-decoration: none;
-                font-weight: bold;
-            }
-        </style>
     </head>
     
     <body>
         <?php include("VisitorNavBar.php");?>
-        
-        <div class="login-container">
-            <img class="formLogo" src="images/logoDark.png" alt="Booklet Logo">
-            
-            <h2>Login</h2>
-            
-            <form id="loginForm" method="POST" onsubmit="return validateForm()">
-                <!-- email -->
-                <input type="email" id="email" name="email" placeholder="Enter Your Email">
+        <div class="login-page">
+            <div class="login-container">
+                <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
 
-                <!-- password -->
-                <div class="passBox">
-                    <input type="password" id="password" name="password" placeholder="Enter Your Password">
-                    <span class="passEye" onclick="seePassword()">👁</span>
-                </div>
-                <!-- Login Button -->
-                <button type="submit" Class="formBtn" name="btnLogin">Login</button>
-            </form>
+                <h2>Login</h2>
 
-            <!-- Register -->
-            <p class="regLink">Don't have an account?  <a href="Register.php">Register</a></p>
+                <form id="loginForm" method="POST" onsubmit="return validateForm()">
+                    <!-- email -->
+                    <input type="email" id="email" name="email" placeholder="Enter Your Email">
+
+                    <!-- password -->
+                    <div class="passBox">
+                        <input type="password" id="password" name="password" placeholder="Enter Your Password">
+                        <span class="passEye" onclick="seePassword()">👁</span>
+                    </div>
+                    <!-- Login Button -->
+                    <button type="submit" class="formBtn" name="btnLogin">Login</button>
+                </form>
+
+                <!-- Register -->
+                <p class="regLink">Don't have an account?  <a href="Register.php">Register</a></p>
+            </div>
         </div>
         
         <?php include("Footer.php");?>

@@ -7,22 +7,7 @@
 
 <html>
     <head>
-        <style>
-            #pageFooter{
-                background: #483434;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1rem 2rem;
-                min-height: 50px;
-                margin-top: auto;
-            }
-
-            #footer-left, #footer-right{
-                font-size: 1rem;
-                color: #FFF7EE;
-            }
-         </style>
+        <link rel="stylesheet" href="/BookletCSS.css">
     </head>
     
     <body>
