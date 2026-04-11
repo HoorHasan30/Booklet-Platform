@@ -4,7 +4,7 @@
     
     include("DBConnection.php");
     
-    //Check for seesions
+    //Check for sessions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -16,7 +16,7 @@
         
         $dbc= getConnection();
         
-        //get values
+        //get values from input
         $email = trim($_POST["email"]);
         $password = $_POST["password"];
         
@@ -24,11 +24,12 @@
         
         // Check if fields are empty
         if (empty($email) || empty($password)) {
-            $error[] = "Please fill in all fields.";
+            $errors[] = "Please fill in all fields.";
         } 
         
-        //if not empty --> validate
+        //if empty (no errors) --> validate
         if(empty($errors)){
+            
             //Find user
             $sql = "SELECT * FROM dbProj_users WHERE email = ?";
             $stmt = mysqli_prepare($dbc, $sql);
@@ -54,12 +55,12 @@
                     $_SESSION["role"] = $row["role"];
                     
                     //redirect to home page
-                    header("Location: index.php");
+                    header("Location: AboutUs.php");
                     exit();
                 }
                 //worng password 
                 else {
-                  $message = "Incorrect Passwor";  
+                  $message = "Incorrect Password";  
                 } 
             }
             //user not found
@@ -109,7 +110,9 @@
     
     <body class="authBody">
         <?php include("VisitorNavBar.php");?>
+        
         <div class="login-page">
+            
             <div class="login-container">
                 <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
 
@@ -128,13 +131,16 @@
                         <input type="password" id="password" name="password" placeholder="Enter Your Password">
                         <span class="passEye" onclick="seePassword()">👁</span>
                     </div>
+                    
                     <!-- Login Button -->
                     <button type="submit" class="formBtn" name="btnLogin">Login</button>
                 </form>
 
                 <!-- Register -->
-                <p class="regLink">Don't have an account?  <a href="Register.php">Register</a></p>
+                <p class="regLink">Don't have an account?<a href="Register.php"> Register</a></p>
+            
             </div>
+            
         </div>
         
         <?php include("Footer.php");?>

@@ -1,5 +1,5 @@
 <?php
-    //Check for seesions
+    //Check for sessions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -12,8 +12,7 @@
     
     <body>
         <footer id="pageFooter">
-            <p id="footer-right">© All Rights Reserved to Booklet <?php echo date("Y");?></p>
-            <p id="footer-left">June</p>
+            <p id="footer-text">© All Rights Reserved to Booklet <?php echo date("Y");?></p>
         </footer>
     </body>
 </html>

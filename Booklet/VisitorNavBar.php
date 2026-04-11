@@ -1,5 +1,5 @@
 <?php
-    //Check for seesions
+    //Check for sessions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
@@ -18,7 +18,7 @@
             <ul class="nav-links">
                 <li><a href="">Home</a></li>
                 <li><a href="">All Books</a></li>
-                <li><a href="">About Us</a></li>
+                <li><a href="AboutUs.php">About Us</a></li>
             </ul>
             
             <div class="navBtn">
