@@ -1,16 +1,19 @@
 <?php
 session_start();
 ?>
+
 <!DOCTYPE html>
 <html>
-<head>
+    <head>
+        
+    </head>
     
-</head>
-<body>
+    <body>
 
-<?php include("CreatorNavBar.php"); ?>
+        <?php include("VisitorNavBar.php"); ?>
 
-<h1>Welcome to Booklet</h1>
+        <h1>Welcome to Booklet</h1>
 
-</body>
+        <?php include("Footer.php"); ?>
+    </body>
 </html>

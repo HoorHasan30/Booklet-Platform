@@ -13,7 +13,7 @@
     
     <body>
         <nav> 
-            <img src="images/Logo.png" alt="Booklet Logo">
+            <img class="logo" src="images/Logo.png" alt="Booklet Logo">
             
             <ul class="nav-links">
                 <li><a href="">Home</a></li>
@@ -22,7 +22,7 @@
             </ul>
             
             <div class="navBtn">
-                <a href=""><button class="LoginRegBtn">Register/Login</button></a>
+                <a href="Login.php"><button class="LoginRegBtn">Register/Login</button></a>
             </div>
         </nav>
     </body>

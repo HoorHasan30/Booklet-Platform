@@ -5,6 +5,12 @@
     box-sizing: border-box;
     font-family: Alice;
 }
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    background: #FFF7EE;
+}
  
 /*Navbar*/
 nav {
@@ -18,9 +24,10 @@ nav {
     justify-content: flex-start;
 }
             
-img {
-    height: 12%;
-    width: 12%;
+.logo {
+    height: 50px;
+    width: auto;
+    margin-right: 20px;
 }
 
 /*Visitor*/
@@ -131,5 +138,6 @@ img {
     color: #FFF7EE;
 }
 
+/*Footer --> in style tag in the Foter.php*/    
 
-/*Footer*/    
+/*Login Form*/
