@@ -46,6 +46,7 @@ body { background:#F5EDE6; font-family:Arial; }
     font-size:25px;
     text-decoration:none;
     color:black;
+   margin-left:-180px;
 }
 
 /* HEADER */
@@ -60,6 +61,7 @@ body { background:#F5EDE6; font-family:Arial; }
     display:flex;
     gap:30px;
     margin-top:20px;
+    align-items:flex-start;
 }
 
 .book-img {
@@ -86,14 +88,13 @@ body { background:#F5EDE6; font-family:Arial; }
 
 /* REVIEW CARD */
 .review-card {
-    background:#EFE7DF;
-    border-radius:25px;
-    padding:25px;
-    margin-top:25px;
-}
+    background: #EFE7DF;
+    padding: 20px;
+    border-radius: 20px;
+    margin-top: 15px;
 
-/* STARS */
-.stars { color:gold; }
+    border: 2px solid #D3C1B4; 
+}
 
 /* MODAL */
 .modal {
@@ -146,6 +147,67 @@ textarea {
     margin-top:15px;
     float:right;
 }
+
+
+.book-info {
+    display:flex;
+    flex-direction:column;
+    gap:12px; 
+    margin-top:10px;
+}
+.book-info p {
+    margin:0;
+}
+.label {
+    font-weight:bold;
+}
+
+.desc p {
+    margin-top:5px;
+    font-weight:normal; 
+}
+
+/* SECTION TITLE */
+.section-title{
+    margin-top:40px;
+    margin-bottom:15px;
+    font-size:22px;
+}
+
+/* REVIEW LIST */
+.reviews-list{
+    margin-top:10px;
+}
+
+/* STARS */
+.stars{
+    color:gold;
+    margin-bottom:8px;
+}
+
+/* TEXT */
+.review-text{
+    margin-bottom:10px;
+}
+
+/* USER */
+.review-user{
+    font-size:13px;
+    color:#444;
+}
+
+.view-comments{
+    display:inline-block;
+    margin-top:8px;
+    font-size:14px;
+    color:#6b4c3b;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.view-comments:hover{
+    text-decoration:underline;
+}
 </style>
 </head>
 
@@ -155,7 +217,7 @@ if(isset($_SESSION['role'])){
     if($_SESSION['role'] == 'Creator'){
         include("CreatorNavBar.php");
     } else {
-        include("VisitorNavBar.php");
+        include("AdminNavBar.php");
     }
 } else {
     include("VisitorNavBar.php");
@@ -173,37 +235,51 @@ if(isset($_SESSION['role'])){
 <div class="book-box">
 
     <!-- IMAGE -->
-    <img src="BookCovers/<?= $book['bookCovers'] ?>" class="book-img">
+<img src="<?= $book['bookCover'] ?>" class="book-img">   
+   
 
-    <div>
-        <p><b>Author:</b> <?= $book['author'] ?></p>
-        <p><b>Pages:</b> <?= $book['noPages'] ?></p>
+  <div class="book-info">
 
-        <div class="avg-rating">
-            Rating: <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐
-        </div>
+    <p><span class="label">Author:</span> <?= $book['author'] ?></p>
 
-        <p style="margin-top:15px;">
-            <?= $book['description'] ?>
-        </p>
+    <p><span class="label">Pages:</span> <?= $book['noPages'] ?></p>
+
+    <p><span class="label">Average Rating:</span> 
+        <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐
+    </p>
+
+    <div class="desc">
+        <span class="label">Description:</span>
+        <p><?= $book['description'] ?></p>
     </div>
+
+</div>
 
 </div>
 
 <!-- REVIEWS -->
+<h2 class="section-title">Reviews</h2>
+
+<div class="reviews-list">
 <?php while($r = mysqli_fetch_assoc($reviews)){ ?>
-<div class="review-card">
+    <div class="review-card">
+        <p class="stars">
+            <?= str_repeat("⭐", $r['rating']) ?>
+        </p>
 
-    <div class="stars">
-        <?= str_repeat("★",$r['rating']) ?>
+        <p class="review-text"><?= $r['reviewText'] ?></p>
+
+        <span class="review-user">By: <?= $r['firstName'] ?></span>
+        
+        <!-- VIEW COMMENTS -->
+    <br>
+    <a class="view-comments" href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">
+        View Comments
+    </a>
+    
     </div>
-
-    <p><?= $r['reviewText'] ?></p>
-    <small>By: <?= $r['firstName'] ?></small><br>
-
-    <a href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">Comments</a>
-</div>
 <?php } ?>
+</div>
 
 </div>
 
