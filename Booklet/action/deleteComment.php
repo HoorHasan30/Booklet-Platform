@@ -1,10 +1,14 @@
 <?php
+session_start();
 include("../DBConnection.php");
 $dbc = getConnection();
 
-$id = $_POST['commentId'];
+if(isset($_POST['commentId']) && $_SESSION['role'] == 'Admin'){
 
-mysqli_query($dbc,"DELETE FROM dbProj_comments WHERE commentId = $id");
+    $commentId = $_POST['commentId'];
 
-header("Location: ".$_SERVER['HTTP_REFERER']);
+    mysqli_query($dbc, "DELETE FROM dbProj_comments WHERE commentId = $commentId");
+
+    header("Location: " . $_SERVER['HTTP_REFERER']);
+}
 ?>
