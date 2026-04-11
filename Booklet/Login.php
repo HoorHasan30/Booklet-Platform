@@ -1,20 +1,26 @@
 <?php
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+    
+    include("DBConnection.php");
+    
     //Check for seesions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    include("DBConnection.php");
-    
-    
-    $message=""; //For error massages
+
+    $message=""; //For error messages
     
     //if button clicked
     if(isset($_POST["btnLogin"])){
         
+        $dbc= getConnection();
+        
         //get values
         $email = trim($_POST["email"]);
-        $password = $POST["password"];
+        $password = $_POST["password"];
         
+        $errors = araay();
         // Check if fields are empty
         if (empty($email) || empty($password)) {
             $message = "Please fill in all fields.";
@@ -23,15 +29,22 @@
         else {
             //Find user
             $sql = "SELECT * FROM dbProj_users WHERE email = ?";
-            $stmt = mysqli_prepare($conn, $sql);
+            $stmt = mysqli_prepare($dbc, $sql);
+            
+            if (!$stmt) {
+                die("SQL Error: " . mysqli_error($dbc));
+            }
+            
             mysqli_stmt_bind_param($stmt, "s", $email);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
             
             //check if email existed
             if($row = mysqli_fetch_assoc($result)){
+                
                 // if existed -> verify password (hashed)
                 if(password_verify($password, $row["password"])){
+                    
                     // Save user data in session
                     $_SESSION["userId"] = $row["userId"];
                     $_SESSION["firstName"] = $row["firstName"];
@@ -39,7 +52,7 @@
                     $_SESSION["role"] = $row["role"];
                     
                     //redirect to home page
-                    header("Location: HomePage.php");
+                    header("Location: index.php");
                     exit();
                 }
                 //worng password 
@@ -68,7 +81,7 @@
                 
                 //if either of the inputs empty
                 if (email === "" || password === "") {
-                    alert("Please fill in all fields.");
+                    alert("Please fill all fields.");
                     return false;
                 }
                 return true;
@@ -96,7 +109,7 @@
 
                 <h2>Login</h2>
 
-                <form id="loginForm" method="POST" onsubmit="return validateForm()">
+                <form id="loginForm" method="POST" action="Login.php" onsubmit="return validateForm()">
                     <!-- email -->
                     <input type="email" id="email" name="email" placeholder="Enter Your Email">
 
