@@ -3,20 +3,29 @@ session_start();
 include("DBConnection.php");
 $dbc = getConnection();
 
-if(!isset($_GET['id'])) die("Book not found");
-
-$bookId = $_GET['id'];
+$bookId = intval($_GET['id']);
 
 // BOOK
 $book = mysqli_fetch_assoc(mysqli_query($dbc,"
 SELECT * FROM dbProj_books WHERE bookId = $bookId
 "));
 
-// AVG RATING
-$avg = mysqli_fetch_assoc(mysqli_query($dbc,"
-SELECT AVG(rating) as avgRating FROM dbProj_reviews WHERE bookId = $bookId
-"));
-$avgRating = round($avg['avgRating'],1);
+// AVG RATING (PROCEDURE)
+$result = mysqli_query($dbc, "CALL GetAverageRating($bookId)");
+$avg = mysqli_fetch_assoc($result);
+$avgRating = round($avg['AverageRating'],1);
+mysqli_next_result($dbc);
+
+// REVIEWS
+$reviews = mysqli_query($dbc,"
+SELECT r.*, u.firstName
+FROM dbProj_reviews r
+JOIN dbProj_users u ON r.userId = u.userId
+WHERE r.bookId = $bookId
+ORDER BY r.createdAt DESC
+");
+
+
 
 // REVIEWS
 $reviews = mysqli_query($dbc,"
@@ -45,15 +54,8 @@ body { background:#F5EDE6; font-family:Arial; }
 .back-btn {
     font-size:25px;
     text-decoration:none;
-    color:black;
+    color: #D3C1B4;
    margin-left:-180px;
-}
-
-/* HEADER */
-.top {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
 }
 
 /* BOOK */
@@ -69,16 +71,10 @@ body { background:#F5EDE6; font-family:Arial; }
     height:200px;
     border-radius:12px;
     object-fit:cover;
+     border: 3px solid #b8a08d;
 }
 
-/* BUTTON */
-.review-btn {
-    background:#CBB6A6;
-    border:none;
-    padding:10px 25px;
-    border-radius:20px;
-    cursor:pointer;
-}
+
 
 /* RATING */
 .avg-rating {
@@ -92,35 +88,41 @@ body { background:#F5EDE6; font-family:Arial; }
     padding: 20px;
     border-radius: 20px;
     margin-top: 15px;
-
     border: 2px solid #D3C1B4; 
 }
 
 /* MODAL */
-.modal {
+
+.modal{
     display:none;
     position:fixed;
-    top:0; left:0;
+    top:0;
+    left:0;
     width:100%;
     height:100%;
     background:rgba(0,0,0,0.4);
-
     justify-content:center;
     align-items:center;
+    padding: 40px 30px 30px 30px;
+    text-align: center;
 }
 
-.modal-content {
+/* POPUP BOX */
+.modal-content{
     background:#F5EDE6;
     width:400px;
-    padding:25px;
+    padding:40px;
     border-radius:25px;
     position:relative;
+    border: 3px solid #6b4c3b; 
+    gap: 15px;
 }
 
 .close {
     position:absolute;
     top:10px;
     left:10px;
+    bottom: 10px;
     cursor:pointer;
 }
 
@@ -139,15 +141,28 @@ textarea {
     border-radius:12px;
 }
 
-.save-btn {
+/* SAVE */
+.save-btn{
     background:#CBB6A6;
     border:none;
-    padding:10px 25px;
+    padding:10px 20px;
     border-radius:20px;
     margin-top:15px;
     float:right;
 }
+.save-btn:hover {
+    color: #483434;
+    background: #EFE7DF;
+     border: 2px solid #b8a08d;
+}
 
+
+
+.review-btn:hover {
+    color: #483434;
+    background: #EFE7DF;
+     border: 2px solid #b8a08d;
+}
 
 .book-info {
     display:flex;
@@ -208,16 +223,104 @@ textarea {
 .view-comments:hover{
     text-decoration:underline;
 }
+
+.login-title{
+    margin-bottom:10px;
+}
+
+.login-text{
+    margin-bottom:25px; 
+    color:#555;
+}
+
+.login-actions{
+    display:flex;
+    justify-content:center;
+}
+
+/* LOGIN BUTTON */
+.login-btn{
+    background:#CBB6A6;
+    padding:10px 22px;
+    border-radius:20px;
+    text-decoration:none;
+    width: 90%;       
+    margin: 20px auto;
+    color:#6b4c3b; 
+    text-align: center;
+}
+
+/* HOVER */
+.login-btn:hover{
+   color: #483434;
+    background: #EFE7DF;
+     border: 2px solid #b8a08d;
+}
+
+/* EDIT, REVIEW  BUTTON */
+.edit-btn,
+.review-btn {
+    background:#CBB6A6;
+    border:none;
+    padding:10px 25px;
+    border-radius:20px;
+    cursor:pointer;
+    color:#6b4c3b;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.edit-btn:hover{
+   color: #483434;
+    background: #EFE7DF;
+     border: 2px solid #b8a08d;
+}
+
+.top {
+       display:flex;
+       align-items:center;
+       margin-top:30px;
+}
+
+.top-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
 </style>
 </head>
 
 <body>
+    
+   <div id="loginModal" class="modal">
+  <div class="modal-content">
+
+    <span class="close" onclick="closeLogin()">✖</span>
+
+   <h3 class="login-title">You need to sign in</h3>
+<p class="login-text">Please login to continue</p>
+
+<div class="login-actions">
+    <a href="Login.php" class="login-btn">Login</a>
+
+  </div>
+</div>
+       </div>
+       
+    
 <?php
 if(isset($_SESSION['role'])){
     if($_SESSION['role'] == 'Creator'){
         include("CreatorNavBar.php");
-    } else {
+    } 
+    elseif($_SESSION['role'] == 'Admin'){
         include("AdminNavBar.php");
+    } 
+    else {
+        include("VisitorNavBar.php");
     }
 } else {
     include("VisitorNavBar.php");
@@ -227,9 +330,33 @@ if(isset($_SESSION['role'])){
 
 <a href="javascript:history.back()" class="back-btn">←</a>
 
+
+
 <div class="top">
+
     <h2><?= $book['title'] ?></h2>
-    <button class="review-btn" onclick="openReviewModal()">Add Review</button>
+
+    <div class="top-actions">
+
+        <?php 
+        if(isset($_SESSION['role']) && 
+           ($_SESSION['role'] == 'Admin' || 
+           ($_SESSION['role'] == 'Creator' && $_SESSION['userId'] == $book['userId']))
+        ){ 
+        ?>
+            <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
+    Edit
+</button>
+        <?php } ?>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Creator'){ ?>
+            <button class="review-btn" onclick="openReviewModal()">Add Review</button>
+        <?php } elseif(!isset($_SESSION['role'])) { ?>
+            <button class="review-btn" onclick="openLogin()">Add Review</button>
+        <?php } ?>
+
+    </div>
+
 </div>
 
 <div class="book-box">
@@ -305,7 +432,7 @@ if(isset($_SESSION['role'])){
 <textarea name="reviewText" required placeholder="Write a review"></textarea>
 
 <div style="overflow:hidden;">
-    <button class="save-btn">Save</button>
+     <button class="save-btn">Save</button>
 </div>
 
 </form>
@@ -335,6 +462,16 @@ window.onclick=function(e){
 let m=document.getElementById("reviewModal");
 if(e.target==m) m.style.display="none";
 }
+
+
+function openLogin(){
+    document.getElementById("loginModal").style.display = "flex";
+}
+
+function closeLogin(){
+    document.getElementById("loginModal").style.display = "none";
+}
+
 </script>
 
 </body>

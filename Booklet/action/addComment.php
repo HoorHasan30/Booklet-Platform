@@ -1,23 +1,20 @@
 <?php
+session_start();
 include("../DBConnection.php");
+$dbc = getConnection();
 
 if(!isset($_SESSION['userId'])){
     die("You must login first");
 }
 
-$commentText = $_POST['commentText'];
-$reviewId = $_POST['reviewId'];
+$commentText = mysqli_real_escape_string($dbc, $_POST['commentText']);
+$reviewId = intval($_POST['reviewId']);
 $userId = $_SESSION['userId'];
 
-$stmt = $conn->prepare("
-    INSERT INTO dbProj_comments (userId, commentText, createdAt, reviewId)
-    VALUES (?, ?, NOW(), ?)
+mysqli_query($dbc,"
+INSERT INTO dbProj_comments (commentText, reviewId, userId, createdAt)
+VALUES ('$commentText', $reviewId, $userId, CURDATE())
 ");
 
-$stmt->bind_param("isi", $userId, $commentText, $reviewId);
-$stmt->execute();
-
-// return to same page
-header("Location: ../pages/reviewDetails.php?reviewId=".$reviewId);
-exit();
+header("Location: ../reviewDetails.php?reviewId=$reviewId");
 ?>
