@@ -4,7 +4,21 @@
 
     session_start();
     include("DBConnection.php");
+    
+    function loadNavBar() {
+        if (isset($_SESSION["role"])) {
+            if ($_SESSION["role"] == "Admin") {
+                include("AdminNavBar.php");
+            } 
+            elseif ($_SESSION["role"] == "Creator") {
+                include("CreatorNavBar.php");
 
+            }
+        } else {
+            include("VisitorNavBar.php");
+        }
+    }
+    
     $dbc = getConnection();
 
     if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -387,19 +401,7 @@
             </div>
         </div>
 
-        <?php
-        if (isset($_SESSION['role'])) {
-            if ($_SESSION['role'] == 'Creator') {
-                include("CreatorNavBar.php");
-            } elseif ($_SESSION['role'] == 'Admin') {
-                include("AdminNavBar.php");
-            } else {
-                include("VisitorNavBar.php");
-            }
-        } else {
-            include("VisitorNavBar.php");
-        }
-        ?>
+        <?php loadNavBar(); ?>
 
         <div class="container">
 

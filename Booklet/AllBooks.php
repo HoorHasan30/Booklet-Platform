@@ -9,12 +9,12 @@
         if (isset($_SESSION["role"])) {
             if ($_SESSION["role"] == "Admin") {
                 include("AdminNavBar.php");
-            } elseif ($_SESSION["role"] == "Creator") {
+            } 
+            elseif ($_SESSION["role"] == "Creator") {
                 include("CreatorNavBar.php");
-            } else {
-                include("VisitorNavBar.php");
             }
-        } else {
+        } 
+        else {
             include("VisitorNavBar.php");
         }
     }

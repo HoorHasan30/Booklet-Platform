@@ -1,6 +1,21 @@
 <?php
 session_start();
 include("DBConnection.php");
+
+function loadNavBar() {
+    if (isset($_SESSION["role"])) {
+        if ($_SESSION["role"] == "Admin") {
+            include("AdminNavBar.php");
+        } 
+        elseif ($_SESSION["role"] == "Creator") {
+            include("CreatorNavBar.php");
+        }
+    } 
+    else {
+        include("VisitorNavBar.php");
+    }
+}
+    
 $dbc = getConnection();
 
 $bookId = intval($_GET['id']);
@@ -87,19 +102,7 @@ body { background:#F5EDE6; font-family:Arial; }
 </head>
 
 <body>
-
-
-<?php
-$role = $_SESSION['role'] ?? 'Visitor';
-
-if($role == 'Creator'){
-    include("CreatorNavBar.php");
-} elseif($role == 'Admin'){
-    include("AdminNavBar.php");
-} else {
-    include("VisitorNavBar.php");
-}
-?>
+<?php loadNavBar(); ?>
 
 <div class="edit-container">
 
