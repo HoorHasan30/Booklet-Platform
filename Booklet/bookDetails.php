@@ -10,6 +10,18 @@ $book = mysqli_fetch_assoc(mysqli_query($dbc,"
 SELECT * FROM dbProj_books WHERE bookId = $bookId
 "));
 
+
+//genre
+
+$book = mysqli_fetch_assoc(mysqli_query($dbc,"
+SELECT b.*, g.genreName
+FROM dbProj_books b
+JOIN dbProj_Genres g ON b.genreId = g.genreId
+WHERE b.bookId = $bookId
+"));
+
+
+
 // AVG RATING (PROCEDURE)
 $result = mysqli_query($dbc, "CALL GetAverageRating($bookId)");
 $avg = mysqli_fetch_assoc($result);
@@ -83,7 +95,7 @@ body { background:#F5EDE6; font-family:Arial; }
 }
 
 /* REVIEW CARD */
-.review-card {
+.review-card1 {
     background: #EFE7DF;
     padding: 20px;
     border-radius: 20px;
@@ -368,6 +380,7 @@ if(isset($_SESSION['role'])){
   <div class="book-info">
 
     <p><span class="label">Author:</span> <?= $book['author'] ?></p>
+   <p><span class="label">Genre:</span> <?= $book['genreName'] ?></p>
 
     <p><span class="label">Pages:</span> <?= $book['noPages'] ?></p>
 
@@ -389,7 +402,7 @@ if(isset($_SESSION['role'])){
 
 <div class="reviews-list">
 <?php while($r = mysqli_fetch_assoc($reviews)){ ?>
-    <div class="review-card">
+    <div class="review-card1">
         <p class="stars">
             <?= str_repeat("⭐", $r['rating']) ?>
         </p>

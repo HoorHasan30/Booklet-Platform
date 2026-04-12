@@ -53,12 +53,13 @@ body{
 }
 
 /* REVIEW CARD */
-.review-card{
+.review-card1{
     background:#EFE7DF;
     border-radius:25px;
     padding:25px 30px;
     margin-bottom:25px;
     border: 2px solid #6b4c3b;
+    position: relative;
 }
 
 /* STARS */
@@ -99,6 +100,7 @@ body{
     border-radius:20px;
     margin-bottom:15px;
     border: 2px solid #D3C1B4;
+    display:block;
 }
 
 .comment-user{
@@ -112,9 +114,10 @@ body{
     border:none;
     padding:8px 18px;
     border-radius:20px;
-    margin-top:50px; 
-    float:right;
     cursor:pointer;
+    bottom: 15px; 
+    margin-left: auto;
+     display: block; 
 }
 
 .delete-btn:hover{
@@ -134,6 +137,7 @@ body{
     background:rgba(0,0,0,0.4);
     justify-content:center;
     align-items:center;
+    z-index: 9999; 
 }
 
 .modal-content{
@@ -232,7 +236,6 @@ textarea{
 </style>
 
 </head>
-
 <body>
 
 <!-- LOGIN MODAL -->
@@ -282,7 +285,7 @@ if(isset($_SESSION['role'])){
 <a href="javascript:history.back()" class="back-btn">←</a>
 
 <!-- REVIEW -->
-<div class="review-card">
+<div class="review-card1">
 
     <div class="review-stars">
         <?= str_repeat("⭐", $review['rating']) ?>
