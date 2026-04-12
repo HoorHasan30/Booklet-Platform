@@ -378,6 +378,6 @@ window.onclick = function(e){
     if(e.target == loginModal) loginModal.style.display = "none";
 }
 </script>
-
+<?php include("Footer.php"); ?>
 </body>
 </html>

@@ -104,9 +104,15 @@
     <title>All Books</title>
     <link rel="stylesheet" href="BookletCSS.css">
     <style>
-        .book-link {
+.view-more {
+    display: inline-block;
+    margin-top: 8px;
+    font-weight: bold;
+    color: #6b4c3b;
     text-decoration: none;
-    color: inherit;
+}
+.view-more:hover {
+    text-decoration: underline;
 }
     </style>
 </head>
@@ -172,7 +178,6 @@
     <div class="books-container">
         <?php while ($row = mysqli_fetch_assoc($result)) { ?>
             <?php $coverPath = fixBookCoverPath($row['bookCover']); ?>
-<a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="book-link">
 
             <div class="book-card">
                 <div class="book-image-box">
@@ -181,14 +186,13 @@
 
                 <div class="book-info">
                     <h3><?php echo htmlspecialchars($row['title']); ?></h3>
-                    <p class="author">by <?php echo htmlspecialchars($row['author']); ?></p>
-                    <p>Genre: <?php echo htmlspecialchars($row['genreName']); ?></p>
-                    <p>Pages: <?php echo htmlspecialchars($row['noPages']); ?></p>
-                    <p>Rating: <?php echo number_format($row['avgRating'], 1); ?></p>
-                    <p class="creator">Creator: <?php echo htmlspecialchars($row['firstName'] . ' ' . $row['lastName']); ?></p>
+                
+               <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="view-more">
+    View More
+</a>
                 </div>
             </div>
-</a>
+
         <?php } ?>
     </div>
 </div>
