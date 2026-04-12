@@ -129,7 +129,6 @@
                     <!-- password -->
                     <div class="passBox">
                         <input type="password" id="password" name="password" placeholder="Enter Your Password">
-                        <span class="passEye" onclick="seePassword()">👁</span>
                     </div>
                     
                     <!-- Login Button -->

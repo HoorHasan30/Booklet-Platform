@@ -1,111 +1,111 @@
 <?php
-    include("DBConnection.php");
+include("DBConnection.php");
 
-    if (session_status() == PHP_SESSION_NONE) {
-        session_start();
-    }
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-    if (!isset($_SESSION["userId"]) || !isset($_SESSION["role"]) || $_SESSION["role"] != "Creator") {
-        header("Location: Login.php");
-        exit();
-    }
+if (!isset($_SESSION["userId"]) || !isset($_SESSION["role"]) || $_SESSION["role"] != "Creator") {
+    header("Location: Login.php");
+    exit();
+}
 
-    function loadNavBar() {
-        include("CreatorNavBar.php");
-    }
+function loadNavBar() {
+    include("CreatorNavBar.php");
+}
 
-    function fixBookCoverPath($coverPath) {
-        $fileName = basename($coverPath);
+$dbc = getConnection();
 
-        $fixedNames = array(
-            "HarryPoter.jpg" => "HarryPotter.jpg",
-            "TheMidnightLibrary.jpg" => "MidnightLibrary.jpg",
-            "BeforeTheCoffeeGetsCold.jpg" => "BeforeTheCofeeGetsCold.jpg",
-            "AndThenThereWereNone.jpg" => "WereNone.jpg",
-            "TheKiteRunner.jfif" => "KiteRunner.jfif",
-            "TheSilentPatient.jpg" => "SilentPatient.jpg",
-            "TheConvenienceStoreByTheSea.jpg" => "StoreByTheSea.jpg",
-            "wonder.jpg" => "Wonder.jpeg",
-            "Wonder.jpg" => "Wonder.jpeg"
-        );
+$userId = (int)$_SESSION["userId"];
+$sortBy = isset($_GET["sort"]) ? trim($_GET["sort"]) : "newest";
+$ratingFilter = isset($_GET["rating"]) ? trim($_GET["rating"]) : "";
 
-        if (array_key_exists($fileName, $fixedNames)) {
-            return "BookCovers/" . $fixedNames[$fileName];
-        }
+$sql = "SELECT b.*, 
+               COALESCE(AVG(r.rating), 0) AS avgRating
+        FROM dbProj_books b
+        LEFT JOIN dbProj_reviews r ON b.bookId = r.bookId
+        WHERE b.userId = ?";
 
-        return $coverPath;
-    }
+$params = [$userId];
+$types = "i";
 
-    $dbc = getConnection();
+$sql .= " GROUP BY b.bookId";
 
-    $userId = $_SESSION["userId"];
-    $sortBy = isset($_GET["sort"]) ? trim($_GET["sort"]) : "newest";
-    $ratingFilter = isset($_GET["rating"]) ? trim($_GET["rating"]) : "";
+if ($ratingFilter !== "") {
+    $sql .= " HAVING ROUND(avgRating) = ?";
+    $params[] = (int)$ratingFilter;
+    $types .= "i";
+}
 
-    $sql = "SELECT b.*, 
-                   COALESCE(AVG(r.rating), 0) AS avgRating
-            FROM dbProj_books b
-            LEFT JOIN dbProj_reviews r ON b.bookId = r.bookId
-            WHERE b.userId = $userId
-            GROUP BY b.bookId";
+if ($sortBy == "oldest") {
+    $sql .= " ORDER BY b.createdAt ASC";
+} else {
+    $sql .= " ORDER BY b.createdAt DESC";
+}
 
-    if ($ratingFilter !== "") {
-        $safeRating = (int)$ratingFilter;
-        $sql .= " HAVING ROUND(avgRating) = $safeRating";
-    }
+$stmt = mysqli_prepare($dbc, $sql);
 
-    if ($sortBy == "oldest") {
-        $sql .= " ORDER BY b.createdAt ASC";
-    } else {
-        $sql .= " ORDER BY b.createdAt DESC";
-    }
+if (!$stmt) {
+    die("SQL Error: " . mysqli_error($dbc));
+}
 
-    $result = mysqli_query($dbc, $sql);
-
-    if (!$result) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+mysqli_stmt_bind_param($stmt, $types, ...$params);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title>My Books</title>
     <link rel="stylesheet" href="BookletCSS.css">
+    <style>
+        .view-more {
+            display: inline-block;
+            margin-top: 8px;
+            font-weight: bold;
+            color: #6b4c3b;
+            text-decoration: none;
+        }
+        .view-more:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
-    <?php loadNavBar(); ?>
+<?php loadNavBar(); ?>
 
-    <div class="mybooks-page">
+<div class="mybooks-page">
 
-        <form method="GET" action="MyBooks.php" class="mybooks-topbar">
-            <div class="mybooks-left-controls">
-                <select name="sort" class="mybooks-select">
-                    <option value="newest" <?php if ($sortBy == "newest") echo "selected"; ?>>Newest To Oldest</option>
-                    <option value="oldest" <?php if ($sortBy == "oldest") echo "selected"; ?>>Oldest To Newest</option>
-                </select>
+    <form method="GET" action="MyBooks.php" class="mybooks-topbar">
+        <div class="mybooks-left-controls">
+            <select name="sort" class="mybooks-select">
+                <option value="newest" <?php if ($sortBy == "newest") echo "selected"; ?>>Newest To Oldest</option>
+                <option value="oldest" <?php if ($sortBy == "oldest") echo "selected"; ?>>Oldest To Newest</option>
+            </select>
 
-                <select name="rating" class="mybooks-select">
-                    <option value="">Rating</option>
-                    <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
-                    <option value="4" <?php if ($ratingFilter == "4") echo "selected"; ?>>4 Stars</option>
-                    <option value="3" <?php if ($ratingFilter == "3") echo "selected"; ?>>3 Stars</option>
-                    <option value="2" <?php if ($ratingFilter == "2") echo "selected"; ?>>2 Stars</option>
-                    <option value="1" <?php if ($ratingFilter == "1") echo "selected"; ?>>1 Star</option>
-                    <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
-                </select>
+            <select name="rating" class="mybooks-select">
+                <option value="">Rating</option>
+                <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
+                <option value="4" <?php if ($ratingFilter == "4") echo "selected"; ?>>4 Stars</option>
+                <option value="3" <?php if ($ratingFilter == "3") echo "selected"; ?>>3 Stars</option>
+                <option value="2" <?php if ($ratingFilter == "2") echo "selected"; ?>>2 Stars</option>
+                <option value="1" <?php if ($ratingFilter == "1") echo "selected"; ?>>1 Star</option>
+                <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
+            </select>
 
-                <button type="submit" class="mybooks-small-btn">Apply</button>
-            </div>
+            <button type="submit" class="mybooks-small-btn">Apply</button>
+        </div>
 
-            <a href="#" class="mybooks-add-btn">Add Book</a>
-        </form>
+        <a href="AddBook.php" class="mybooks-add-btn">Add Book</a>
+    </form>
 
-        <div class="mybooks-grid">
+    <div class="mybooks-grid">
+        <?php if (mysqli_num_rows($result) > 0) { ?>
             <?php while ($row = mysqli_fetch_assoc($result)) { ?>
                 <div class="mybooks-card">
                     <div class="mybooks-image-box">
-                        <img src="<?php echo fixBookCoverPath($row["bookCover"]); ?>" alt="<?php echo htmlspecialchars($row["title"]); ?>">
+                        <img src="<?php echo htmlspecialchars($row["bookCover"]); ?>" alt="<?php echo htmlspecialchars($row["title"]); ?>">
                     </div>
 
                     <div class="mybooks-info">
@@ -113,14 +113,19 @@
                         <p class="mybooks-author">by <?php echo htmlspecialchars($row["author"]); ?></p>
                         <p>Pages: <?php echo htmlspecialchars($row["noPages"]); ?></p>
                         <p>Rating: <?php echo number_format($row["avgRating"], 1); ?></p>
+
+                        <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="view-more">View Details</a>
                     </div>
                 </div>
             <?php } ?>
-        </div>
-
+        <?php } else { ?>
+            <p>No books found.</p>
+        <?php } ?>
     </div>
 
-    <?php include("Footer.php"); ?>
+</div>
+
+<?php include("Footer.php"); ?>
 
 </body>
 </html>

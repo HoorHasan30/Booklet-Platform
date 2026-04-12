@@ -222,15 +222,6 @@ input{
     padding-right: 40px;
 }
 
-.passEye{
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #483434;
-    cursor: pointer;
-}
-
 .formBtn{
     padding: 0.5rem 1.5rem;
     border-radius: 20px;
@@ -688,6 +679,7 @@ input{
 }
 
 .review-card {
+    height: 200px; 
     display: flex;
     gap: 15px;
     padding: 14px;
@@ -697,8 +689,8 @@ input{
 }
 
 .review-book-cover {
-    width: 70px;
-    height: 95px;
+    width: 120px;
+    height: 165px;
     border-radius: 10px;
     overflow: hidden;
 }
