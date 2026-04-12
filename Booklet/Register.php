@@ -83,7 +83,7 @@
                     $_SESSION["lastName"] = $lastName;
                     $_SESSION["role"] = $role;
                             
-                    header("Location: AboutUs.php");
+                    header("Location: Home.php");
                     exit();
                 }
                 else {

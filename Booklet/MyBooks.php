@@ -92,6 +92,7 @@
                     <option value="3" <?php if ($ratingFilter == "3") echo "selected"; ?>>3 Stars</option>
                     <option value="2" <?php if ($ratingFilter == "2") echo "selected"; ?>>2 Stars</option>
                     <option value="1" <?php if ($ratingFilter == "1") echo "selected"; ?>>1 Star</option>
+                    <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
                 </select>
 
                 <button type="submit" class="mybooks-small-btn">Apply</button>

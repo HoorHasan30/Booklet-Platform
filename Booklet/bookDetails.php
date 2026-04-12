@@ -12,14 +12,12 @@ SELECT * FROM dbProj_books WHERE bookId = $bookId
 
 
 //genre
-
 $book = mysqli_fetch_assoc(mysqli_query($dbc,"
 SELECT b.*, g.genreName
 FROM dbProj_books b
 JOIN dbProj_Genres g ON b.genreId = g.genreId
 WHERE b.bookId = $bookId
 "));
-
 
 
 // AVG RATING (PROCEDURE)
@@ -36,8 +34,6 @@ JOIN dbProj_users u ON r.userId = u.userId
 WHERE r.bookId = $bookId
 ORDER BY r.createdAt DESC
 ");
-
-
 
 // REVIEWS
 $reviews = mysqli_query($dbc,"
@@ -343,7 +339,6 @@ if(isset($_SESSION['role'])){
 <a href="javascript:history.back()" class="back-btn">←</a>
 
 
-
 <div class="top">
 
     <h2><?= $book['title'] ?></h2>
@@ -356,9 +351,9 @@ if(isset($_SESSION['role'])){
            ($_SESSION['role'] == 'Creator' && $_SESSION['userId'] == $book['userId']))
         ){ 
         ?>
-            <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
-    Edit
-</button>
+        <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
+            Edit
+        </button>
         <?php } ?>
 
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Creator'){ ?>

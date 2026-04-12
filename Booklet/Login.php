@@ -55,7 +55,7 @@
                     $_SESSION["role"] = $row["role"];
                     
                     //redirect to home page
-                    header("Location: AboutUs.php");
+                    header("Location: Home.php");
                     exit();
                 }
                 //worng password 

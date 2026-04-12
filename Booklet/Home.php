@@ -87,7 +87,7 @@
 
             <form action="AllBooks.php" method="GET" class="home-search-form">
                 <input type="text" name="search" placeholder="Title / Author">
-                <button type="submit">Search</button>
+                <button id="searchBtn" type="submit">Search</button>
             </form>
         </div>
     </div>
