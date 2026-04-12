@@ -462,7 +462,7 @@ input{
     border-radius: 18px;
     padding: 14px;
     text-align: center;
-    min-height: 455px;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
 }
@@ -683,7 +683,7 @@ input{
 /*Reviews*/
 .home-reviews-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 18px;
 }
 
