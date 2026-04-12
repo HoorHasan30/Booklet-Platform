@@ -1,11 +1,15 @@
 <?php
-session_start();
 include("../DBConnection.php");
 $dbc = getConnection();
 
-$commentId = intval($_POST['commentId']);
+$commentId = $_POST['id'];
+$reviewId = $_POST['reviewId'];   
 
-mysqli_query($dbc, "DELETE FROM dbProj_comments WHERE commentId = $commentId");
+// DELETE COMMENT
+mysqli_query($dbc,"
+DELETE FROM dbProj_comments 
+WHERE commentId = $commentId
+");
 
-header("Location: " . $_SERVER['HTTP_REFERER']);
-?>
+header("Location: ../reviewDetails.php?reviewId=$reviewId");
+exit;

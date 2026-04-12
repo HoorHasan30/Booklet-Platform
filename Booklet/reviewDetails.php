@@ -252,17 +252,18 @@ textarea{
 <div id="deleteModal" class="modal">
   <div class="modal-content">
     <span class="close" onclick="closeDelete()">✖</span>
+
     <h3>Are you sure?</h3>
     <p>This action cannot be undone.</p>
 
-   <form method="POST" action="action/deleteComment.php">
-    <input type="hidden" name="commentId" id="deleteId">
-
-    <div class="modal-actions">
-        <button type="submit" class="delete-confirm">Yes, Delete</button>
-        <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
-    </div>
-</form>
+    <form method="POST" id="deleteForm">
+    <input type="hidden" name="id" id="deleteId">
+    <input type="hidden" name="reviewId" value="<?= $reviewId ?>">
+        <div class="modal-actions">
+            <button type="submit" class="delete-confirm">Yes, Delete</button>
+            <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
+        </div>
+    </form>
   </div>
 </div>
 
@@ -295,8 +296,11 @@ if(isset($_SESSION['role'])){
     <small class="review-user">By: <?= $review['firstName'] ?></small>
 
     <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
-        <button class="delete-btn" onclick="openDelete(<?= $review['reviewId'] ?>)">Delete</button>
-    <?php } ?>
+    <button class="delete-btn"
+        onclick="openDelete(<?= $review['reviewId'] ?>, 'review')">
+        Delete
+    </button>
+<?php } ?>
 
 </div>
 
@@ -318,9 +322,12 @@ if(isset($_SESSION['role'])){
     <p><?= $c['commentText'] ?></p>
     <small>By: <?= $c['firstName'] ?></small>
 
-    <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
-        <button class="delete-btn" onclick="openDelete(<?= $c['commentId'] ?>)">Delete</button>
-    <?php } ?>
+   <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
+    <button class="delete-btn"
+        onclick="openDelete(<?= $c['commentId'] ?>, 'comment')">
+        Delete
+    </button>
+<?php } ?>
 
 </div>
 <?php } ?>
@@ -359,14 +366,31 @@ function closeLogin(){
     document.getElementById("loginModal").style.display = "none";
 }
 
-function openDelete(id){
+
+function openDelete(id, type){
     document.getElementById("deleteModal").style.display = "flex";
     document.getElementById("deleteId").value = id;
+
+    let form = document.getElementById("deleteForm");
+
+    if(type === 'review'){
+        form.action = "action/deleteReview.php";
+    } else {
+        form.action = "action/deleteComment.php";
+    }
 }
 
 function closeDelete(){
     document.getElementById("deleteModal").style.display = "none";
 }
+
+window.onclick = function(e){
+    let modal = document.getElementById("deleteModal");
+    if(e.target == modal){
+        modal.style.display = "none";
+    }
+}
+
 
 window.onclick = function(e){
     let commentModal = document.getElementById("commentModal");
