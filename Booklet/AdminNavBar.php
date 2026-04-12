@@ -30,8 +30,8 @@
             
             <ul class="nav-links2">
                 <li><a>Dashboard</a></li>
-                <li><a href="">Home</a></li>
-                <li><a href="">All Books</a></li>
+                <li><a href="Home.php">Home</a></li>
+                <li><a href="AllBooks.php">All Books</a></li>
                 <li><a href="">All Users</a></li>
                 <li><a href="AboutUs.php">About Us</a></li>
                 

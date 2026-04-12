@@ -16,8 +16,8 @@
             <img class="logo" src="images/Logo.png" alt="Booklet Logo">
             
             <ul class="nav-links">
-                <li><a href="">Home</a></li>
-                <li><a href="">All Books</a></li>
+                <li><a href="Home.php">Home</a></li>
+                <li><a href="AllBooks.php">All Books</a></li>
                 <li><a href="AboutUs.php">About Us</a></li>
             </ul>
             
