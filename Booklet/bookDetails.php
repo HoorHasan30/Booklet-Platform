@@ -5,37 +5,42 @@ $dbc = getConnection();
 
 $bookId = intval($_GET['id']);
 
-// BOOK
-$book = mysqli_fetch_assoc(mysqli_query($dbc,"
-SELECT * FROM dbProj_books WHERE bookId = $bookId
-"));
+
+// UPDATE VIEW COUNT FIRST
+mysqli_query($dbc,"
+UPDATE dbProj_books 
+SET viewCount = IFNULL(viewCount,0) + 1
+WHERE bookId = $bookId
+");
 
 
-//genre
+//GET BOOK + GENRE + CREATOR
 $book = mysqli_fetch_assoc(mysqli_query($dbc,"
-SELECT b.*, g.genreName
+SELECT b.*, g.genreName, u.firstName
 FROM dbProj_books b
-JOIN dbProj_Genres g ON b.genreId = g.genreId
+LEFT JOIN dbProj_Genres g ON b.genreId = g.genreId
+LEFT JOIN dbProj_users u ON b.userId = u.userId
 WHERE b.bookId = $bookId
 "));
 
 
-// AVG RATING (PROCEDURE)
+//  GET AVG RATING (PROCEDURE)
 $result = mysqli_query($dbc, "CALL GetAverageRating($bookId)");
 $avg = mysqli_fetch_assoc($result);
 $avgRating = round($avg['AverageRating'],1);
 mysqli_next_result($dbc);
 
-// REVIEWS
-$reviews = mysqli_query($dbc,"
-SELECT r.*, u.firstName
-FROM dbProj_reviews r
-JOIN dbProj_users u ON r.userId = u.userId
-WHERE r.bookId = $bookId
-ORDER BY r.createdAt DESC
-");
 
-// REVIEWS
+// REVIEWS COUNT
+$countResult = mysqli_query($dbc,"
+SELECT COUNT(*) as total 
+FROM dbProj_reviews 
+WHERE bookId = $bookId
+");
+$countRow = mysqli_fetch_assoc($countResult);
+
+
+//  REVIEWS LIST (KE
 $reviews = mysqli_query($dbc,"
 SELECT r.*, u.firstName
 FROM dbProj_reviews r
@@ -71,7 +76,10 @@ body { background:#F5EDE6; font-family:Arial; }
     display:flex;
     gap:30px;
     margin-top:20px;
-    align-items:flex-start;
+    align-items:center;}
+
+.reviews-list {
+    margin-bottom: 60px;   
 }
 
 .book-img {
@@ -339,6 +347,7 @@ if(isset($_SESSION['role'])){
 <a href="javascript:history.back()" class="back-btn">←</a>
 
 
+
 <div class="top">
 
     <h2><?= $book['title'] ?></h2>
@@ -351,9 +360,9 @@ if(isset($_SESSION['role'])){
            ($_SESSION['role'] == 'Creator' && $_SESSION['userId'] == $book['userId']))
         ){ 
         ?>
-        <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
-            Edit
-        </button>
+            <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
+    Edit
+</button>
         <?php } ?>
 
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Creator'){ ?>
@@ -376,9 +385,12 @@ if(isset($_SESSION['role'])){
 
     <p><span class="label">Author:</span> <?= $book['author'] ?></p>
    <p><span class="label">Genre:</span> <?= $book['genreName'] ?></p>
-
     <p><span class="label">Pages:</span> <?= $book['noPages'] ?></p>
+<p><span class="label">Views:</span> <?= $book['viewCount'] ?? 0 ?></p>
 
+<p><span class="label">Creator:</span> <?= $book['firstName'] ?></p>
+
+<p><span class="label">Reviews:</span> <?= $countRow['total'] ?? 0 ?></p>
     <p><span class="label">Average Rating:</span> 
         <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐
     </p>
@@ -481,6 +493,6 @@ function closeLogin(){
 }
 
 </script>
-
+<?php include("Footer.php"); ?>
 </body>
 </html>
