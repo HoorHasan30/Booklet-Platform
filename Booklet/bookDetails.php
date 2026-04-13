@@ -154,7 +154,7 @@
     </script>
     
     <style>
-    body { background:#FFF7EE; font-family:Arial; }
+    body { background:#FFF7EE; font-family: Alice; color: #483434; }
 
     .container {
         width:65%;
@@ -434,19 +434,20 @@
                 <p><span class="label">Author:</span> <?= htmlspecialchars($book['author']) ?></p>
                 <p><span class="label">Genre:</span> <?= htmlspecialchars($book['genreName']) ?></p>
                 <p><span class="label">Pages:</span> <?= htmlspecialchars($book['noPages']) ?></p>
-                <p><span class="label">Views:</span> <?= htmlspecialchars($book['viewCount'] ?? 0) ?></p>
-                <p><span class="label">Creator:</span> <?= htmlspecialchars($book['firstName'] . ' ' . $book['lastName']) ?></p>
-                <p><span class="label">Reviews:</span> <?= htmlspecialchars($countRow['total'] ?? 0) ?></p>
                 <p><span class="label">Average Rating:</span> <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐</p>
-
+                <p><span class="label">Created By:</span> <?= htmlspecialchars($book['firstName'] . ' ' . $book['lastName']) ?></p>     
+                <br>
                 <div class="desc">
                     <span class="label">Description:</span>
                     <p><?= htmlspecialchars($book['description']) ?></p>
                 </div>
+                
+                <br>
+                <p><span class="label">Views:</span> <?= htmlspecialchars($book['viewCount'] ?? 0) ?></p> 
             </div>
         </div>
 
-        <h2 class="section-title">Reviews</h2>
+        <h2 class="section-title">(<?= htmlspecialchars($countRow['total'] ?? 0) ?>) Reviews</h2>
 
         <div class="reviews-list">
         <?php while($r = mysqli_fetch_assoc($reviews)) { ?>

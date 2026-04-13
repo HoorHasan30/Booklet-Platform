@@ -32,7 +32,7 @@ SELECT * FROM dbProj_books WHERE bookId = $bookId
 <title>Edit Book</title>
 
 <style>
-body { background:#FFF7EE; font-family:Arial; }
+body { background:#FFF7EE; font-family: Alice; }
 
 /* CONTAINER */
 .edit-container {

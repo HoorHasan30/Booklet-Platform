@@ -34,9 +34,10 @@ ORDER BY c.createdAt ASC
 
 <style>
 body{
-    background:##FFF7EE;
-    font-family:Arial;
+    background: #FFF7EE;
+    font-family: Alice;
     margin:0;
+    color: #483434;
 }
 
 .container{

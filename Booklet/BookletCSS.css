@@ -134,7 +134,8 @@ nav {
 }
 
 .Logout li a:hover{
-    color: #FFF7EE;
+    background: #FFFDF8;
+    border: 2px solid #483434;
 }
 
 /*Footer --> in style tag in the Footer.php*/    
@@ -397,15 +398,18 @@ input[type="password"]::-ms-clear {
 .filter-btn{
     background: #D3C1B4;
     color: #483434;
+    border: none;
 }
 
 .search-btn {
     width: 122px;
     background: #D3C1B4;
     color: #483434;
+    border: none;
 }
 .search-btn:hover,.filter-btn:hover {
-    background: #FFF7EE;
+    background: #FFFDF8;
+    border: 2px solid #483434;
 }
 
 .reset-btn{
@@ -414,7 +418,7 @@ input[type="password"]::-ms-clear {
 }
 
 .reset-btn:hover{
-    background: #FFF7EE;
+    background: #FFFDF8;
     color: #483434;
     border: 2px solid #483434;
 }
@@ -642,12 +646,11 @@ input[type="password"]::-ms-clear {
     border-radius: 24px;
     background: #D3C1B4;
     cursor: pointer;
-    border: 2px solid #483434;
 }
 
 .home-search-form button:hover{
-    border: 2px solid #D3C1B4;
-    background: #FFF7EE;
+    border: 2px solid #483434;
+    background: #FFFDF8;
 }
 
 /* Sections */
@@ -795,8 +798,8 @@ input[type="password"]::-ms-clear {
 .mybooks-small-btn {
     height: 42px;
     padding: 0 18px;
-    border: 2px solid #483434;
     border-radius: 22px;
+    border: none;
     background: #D3C1B4;
     color: #483434;
     font-size: 14px;
@@ -806,7 +809,6 @@ input[type="password"]::-ms-clear {
 .mybooks-add-btn {
     width: 150px;
     height: 42px;
-    border: 2px solid #483434;
     border-radius: 22px;
     background: #D3C1B4;
     color: #483434;
@@ -819,7 +821,8 @@ input[type="password"]::-ms-clear {
 
 .mybooks-small-btn:hover,
 .mybooks-add-btn:hover {
-    background: #FFF7EE;
+    background: #FFFDF8;
+    border: 2px solid #483434;
 }
 
 .mybooks-grid {
@@ -830,12 +833,11 @@ input[type="password"]::-ms-clear {
 
 .mybooks-card {
     background: #FFF7EE;
-    height: 350px;
     border: 2px solid #D3C1B4;
     border-radius: 18px;
     padding: 14px;
     text-align: center;
-    min-height: 455px;
+    min-height: 400px;
     display: flex;
     flex-direction: column;
 }
