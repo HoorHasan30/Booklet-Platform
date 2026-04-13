@@ -38,3 +38,5 @@ images/uploads/
 # Cache
 cache/
 tmp/
+
+private/
