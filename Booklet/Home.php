@@ -9,60 +9,37 @@
         if (isset($_SESSION["role"])) {
             if ($_SESSION["role"] == "Admin") {
                 include("AdminNavBar.php");
-            } elseif ($_SESSION["role"] == "Creator") {
+            } 
+            elseif ($_SESSION["role"] == "Creator") {
                 include("CreatorNavBar.php");
-            } else {
-                include("VisitorNavBar.php");
             }
         } else {
             include("VisitorNavBar.php");
         }
     }
 
-    function fixBookCoverPath($coverPath) {
-        $fileName = basename($coverPath);
-
-        $fixedNames = array(
-            "HarryPoter.jpg" => "HarryPotter.jpg",
-            "TheMidnightLibrary.jpg" => "MidnightLibrary.jpg",
-            "BeforeTheCoffeeGetsCold.jpg" => "BeforeTheCofeeGetsCold.jpg",
-            "AndThenThereWereNone.jpg" => "WereNone.jpg",
-            "TheKiteRunner.jfif" => "KiteRunner.jfif",
-            "TheSilentPatient.jpg" => "SilentPatient.jpg",
-            "TheConvenienceStoreByTheSea.jpg" => "StoreByTheSea.jpg",
-            "wonder.jpg" => "Wonder.jpeg",
-            "Wonder.jpg" => "Wonder.jpeg"
-        );
-
-        if (array_key_exists($fileName, $fixedNames)) {
-            return "BookCovers/" . $fixedNames[$fileName];
-        }
-
-        return $coverPath;
-    }
-
     $dbc = getConnection();
 
-    // Newest books
-    $booksSql = "SELECT b.bookId, b.title, b.author, b.bookCover
+    // 6 newest books
+    $booksSql = "SELECT b.bookId, b.title, b.author, b.bookCover, b.createdAt
                  FROM dbProj_books b
                  ORDER BY b.createdAt DESC
-                 LIMIT 5";
+                 LIMIT 6";
     $booksResult = mysqli_query($dbc, $booksSql);
 
     if (!$booksResult) {
         die("SQL Error (Books): " . mysqli_error($dbc));
     }
 
-    // Latest reviews
-    $reviewsSql = "SELECT r.reviewText, r.rating, r.createdAt,
-                          b.title, b.bookCover,
+    // 6 latest reviews
+    $reviewsSql = "SELECT r.reviewId, r.reviewText, r.rating, r.createdAt,
+                          b.bookId, b.title, b.bookCover,
                           u.firstName, u.lastName
                    FROM dbProj_reviews r
                    JOIN dbProj_books b ON r.bookId = b.bookId
                    JOIN dbProj_users u ON r.userId = u.userId
                    ORDER BY r.createdAt DESC, r.reviewId DESC
-                   LIMIT 4";
+                   LIMIT 6";
     $reviewsResult = mysqli_query($dbc, $reviewsSql);
 
     if (!$reviewsResult) {
@@ -75,6 +52,17 @@
 <head>
     <title>Home</title>
     <link rel="stylesheet" href="BookletCSS.css">
+    <style>
+        home-book-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .review-book-title a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
 </head>
 
 <body>
@@ -97,9 +85,13 @@
 
         <div class="home-books-grid">
             <?php while ($book = mysqli_fetch_assoc($booksResult)) { ?>
-                <div class="home-book-card">
-                    <img src="<?php echo fixBookCoverPath($book['bookCover']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
-                </div>
+                <a href="bookDetails.php?id=<?php echo $book['bookId']; ?>" class="home-book-link">
+                    <div class="home-book-card">
+                        <img src="<?php echo htmlspecialchars($book['bookCover']); ?>" alt="<?php echo htmlspecialchars($book['title']); ?>">
+                        <h3><?php echo htmlspecialchars($book['title']); ?></h3>
+                        <p>by <?php echo htmlspecialchars($book['author']); ?></p>
+                    </div>
+                </a>
             <?php } ?>
         </div>
     </div>
@@ -110,11 +102,19 @@
         <div class="home-reviews-grid">
             <?php while ($review = mysqli_fetch_assoc($reviewsResult)) { ?>
                 <div class="review-card">
-                    <div class="review-book-cover">
-                        <img src="<?php echo fixBookCoverPath($review['bookCover']); ?>" alt="<?php echo htmlspecialchars($review['title']); ?>">
-                    </div>
+                    <a href="bookDetails.php?id=<?php echo $review['bookId']; ?>" class="home-book-link">
+                        <div class="review-book-cover">
+                            <img src="<?php echo htmlspecialchars($review['bookCover']); ?>" alt="<?php echo htmlspecialchars($review['title']); ?>">
+                        </div>
+                    </a>
 
                     <div class="review-content">
+                        <h3 class="review-book-title">
+                            <a href="bookDetails.php?id=<?php echo $review['bookId']; ?>" class="home-book-link">
+                                <?php echo htmlspecialchars($review['title']); ?>
+                            </a>
+                        </h3>
+
                         <div class="review-stars">
                             <?php
                                 $rating = (int)$review['rating'];

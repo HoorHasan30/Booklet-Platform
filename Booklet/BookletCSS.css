@@ -208,7 +208,7 @@ input{
     margin: 5px 0px;
     border: 2px solid #D3C1B4;
     border-radius: 20px; 
-    background: #FFF7EE;
+    background: #FFFDF8;
 }
 
 .passBox{
@@ -219,7 +219,17 @@ input{
             
 .passBox input {
     margin: 5px 0;
-    padding-right: 40px;
+    padding-right: 20px;
+}
+
+.passEye {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 16px;
+    color: #483434;
 }
 
 .formBtn{
@@ -253,6 +263,12 @@ input{
     color: #483434;
     text-decoration: none;
     font-weight: bold;
+}
+
+/* Hide default browser eye icon (Edge / Chrome) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
 }
 
 /*About us*/
@@ -369,10 +385,6 @@ input{
     outline: none;
 }
 
-.search-input::placeholder {
-    color: #8A7A6D;
-}
-
 .search-btn,
 .filter-btn,
 .reset-btn {
@@ -383,13 +395,13 @@ input{
     transition: 0.3s;
 }
 .filter-btn{
-    background: #D8C7B8;
+    background: #D3C1B4;
     color: #483434;
 }
 
 .search-btn {
     width: 122px;
-    background: #D8C7B8;
+    background: #D3C1B4;
     color: #483434;
 }
 .search-btn:hover,.filter-btn:hover {
@@ -488,7 +500,7 @@ input{
 
 .author {
     font-size: 13px;
-    color: #6b4f4f;
+    color: #483434;
     margin-bottom: 4px;
 }
 
@@ -621,6 +633,7 @@ input{
     border: none;
     padding: 0 16px;
     font-size: 0.9rem;
+    border: 2px solid #483434;
 }
 
 .home-search-form button {
@@ -629,10 +642,11 @@ input{
     border-radius: 24px;
     background: #D3C1B4;
     cursor: pointer;
+    border: 2px solid #483434;
 }
 
 .home-search-form button:hover{
-    border: 2px solid #D3C1B4 ;
+    border: 2px solid #D3C1B4;
     background: #FFF7EE;
 }
 
@@ -643,7 +657,7 @@ input{
 
 .home-section h2 {
     font-size: 1.8rem;
-    color: #6B4A4A;
+    color: #483434;
     margin-bottom: 20px;
 }
 
@@ -658,7 +672,7 @@ input{
 .home-book-card {
     width: 100%;
     height: 350px;
-    border: 2px solid #CDB9A8;
+    border: 2px solid #D3C1B4;
     border-radius: 18px;
     background: #F4EFE8;
     overflow: hidden;
@@ -683,7 +697,7 @@ input{
     display: flex;
     gap: 15px;
     padding: 14px;
-    border: 2px solid #CDB9A8;
+    border: 2px solid #D3C1B4;
     border-radius: 18px;
     background: #FFF7EE;
 }
@@ -765,7 +779,7 @@ input{
     width: 210px;
     height: 42px;
     padding: 0 34px 0 14px;
-    border: 2px solid #CDB9A8;
+    border: 2px solid #D3C1B4;
     border-radius: 22px;
     background: #FFFDF8;
     font-size: 14px;
@@ -783,7 +797,7 @@ input{
     padding: 0 18px;
     border: 2px solid #483434;
     border-radius: 22px;
-    background: #D8C7B8;
+    background: #D3C1B4;
     color: #483434;
     font-size: 14px;
     cursor: pointer;
@@ -794,7 +808,7 @@ input{
     height: 42px;
     border: 2px solid #483434;
     border-radius: 22px;
-    background: #D8C7B8;
+    background: #D3C1B4;
     color: #483434;
     font-size: 14px;
     text-decoration: none;
@@ -810,12 +824,13 @@ input{
 
 .mybooks-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 22px;
 }
 
 .mybooks-card {
     background: #FFF7EE;
+    height: 350px;
     border: 2px solid #D3C1B4;
     border-radius: 18px;
     padding: 14px;
@@ -855,7 +870,7 @@ input{
 
 .mybooks-author {
     font-size: 13px;
-    color: #6b4f4f;
+    color: #483434;
     margin-bottom: 4px;
 }
 
