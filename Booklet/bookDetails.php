@@ -154,7 +154,7 @@
     </script>
     
     <style>
-    body { background:#F5EDE6; font-family:Arial; }
+    body { background:#FFF7EE; font-family:Arial; }
 
     .container {
         width:65%;
@@ -164,7 +164,7 @@
     .back-btn {
         font-size:25px;
         text-decoration:none;
-        color: #D3C1B4;
+        color: #483434;
         margin-left:-180px;
     }
 
@@ -184,7 +184,7 @@
         height:200px;
         border-radius:12px;
         object-fit:cover;
-        border: 3px solid #b8a08d;
+        border: 3px solid #D3C1B4;
     }
 
     .avg-rating {
@@ -193,11 +193,11 @@
     }
 
     .review-card1 {
-        background: #EFE7DF;
+        background: #FFFDF8;
         padding: 20px;
         border-radius: 20px;
         margin-top: 15px;
-        border: 2px solid #D3C1B4; 
+        border: 2px solid #483434; 
     }
 
     .modal{
@@ -215,7 +215,7 @@
     }
 
     .modal-content{
-        background:#F5EDE6;
+        background:#FFFDF8;
         width:400px;
         padding:40px;
         border-radius:25px;
@@ -248,7 +248,7 @@
     }
 
     .save-btn{
-        background:#CBB6A6;
+        background:#D3C1B4;
         border:none;
         padding:10px 20px;
         border-radius:20px;
@@ -256,15 +256,13 @@
         float:right;
     }
     .save-btn:hover {
-        color: #483434;
-        background: #EFE7DF;
-        border: 2px solid #b8a08d;
+        background: #FFFDF8;
+        border: 2px solid #483434;
     }
 
     .review-btn:hover {
-        color: #483434;
-        background: #EFE7DF;
-        border: 2px solid #b8a08d;
+        background: #FFFDF8;
+        border: 2px solid #483434;
     }
 
     .book-info {
@@ -313,7 +311,7 @@
         display:inline-block;
         margin-top:8px;
         font-size:14px;
-        color:#6b4c3b;
+        color:#D3C1B4;
         text-decoration:none;
         font-weight:bold;
     }
@@ -337,7 +335,7 @@
     }
 
     .login-btn{
-        background:#CBB6A6;
+        background:#D3C1B4;
         padding:10px 22px;
         border-radius:20px;
         text-decoration:none;
@@ -348,14 +346,13 @@
     }
 
     .login-btn:hover{
-        color: #483434;
-        background: #EFE7DF;
-        border: 2px solid #b8a08d;
+        background: #FFFDF8;
+        border: 2px solid #483434;
     }
 
     .edit-btn,
     .review-btn {
-        background:#CBB6A6;
+        background:#D3C1B4;
         border:none;
         padding:10px 25px;
         border-radius:20px;
@@ -367,9 +364,9 @@
     }
 
     .edit-btn:hover{
-        color: #483434;
-        background: #EFE7DF;
-        border: 2px solid #b8a08d;
+        
+        background: #FFFDF8;
+        border: 2px solid #483434;
     }
 
     .top {

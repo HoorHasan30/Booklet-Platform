@@ -32,13 +32,20 @@ SELECT * FROM dbProj_books WHERE bookId = $bookId
 <title>Edit Book</title>
 
 <style>
-body { background:#F5EDE6; font-family:Arial; }
+body { background:#FFF7EE; font-family:Arial; }
 
 /* CONTAINER */
 .edit-container {
     width: 60%;
     margin: 50px auto;
 }
+
+.back-btn {
+        font-size:25px;
+        text-decoration:none;
+        color: #483434;
+        margin-left:-180px;
+    }
 
 /* ROW */
 .form-row {
@@ -59,7 +66,7 @@ body { background:#F5EDE6; font-family:Arial; }
     width: 60%;
     padding: 10px;
     border-radius: 20px;
-    border: 1px solid #aaa;
+    border: 1px solid #D3C1B4;
 }
 
 /* TEXTAREA */
@@ -85,18 +92,18 @@ body { background:#F5EDE6; font-family:Arial; }
 .btn {
     padding: 10px 25px;
     border-radius: 25px;
-    border: 1px solid #aaa;
-    background: #EFE7DF;
+    border: 1px solid #D3C1B4;
+    background: #FFFDF8;
     cursor: pointer;
 }
 
 .btn.primary {
-    background: #CBB6A6;
+    background: #D3C1B4;
 }
 
 .btn:hover {
-    background: #EFE7DF;
-    border: 2px solid #b8a08d;
+     background: #FFFDF8;
+        border: 2px solid #483434;
 }
 </style>
 </head>
@@ -105,6 +112,8 @@ body { background:#F5EDE6; font-family:Arial; }
 <?php loadNavBar(); ?>
 
 <div class="edit-container">
+    
+     <a href="javascript:history.back()" class="back-btn">←</a>
 
 <form method="POST" action="action/updateBook.php" enctype="multipart/form-data">
 
