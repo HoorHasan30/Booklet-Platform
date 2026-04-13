@@ -94,14 +94,15 @@
             }
             
             //view hidden password
-            function seePassword(){
+            function seePassword(icon){
                 let pass = document.getElementById("password");
-                
+
                 if(pass.type === "password"){
                     pass.type = "text";
-                }
-                else{
+                    icon.textContent = "⌣";
+                } else {
                     pass.type = "password";
+                    icon.textContent = "👁";
                 }
             }
         </script>
@@ -129,6 +130,7 @@
                     <!-- password -->
                     <div class="passBox">
                         <input type="password" id="password" name="password" placeholder="Enter Your Password">
+                        <span class="passEye" onclick="seePassword(this)">👁</span>
                     </div>
                     
                     <!-- Login Button -->
