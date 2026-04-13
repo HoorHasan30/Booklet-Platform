@@ -417,7 +417,7 @@
                    ($_SESSION['role'] == 'Creator' && $_SESSION['userId'] == $book['userId']))
                 ) { 
                 ?>
-                    <button class="edit-btn" onclick="location.href='EditBook.php?id=<?= $bookId ?>'">
+                    <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
                         Edit
                     </button>
                 <?php } ?>
