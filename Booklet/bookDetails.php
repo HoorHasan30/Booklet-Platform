@@ -436,7 +436,8 @@
                 <p><span class="label">Genre:</span> <?= htmlspecialchars($book['genreName']) ?></p>
                 <p><span class="label">Pages:</span> <?= htmlspecialchars($book['noPages']) ?></p>
                 <p><span class="label">Average Rating:</span> <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐</p>
-                <p><span class="label">Created By:</span> <?= htmlspecialchars($book['firstName'] . ' ' . $book['lastName']) ?></p>     
+                <p><span class="label">Created By:</span> <?= htmlspecialchars($book['firstName'] . ' ' . $book['lastName']) ?></p> 
+                <p><strong>Created:</strong> <?= $book['createdAt'] ?></p>
                 <br>
                 <div class="desc">
                     <span class="label">Description:</span>
