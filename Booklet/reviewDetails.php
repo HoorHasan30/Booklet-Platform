@@ -47,11 +47,12 @@ body{
 
 /* BACK */
 .back-btn {
-    font-size:25px;
-    text-decoration:none;
-    color: #483434;
-    margin-left:-180px;
-}
+        font-size:25px;
+        text-decoration:none;
+        color: #483434;
+        margin-left:-180px;
+        margin-bottom: 30px;
+    }
 
 /* REVIEW CARD */
 .review-card1{

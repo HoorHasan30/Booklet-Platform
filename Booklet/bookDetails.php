@@ -161,11 +161,12 @@
         margin:auto;
     }
 
-    .back-btn {
+   .back-btn {
         font-size:25px;
         text-decoration:none;
         color: #483434;
         margin-left:-180px;
+        margin-bottom: 30px;
     }
 
     .book-box {
