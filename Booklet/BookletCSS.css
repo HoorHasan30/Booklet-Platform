@@ -928,4 +928,369 @@ input[type="password"]::-ms-clear {
     .mybooks-left-controls {
         width: 100%;
     }
+} 
+
+
+.container{
+    width:65%;
+    margin:auto;
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn{
+    font-size:25px;
+    text-decoration:none;
+    color:#483434;
+    margin-left:-180px;
+    margin-bottom:30px;
+    display:inline-block;
+}
+
+/* ===== BOOK DETAILS ===== */
+.book-box{
+    display:flex;
+    gap:30px;
+    margin-top:20px;
+    align-items:center;
+}
+
+.book-img{
+    width:220px;
+    height:300px;
+    border-radius:12px;
+    object-fit:cover;
+    border:3px solid #D3C1B4;
+}
+
+.book-info{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.book-info p{ margin:0; }
+
+.label{ font-weight:bold; }
+
+.desc p{
+    margin-top:5px;
+}
+
+.title-row {
+    margin: 0;
+}
+
+.views {
+    font-size: 12px;
+    color: #D3C1B4;
+    font-weight: normal;
+    margin: 0;
+}
+
+.top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-actions {
+    margin-left: auto; 
+    display: flex;
+    gap: 15px;
+}
+
+/* ===== RATINGS ===== */
+.avg-rating{
+    margin-top:10px;
+    font-size:18px;
+}
+
+.stars{
+        color:gold;
+        margin-bottom:8px;
+    }
+
+.star-input span {
+        font-size:25px;
+        cursor:pointer;
+        color:lightgray;
+    }
+
+    .star-input .active { color:gold; }
+
+
+/* ===== REVIEWS ===== */
+.review-card1{
+    background:#FFFDF8;
+    padding:20px;
+    border-radius:20px;
+    margin-top:15px;
+    border:2px solid #483434;
+}
+
+.review-text1{ margin-bottom:10px; }
+
+.review-user{
+    font-size:13px;
+    color:#483434;
+}
+
+.reviews-list{
+    margin-top:10px;
+    margin-bottom:60px;
+}
+
+/* ===== COMMENTS ===== */
+.comment-card{
+    background:#FFFDF8;
+    padding:18px 25px;
+    border-radius:20px;
+    margin-bottom:15px;
+    border:2px solid #483434;
+}
+
+.comment-user{
+    font-size:13px;
+    color:#444;
+}
+
+.comments-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.no-comments {
+    color: #888;
+    font-style: italic;
+    margin-top: 15px;
+}
+.space{
+    margin-top: 15px;
+}
+
+.modal textarea {
+    width: 90%;
+    height: 100px;
+    margin: 15px auto;
+    display: block;
+    border-radius: 12px;
+}
+
+/* ===== BUTTONS ===== */
+.save-btn,
+.review-btn,
+.edit-btn,
+.comment-btn,
+.upload-btn,
+.btn{
+        background:#D3C1B4;
+        border:none;
+        padding:10px 22px;
+        border-radius:20px;        
+        float:right;
+        margin-top: 15px;  
+        margin-bottom: 10px;
+    
+}
+
+.delete-btn{
+    background:#D3C1B4;
+    border:none;
+    padding:8px 18px;
+    border-radius:20px;
+    cursor:pointer;
+    bottom: 15px; 
+    margin-left: auto;
+     display: block; 
+}
+
+.save-btn:hover,
+.review-btn:hover,
+.edit-btn:hover,
+.comment-btn:hover,
+.delete-btn:hover,
+.upload-btn:hover,
+.btn:hover{
+    background:#FFFDF8;
+    border:2px solid #483434;
+}
+
+/* ===== CLOSE  ===== */
+.close {
+    position: absolute;
+    top: 15px;
+    left: 20px; 
+    font-size: 20px;
+}
+
+/* ===== LOGIN ===== */
+.login-btn{
+    background:#D3C1B4;
+    padding:10px 22px;
+    border-radius:20px;
+    text-decoration:none;
+    width:90%;
+    display:block;
+    margin:20px auto;
+    color:#483434;
+    text-align:center;
+}
+
+/* ===== VIEW COMMENTS LINK ===== */
+.view-comments{
+    display:inline-block;
+    margin-top:8px;
+    font-size:14px;
+    color:#D3C1B4;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.view-comments:hover{
+    text-decoration:underline;
+}
+
+/* ===== FORM (EDIT PAGE) ===== */
+.edit-container{
+    width:70%;
+    margin:50px auto;
+}
+
+.edit-layout{
+    display:flex;
+    gap:50px;
+}
+
+.left-side{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:15px;
+}
+
+.upload-box{
+    width:180px;
+    height:220px;
+    background:#FFFDF8;
+    border-radius:20px;
+    border:2px solid #483434;
+    overflow:hidden;
+}
+
+.upload-box img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.form-side{ flex:1; }
+
+.form-row{
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.form-row label{
+    width:140px;
+    font-weight:bold;
+}
+
+.form-row input {
+    width:70%;
+    padding:10px;
+    border-radius:20px;
+    border:1px solid #D3C1B4;
+    
+}
+
+.form-actions {
+    display:flex;
+    justify-content:flex-end;
+    gap:15px;
+    margin-top:30px;
+}
+
+
+.form-row textarea {
+    width: 70%;
+    height: 120px;
+    padding: 10px;
+    border-radius: 15px;
+    background: #FFFDF8;
+    border:1px solid #D3C1B4;
+}
+
+.form-row {
+    display:flex;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+
+
+/* DROPDOWN */
+.form-row select{
+     width:70%;
+    padding:10px 15px;
+    border-radius:20px;
+    border:1px solid #D3C1B4;
+    background:#FFFDF8;
+    appearance:none;
+    cursor:pointer;
+    background:#FFFDF8;
+    appearance:none;
+    cursor:pointer;
+    background-image:url("data:image/svg+xml;utf8,<svg fill='%23483434' height='20' viewBox='0 0 20 20' width='20'><path d='M5 7l5 5 5-5z'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 15px center;
+}
+
+
+/* ===== MODAL ===== */
+.modal{
+    display:none;
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0;
+    left:0;
+    background:rgba(0,0,0,0.4);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.modal-content{
+    background:#FFFDF8;
+    width:400px;
+    padding:40px;
+    border-radius:25px;
+    border:3px solid #483434;
+    text-align:center;
+    position:relative;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    margin-top:20px;
+}
+
+/* DELETE POPUP BUTTONS */
+.delete-confirm,
+.cancel-btn{
+    background:#D3C1B4;
+    border:2px solid #483434;
+    padding:10px 20px;
+    border-radius:20px;
+    cursor:pointer;
+}
+
+.delete-confirm:hover,
+.cancel-btn:hover{
+    background:#FFFDF8;
 }

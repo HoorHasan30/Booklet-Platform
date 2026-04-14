@@ -120,7 +120,7 @@
 <html>
     <head>
     <title>Book Details</title>
-    
+    <link rel="stylesheet" href="/BookletCSS.css">
     <script>
         function openReviewModal(){
             document.getElementById("reviewModal").style.display="flex";
@@ -153,236 +153,7 @@
         }
     </script>
     
-    <style>
-    body { background:#FFF7EE; font-family: Alice; color: #483434; }
-
-    .container {
-        width:65%;
-        margin:auto;
-    }
-
-   .back-btn {
-        font-size:25px;
-        text-decoration:none;
-        color: #483434;
-        margin-left:-180px;
-        margin-bottom: 30px;
-    }
-
-    .book-box {
-        display:flex;
-        gap:30px;
-        margin-top:20px;
-        align-items:center;
-    }
-
-    .reviews-list {
-        margin-bottom: 60px;   
-    }
-
-    .book-img {
-        width:150px;
-        height:200px;
-        border-radius:12px;
-        object-fit:cover;
-        border: 3px solid #D3C1B4;
-    }
-
-    .avg-rating {
-        margin-top:10px;
-        font-size:18px;
-    }
-
-    .review-card1 {
-        background: #FFFDF8;
-        padding: 20px;
-        border-radius: 20px;
-        margin-top: 15px;
-        border: 2px solid #483434; 
-    }
-
-    .modal{
-        display:none;
-        position:fixed;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
-        background:rgba(0,0,0,0.4);
-        justify-content:center;
-        align-items:center;
-        padding: 40px 30px 30px 30px;
-        text-align: center;
-    }
-
-    .modal-content{
-        background:#FFFDF8;
-        width:400px;
-        padding:40px;
-        border-radius:25px;
-        position:relative;
-        border: 3px solid #6b4c3b; 
-        gap: 15px;
-    }
-
-    .close {
-        position:absolute;
-        top:10px;
-        left:10px;
-        bottom: 10px;
-        cursor:pointer;
-    }
-
-    .star-input span {
-        font-size:25px;
-        cursor:pointer;
-        color:lightgray;
-    }
-
-    .star-input .active { color:gold; }
-
-    textarea {
-        width:100%;
-        padding:12px;
-        margin-top:15px;
-        border-radius:12px;
-    }
-
-    .save-btn{
-        background:#D3C1B4;
-        border:none;
-        padding:10px 20px;
-        border-radius:20px;
-        margin-top:15px;
-        float:right;
-    }
-    .save-btn:hover {
-        background: #FFFDF8;
-        border: 2px solid #483434;
-    }
-
-    .review-btn:hover {
-        background: #FFFDF8;
-        border: 2px solid #483434;
-    }
-
-    .book-info {
-        display:flex;
-        flex-direction:column;
-        gap:12px; 
-        margin-top:10px;
-    }
-    .book-info p {
-        margin:0;
-    }
-    .label {
-        font-weight:bold;
-    }
-
-    .desc p {
-        margin-top:5px;
-        font-weight:normal; 
-    }
-
-    .section-title{
-        margin-top:40px;
-        margin-bottom:15px;
-        font-size:22px;
-    }
-
-    .reviews-list{
-        margin-top:10px;
-    }
-
-    .stars{
-        color:gold;
-        margin-bottom:8px;
-    }
-
-    .review-text{
-        margin-bottom:10px;
-    }
-
-    .review-user{
-        font-size:13px;
-        color:#444;
-    }
-
-    .view-comments{
-        display:inline-block;
-        margin-top:8px;
-        font-size:14px;
-        color:#D3C1B4;
-        text-decoration:none;
-        font-weight:bold;
-    }
-
-    .view-comments:hover{
-        text-decoration:underline;
-    }
-
-    .login-title{
-        margin-bottom:10px;
-    }
-
-    .login-text{
-        margin-bottom:25px; 
-        color:#555;
-    }
-
-    .login-actions{
-        display:flex;
-        justify-content:center;
-    }
-
-    .login-btn{
-        background:#D3C1B4;
-        padding:10px 22px;
-        border-radius:20px;
-        text-decoration:none;
-        width: 90%;       
-        margin: 20px auto;
-        color:#6b4c3b; 
-        text-align: center;
-    }
-
-    .login-btn:hover{
-        background: #FFFDF8;
-        border: 2px solid #483434;
-    }
-
-    .edit-btn,
-    .review-btn {
-        background:#D3C1B4;
-        border:none;
-        padding:10px 25px;
-        border-radius:20px;
-        cursor:pointer;
-        color:#6b4c3b;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-    }
-
-    .edit-btn:hover{
-        
-        background: #FFFDF8;
-        border: 2px solid #483434;
-    }
-
-    .top {
-        display:flex;
-        align-items:center;
-        margin-top:30px;
-    }
-
-    .top-actions {
-        margin-left: auto;
-        display: flex;
-        gap: 25px;
-        align-items: center;
-    }
-    </style>
+    
     </head>
 
     <body>
@@ -406,7 +177,8 @@
         <a href="javascript:history.back()" class="back-btn">←</a>
 
         <div class="top">
-            <h2><?= htmlspecialchars($book['title']) ?></h2>
+            <h2 class="title-row"><?= htmlspecialchars($book['title']) ?></h2>
+            <p class="views"><span>👁 </span> <?= htmlspecialchars($book['viewCount'] ?? 0) ?></p>
 
             <div class="top-actions">
                 <?php 
@@ -437,19 +209,17 @@
                 <p><span class="label">Pages:</span> <?= htmlspecialchars($book['noPages']) ?></p>
                 <p><span class="label">Average Rating:</span> <?= $avgRating ? $avgRating : "0.0" ?>/5 ⭐</p>
                 <p><span class="label">Created By:</span> <?= htmlspecialchars($book['firstName'] . ' ' . $book['lastName']) ?></p> 
-                <p><strong>Created:</strong> <?= $book['createdAt'] ?></p>
+                <p><strong>Created On:</strong> <?= $book['createdAt'] ?></p>
                 <br>
                 <div class="desc">
                     <span class="label">Description:</span>
                     <p><?= htmlspecialchars($book['description']) ?></p>
                 </div>
                 
-                <br>
-                <p><span class="label">Views:</span> <?= htmlspecialchars($book['viewCount'] ?? 0) ?></p> 
-            </div>
+        </div>
         </div>
 
-        <h2 class="section-title">(<?= htmlspecialchars($countRow['total'] ?? 0) ?>) Reviews</h2>
+        <h2 class="space">(<?= htmlspecialchars($countRow['total'] ?? 0) ?>) Reviews</h2>
 
         <div class="reviews-list">
         <?php while($r = mysqli_fetch_assoc($reviews)) { ?>
@@ -483,7 +253,7 @@
                         <span onclick="setRating(5)">★</span>
                     </div>
 
-                    <textarea name="reviewText" required placeholder="Write a review"></textarea>
+                    <textarea name="reviewText" required placeholder="  Write a review"></textarea>
 
                     <div style="overflow:hidden;">
                         <button class="save-btn">Save</button>

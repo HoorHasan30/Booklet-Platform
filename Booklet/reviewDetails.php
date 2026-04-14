@@ -31,239 +31,26 @@ ORDER BY c.createdAt ASC
 <html>
 <head>
 <title>Review Details</title>
-
-<style>
-body{
-    background: #FFF7EE;
-    font-family: Alice;
-    margin:0;
-    color: #483434;
-}
-
-.container{
-    width:65%;
-    margin:50px auto;
-}
-
-/* BACK */
-.back-btn {
-        font-size:25px;
-        text-decoration:none;
-        color: #483434;
-        margin-left:-180px;
-        margin-bottom: 30px;
-    }
-
-/* REVIEW CARD */
-.review-card1{
-    background:#e9ded1;
-    border-radius:25px;
-    padding:25px 30px;
-    margin-bottom:25px;
-    border: 2px solid #483434;
-    position: relative;
-    
-}
-
-/* STARS */
-.review-stars{
-    color:gold;
-    margin-bottom:10px;
-}
-
-.review-text{
-    margin-bottom:10px;
-}
-
-.review-user{
-    font-size:13px;
-    color:#444;
-}
-
-/* COMMENTS */
-.comments-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:15px;
-}
-
-.comment-btn{
-    background:#D3C1B4;
-    border:none;
-    padding:10px 22px;
-    border-radius:20px;
-    cursor:pointer;
-}
-
-.comment-btn:hover{
-    
-    background:#FFFDF8;
-    border:2px solid #483434;
-}
-
-/* COMMENT CARD */
-.comment-card{
-    background:#FFFDF8;
-    padding:18px 25px;
-    border-radius:20px;
-    margin-bottom:15px;
-    border: 2px solid #483434;
-    display:block;
-}
-
-.comment-user{
-    font-size:13px;
-    color:#444;
-}
-
-/* DELETE BUTTON */
-.delete-btn{
-    background:#D3C1B4;
-    border:none;
-    padding:8px 18px;
-    border-radius:20px;
-    cursor:pointer;
-    bottom: 15px; 
-    margin-left: auto;
-     display: block; 
-}
-
-.delete-btn:hover{
-    
-    background:#FFFDF8;
-    border:2px solid #483434;
-}
-
-/* MODAL */
-.modal{
-    display:none;
-    position:fixed;
-    width:100%;
-    height:100%;
-    top:0;
-    left:0;
-    background:rgba(0,0,0,0.4);
-    justify-content:center;
-    align-items:center;
-    z-index: 9999; 
-}
-
-.modal-content{
-    background:#FFFDF8;
-    width:400px;
-    padding:40px;
-    border-radius:25px;
-    border:3px solid #483434;
-    text-align:center;
-    position:relative;
-}
-
-.close{
-    position:absolute;
-    top:15px;
-    left:20px;
-    cursor:pointer;
-}
-
-/* TEXTAREA */
-textarea{
-    width:100%;
-    height:80px;
-    border-radius:10px;
-    padding:10px;
-    margin-top:10px;
-}
-
-/* SAVE */
-.save-btn{
-    background:#D3C1B4;
-    border:none;
-    padding:10px 20px;
-    border-radius:20px;
-    margin-top:15px;
-    float:right;
-}
-
-.save-btn:hover{
-     background: #FFFDF8;
-        border: 2px solid #483434;
-}
-
-/* LOGIN */
-.login-btn{
-    background:#D3C1B4;
-    padding:10px 22px;
-    border-radius:20px;
-    text-decoration:none;
-    width:90%;
-    display:block;
-    margin:20px auto;
-    color:#483434;
-} 
-    
-.delete-confirm:hover{
-       background: #FFFDF8;
-        border: 2px solid #483434;
-}
-
-
-.cancel-btn:hover{
-     background: #FFFDF8;
-        border: 2px solid #483434;
-}
-
-.modal-actions{
-    display:flex;
-    justify-content:center;
-    gap:15px;
-    margin-top:20px;
-}
-
-/* YES DELETE */
-.delete-confirm{
-    background:#D3C1B4 ;
-    border:2px solid #483434;
-    padding:10px 20px;
-    border-radius:20px;
-    cursor:pointer;
-}
-
-/* CANCEL */
-.cancel-btn{
-    background:#D3C1B4;
-    border:2px solid #483434;
-    padding:10px 20px;
-    border-radius:20px;
-    cursor:pointer;
-}
-
-
-</style>
-
+<link rel="stylesheet" href="BookletCSS.css">
 </head>
 
 <script>
-    function openComment(){
-        document.getElementById("commentModal").style.display = "flex";
+function openComment(){
+    document.getElementById("commentModal").style.display = "flex";
+}
+function closeComment(){
+    document.getElementById("commentModal").style.display = "none";
+}
+function openLogin(){
+    document.getElementById("loginModal").style.display = "flex";
+}
+function closeLogin(){
+    document.getElementById("loginModal").style.display = "none";
 }
 
-    function closeComment(){
-        document.getElementById("commentModal").style.display = "none";
-}
-
-    function openLogin(){
-        document.getElementById("loginModal").style.display = "flex";
-}
-
-    function closeLogin(){
-        document.getElementById("loginModal").style.display = "none";
-}
-
-
-    function openDelete(id, type){
-        document.getElementById("deleteModal").style.display = "flex";
-        document.getElementById("deleteId").value = id;
+function openDelete(id, type){
+    document.getElementById("deleteModal").style.display = "flex";
+    document.getElementById("deleteId").value = id;
 
     let form = document.getElementById("deleteForm");
 
@@ -274,20 +61,12 @@ textarea{
     }
 }
 
-    function closeDelete(){
-        document.getElementById("deleteModal").style.display = "none";
+function closeDelete(){
+    document.getElementById("deleteModal").style.display = "none";
 }
 
-    window.onclick = function(e){
-        let modal = document.getElementById("deleteModal");
-        if(e.target == modal){
-        modal.style.display = "none";
-    }
-   }
-
-
-
-        window.onclick = function(e){
+/* CLOSE MODALS WHEN CLICK OUTSIDE */
+window.onclick = function(e){
     let commentModal = document.getElementById("commentModal");
     let deleteModal = document.getElementById("deleteModal");
     let loginModal = document.getElementById("loginModal");
@@ -297,6 +76,7 @@ textarea{
     if(e.target == loginModal) loginModal.style.display = "none";
 }
 </script>
+
 <body>
 
 <!-- LOGIN MODAL -->
@@ -318,8 +98,9 @@ textarea{
     <p>This action cannot be undone.</p>
 
     <form method="POST" id="deleteForm">
-    <input type="hidden" name="id" id="deleteId">
-    <input type="hidden" name="reviewId" value="<?= $reviewId ?>">
+        <input type="hidden" name="id" id="deleteId">
+        <input type="hidden" name="reviewId" value="<?= $reviewId ?>">
+
         <div class="modal-actions">
             <button type="submit" class="delete-confirm">Yes, Delete</button>
             <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
@@ -353,44 +134,52 @@ if(isset($_SESSION['role'])){
         <?= str_repeat("⭐", $review['rating']) ?>
     </div>
 
-    <p class="review-text"><?= $review['reviewText'] ?></p>
+    <p class="review-text1"><?= $review['reviewText'] ?></p>
     <small class="review-user">By: <?= $review['firstName'] ?></small>
 
     <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
-    <button class="delete-btn"
-        onclick="openDelete(<?= $review['reviewId'] ?>, 'review')">
-        Delete
-    </button>
-<?php } ?>
+        <button class="delete-btn"
+            onclick="openDelete(<?= $review['reviewId'] ?>, 'review')">
+            Delete
+        </button>
+    <?php } ?>
 
 </div>
 
 <!-- COMMENTS -->
 <div class="comments-header">
-    <h3>Comments</h3>
+    <h3 class="space">Comments</h3>
 
 <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Creator'){ ?>
     <button class="comment-btn" onclick="openComment()">Add Comment</button>
 <?php } elseif(!isset($_SESSION['role'])) { ?>
     <button class="comment-btn" onclick="openLogin()">Add Comment</button>
 <?php } ?>
-
 </div>
 
-<?php while($c = mysqli_fetch_assoc($comments)){ ?>
-<div class="comment-card">
+<!-- NO COMMENTS -->
+<?php if(mysqli_num_rows($comments) == 0){ ?>
 
-    <p><?= $c['commentText'] ?></p>
-    <small>By: <?= $c['firstName'] ?></small>
+    <p class="no-comments">No comments for this review.</p>
 
-   <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
-    <button class="delete-btn"
-        onclick="openDelete(<?= $c['commentId'] ?>, 'comment')">
-        Delete
-    </button>
-<?php } ?>
+<?php } else { ?>
 
-</div>
+    <?php while($c = mysqli_fetch_assoc($comments)){ ?>
+    <div class="comment-card">
+
+        <p><?= $c['commentText'] ?></p>
+        <small>By: <?= $c['firstName'] ?></small>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] == 'Admin'){ ?>
+        <button class="delete-btn"
+            onclick="openDelete(<?= $c['commentId'] ?>, 'comment')">
+            Delete
+        </button>
+        <?php } ?>
+
+    </div>
+    <?php } ?>
+
 <?php } ?>
 
 </div>
@@ -403,13 +192,14 @@ if(isset($_SESSION['role'])){
 
 <form method="POST" action="action/addComment.php">
     <input type="hidden" name="reviewId" value="<?= $reviewId ?>">
-    <textarea name="commentText" placeholder="Write a comment..." required></textarea>
+    <textarea name="commentText" placeholder="  Write a comment..." required></textarea>
     <button class="save-btn">Save</button>
 </form>
 
 </div>
 </div>
 
-
 <?php include("Footer.php"); ?>
+
 </body>
+</html>
