@@ -696,6 +696,7 @@ input[type="password"]::-ms-clear {
 }
 
 .review-card {
+    color: #483434;
     height: 200px; 
     display: flex;
     gap: 15px;
@@ -932,9 +933,8 @@ input[type="password"]::-ms-clear {
 
 
 .container{
-    width:80%;
+    width:65%;
     margin:auto;
-    margin-top: 50px;
 }
 
 /* ===== BACK BUTTON ===== */
@@ -964,6 +964,7 @@ input[type="password"]::-ms-clear {
 }
 
 .book-info{
+    color: #483434;
     display:flex;
     flex-direction:column;
     gap:12px;
@@ -1124,6 +1125,7 @@ input[type="password"]::-ms-clear {
     top: 15px;
     left: 20px; 
     font-size: 20px;
+    cursor: pointer;
 }
 
 /* ===== LOGIN ===== */
