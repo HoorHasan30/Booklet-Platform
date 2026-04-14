@@ -932,8 +932,9 @@ input[type="password"]::-ms-clear {
 
 
 .container{
-    width:65%;
+    width:80%;
     margin:auto;
+    margin-top: 50px;
 }
 
 /* ===== BACK BUTTON ===== */
@@ -1136,6 +1137,11 @@ input[type="password"]::-ms-clear {
     margin:20px auto;
     color:#483434;
     text-align:center;
+}
+
+.login-btn:hover{
+    background:#FFFDF8;
+    border:2px solid #483434;
 }
 
 /* ===== VIEW COMMENTS LINK ===== */
