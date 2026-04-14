@@ -4,6 +4,7 @@
     padding: 0;
     box-sizing: border-box;
     font-family: Alice;
+    color: #483434;
 }
 
 body {
@@ -135,7 +136,9 @@ nav {
 
 .Logout li a:hover{
     background: #FFFDF8;
+    color: #483434;
     border: 2px solid #483434;
+    border-radius: 20px;
 }
 
 /*Footer --> in style tag in the Footer.php*/    
@@ -606,7 +609,7 @@ input[type="password"]::-ms-clear {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #FFF7EE;
+    
     text-align: center;
     padding: 20px;
 }
@@ -614,11 +617,13 @@ input[type="password"]::-ms-clear {
 .home-hero-overlay h1 {
     font-size: 3rem;
     margin-bottom: 6px;
+    color: #FFF7EE;
 }
 
 .home-hero-overlay p {
     font-size: 1rem;
     margin-bottom: 18px;
+    color: #FFF7EE;
 }
 
 /* Search */
@@ -708,7 +713,7 @@ input[type="password"]::-ms-clear {
 
 .review-book-cover {
     width: 120px;
-    height: 165px;
+    height: 180px;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -957,8 +962,8 @@ input[type="password"]::-ms-clear {
 
 .book-img{
     width:220px;
-    height:300px;
-    border-radius:12px;
+    height:310px;
+    border-radius:20px;
     object-fit:cover;
     border:3px solid #D3C1B4;
 }
@@ -1078,6 +1083,7 @@ input[type="password"]::-ms-clear {
     margin: 15px auto;
     display: block;
     border-radius: 12px;
+    border: 2px solid #D3C1B4;
 }
 
 /* ===== BUTTONS ===== */
@@ -1180,10 +1186,10 @@ input[type="password"]::-ms-clear {
 
 .upload-box{
     width:180px;
-    height:220px;
+    height:260px;
     background:#FFFDF8;
     border-radius:20px;
-    border:2px solid #483434;
+    border:2px solid #D3C1B4;
     overflow:hidden;
 }
 
@@ -1210,7 +1216,7 @@ input[type="password"]::-ms-clear {
     width:70%;
     padding:10px;
     border-radius:20px;
-    border:1px solid #D3C1B4;
+    border:2px solid #D3C1B4;
     
 }
 
@@ -1228,7 +1234,7 @@ input[type="password"]::-ms-clear {
     padding: 10px;
     border-radius: 15px;
     background: #FFFDF8;
-    border:1px solid #D3C1B4;
+    border:2px solid #D3C1B4;
 }
 
 .form-row {
@@ -1244,7 +1250,7 @@ input[type="password"]::-ms-clear {
      width:70%;
     padding:10px 15px;
     border-radius:20px;
-    border:1px solid #D3C1B4;
+    border:2px solid #D3C1B4;
     background:#FFFDF8;
     appearance:none;
     cursor:pointer;

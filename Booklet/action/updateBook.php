@@ -1,52 +1,107 @@
 <?php
-include("../DBConnection.php");
-$dbc = getConnection();
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-$bookId = $_POST['bookId'];
-$title = $_POST['title'];
-$author = $_POST['author'];
-$genreId = $_POST['genreId'];
-$noPages = $_POST['noPages'];
-$description = $_POST['description'];
+    session_start();
+    include("../DBConnection.php");
 
-/* IMAGE UPLOAD */
-if(!empty($_FILES['bookCover']['name'])){
+    $dbc = getConnection();
 
-    $imageName = $_FILES['bookCover']['name'];
-    $tmpName = $_FILES['bookCover']['tmp_name'];
+    $bookId = (int)$_POST['bookId'];
+    $title = trim($_POST['title']);
+    $author = trim($_POST['author']);
+    $genreId = (int)$_POST['genreId'];
+    $noPages = (int)$_POST['noPages'];
+    $description = trim($_POST['description']);
 
-    $uploadDir = dirname(__DIR__) . "/BookCovers/";
-    $imagePath = "BookCovers/" . $imageName;
+    /* Get current cover first */
+    $currentSql = "SELECT bookCover FROM dbProj_books WHERE bookId = ?";
+    $currentStmt = mysqli_prepare($dbc, $currentSql);
 
-    // MOVE FILE 
-    move_uploaded_file($tmpName, $uploadDir . $imageName);
+    if (!$currentStmt) {
+        die("SQL Error: " . mysqli_error($dbc));
+    }
 
-    // UPDATE WITH IMAGE
-    mysqli_query($dbc,"
-    UPDATE dbProj_books 
-    SET title='$title',
-        author='$author',
-        genreId='$genreId',
-        noPages='$noPages',
-        description='$description',
-        bookCover='$imagePath'
-    WHERE bookId=$bookId
-    ");
+    mysqli_stmt_bind_param($currentStmt, "i", $bookId);
+    mysqli_stmt_execute($currentStmt);
+    $currentResult = mysqli_stmt_get_result($currentStmt);
+    $currentBook = mysqli_fetch_assoc($currentResult);
 
-}else{
+    $currentCover = $currentBook['bookCover'] ?? "";
+    $newBookCover = $currentCover;
 
-    // UPDATE WITHOUT IMAGE
-    mysqli_query($dbc,"
-    UPDATE dbProj_books 
-    SET title='$title',
-        author='$author',
-        genreId='$genreId',
-        noPages='$noPages',
-        description='$description'
-    WHERE bookId=$bookId
-    ");
-}
+    /* IMAGE UPLOAD */
+    if (isset($_FILES['bookCover']) && $_FILES['bookCover']['error'] === 0 && !empty($_FILES['bookCover']['name'])) {
 
-/* REDIRECT */
-header("Location: ../bookDetails.php?id=$bookId");
-exit;
+        $tmpName = $_FILES['bookCover']['tmp_name'];
+        $originalName = basename($_FILES['bookCover']['name']);
+        $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
+
+        /* Allow only image extensions */
+        $allowedExtensions = array("jpg", "jpeg", "png", "gif", "webp", "jfif");
+
+        if (!in_array($ext, $allowedExtensions)) {
+            die("Invalid image file type.");
+        }
+
+        /* Create unique file name */
+        $newFileName = "book_" . time() . "_" . $bookId . "." . $ext;
+
+        /* Physical path in project folder */
+        $uploadDir = dirname(__DIR__) . "/BookCovers/";
+        $fullPath = $uploadDir . $newFileName;
+
+        /* Path saved in database */
+        $newBookCover = "BookCovers/" . $newFileName;
+
+        /* Make sure folder exists */
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0775, true);
+        }
+
+        /* Upload file */
+        if (!move_uploaded_file($tmpName, $fullPath)) {
+            die("Image upload failed.");
+        }
+
+        /* Delete old image if it exists */
+        if (!empty($currentCover)) {
+            $oldFullPath = dirname(__DIR__) . "/" . $currentCover;
+
+            if (file_exists($oldFullPath) && is_file($oldFullPath)) {
+                @unlink($oldFullPath);
+            }
+        }
+    }
+
+    /* UPDATE BOOK */
+    $updateSql = "UPDATE dbProj_books
+                  SET title = ?, author = ?, genreId = ?, noPages = ?, description = ?, bookCover = ?, updatedAt = NOW()
+                  WHERE bookId = ?";
+
+    $updateStmt = mysqli_prepare($dbc, $updateSql);
+
+    if (!$updateStmt) {
+        die("SQL Error: " . mysqli_error($dbc));
+    }
+
+    mysqli_stmt_bind_param(
+        $updateStmt,
+        "ssiissi",
+        $title,
+        $author,
+        $genreId,
+        $noPages,
+        $description,
+        $newBookCover,
+        $bookId
+    );
+
+    if (!mysqli_stmt_execute($updateStmt)) {
+        die("Update failed: " . mysqli_error($dbc));
+    }
+
+    /* REDIRECT */
+    header("Location: ../bookDetails.php?id=" . $bookId);
+    exit;
+?>
