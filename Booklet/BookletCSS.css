@@ -201,7 +201,6 @@ nav {
 
 .error {
     color: red;
-    font-weight: bold;
     margin-bottom: 10px;
     font-size: 14px;
 }
@@ -702,7 +701,7 @@ input[type="password"]::-ms-clear {
 
 .review-card {
     color: #483434;
-    height: 200px; 
+    height: 210px; 
     display: flex;
     gap: 15px;
     padding: 14px;
