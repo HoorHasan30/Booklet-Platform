@@ -116,46 +116,74 @@
     $reviews = mysqli_stmt_get_result($reviewsStmt);
 ?>
 
+<?php
+$alreadyReviewed = false;
+
+if(isset($_SESSION['userId'])){
+    $uid = $_SESSION['userId'];
+
+    $checkUserReview = mysqli_query($dbc, "
+    SELECT reviewId FROM dbProj_reviews 
+    WHERE userId = $uid AND bookId = $bookId
+    ");
+
+    if(mysqli_num_rows($checkUserReview) > 0){
+        $alreadyReviewed = true;
+    }
+}
+?>
 <!DOCTYPE html>
 <html>
     <head>
     <title>Book Details</title>
     <link rel="stylesheet" href="/BookletCSS.css">
-    <script>
-        function openReviewModal(){
-            document.getElementById("reviewModal").style.display="flex";
-        }
-        function closeReviewModal(){
-            document.getElementById("reviewModal").style.display="none";
-        }
+    
+<script>
+    function openReviewModal(){
+        document.getElementById("reviewModal").style.display="flex";
+    }
 
-        function setRating(value){
-            document.getElementById("ratingValue").value=value;
-            let stars=document.querySelectorAll(".star-input span");
+    function closeReviewModal(){
+        document.getElementById("reviewModal").style.display="none";
+    }
 
-            stars.forEach((s,i)=>{
-                if(i<value) s.classList.add("active");
-                else s.classList.remove("active");
-            });
-        }
+  function handleReviewClick(alreadyReviewed){
+    if(alreadyReviewed){
+        document.getElementById("reviewExistsModal").style.display="flex";
+    } else {
+        openReviewModal();
+    }
+}
 
-        window.onclick=function(e){
-            let m=document.getElementById("reviewModal");
-            if(e.target==m) m.style.display="none";
-        }
+function closeReviewExists(){
+    document.getElementById("reviewExistsModal").style.display="none";
+}
 
-        function openLogin(){
-            document.getElementById("loginModal").style.display = "flex";
-        }
+   function setRating(value){
+    document.getElementById("ratingValue").value = value;
+    let stars=document.querySelectorAll(".star-input span");
+    stars.forEach((s,i)=>{ s.style.color=i<value?"gold":"lightgray"; });
+}
 
-        function closeLogin(){
-            document.getElementById("loginModal").style.display = "none";
-        }
-    </script>
+    function openLogin(){
+        document.getElementById("loginModal").style.display = "flex";
+    }
+
+    function closeLogin(){
+        document.getElementById("loginModal").style.display = "none";
+    }
+
+    window.onclick=function(e){
+        let m=document.getElementById("reviewModal");
+        if(e.target==m) m.style.display="none";
+
+        let m2=document.getElementById("reviewExistsModal"); // NEW
+        if(e.target==m2) m2.style.display="none";
+    }
+</script>
     
     
     </head>
-
     <body>
 
         <div id="loginModal" class="modal">
@@ -171,10 +199,19 @@
         </div>
 
         <?php loadNavBar(); ?>
+        
+        <?php if(isset($_SESSION['success'])){ ?>
+    
+    <div id="success-msg" class="success-msg">
+        <?= $_SESSION['success'] ?>
+    </div>
+
+<?php unset($_SESSION['success']); } ?>
+        
 
         <div class="container">
 
-        <a href="javascript:history.back()" class="back-btn">←</a>
+        <a href="AllBooks.php" class="back-btn">←</a>
 
         <div class="top">
             <h2 class="title-row"><?= htmlspecialchars($book['title']) ?></h2>
@@ -192,10 +229,16 @@
                     </button>
                 <?php } ?>
 
-                <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Creator') { ?>
-                    <button class="review-btn" onclick="openReviewModal()">Add Review</button>
+                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Creator') { ?>
+
+                    <button class="review-btn" onclick="handleReviewClick(<?= $alreadyReviewed ? 'true' : 'false' ?>)">
+                        Add Review
+                    </button>
+
                 <?php } elseif (!isset($_SESSION['role'])) { ?>
+
                     <button class="review-btn" onclick="openLogin()">Add Review</button>
+
                 <?php } ?>
             </div>
         </div>
@@ -221,19 +264,29 @@
 
         <h2 class="space">(<?= htmlspecialchars($countRow['total'] ?? 0) ?>) Reviews</h2>
 
-        <div class="reviews-list">
-        <?php while($r = mysqli_fetch_assoc($reviews)) { ?>
-            <div class="review-card1">
-                <p class="stars"><?= str_repeat("⭐", (int)$r['rating']) ?></p>
-                <p class="review-text"><?= htmlspecialchars($r['reviewText']) ?></p>
-                <span class="review-user">By: <?= htmlspecialchars($r['firstName']) ?></span>
-                <br>
-                <a class="view-comments" href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">
-                    View Comments
-                </a>
-            </div>
-        <?php } ?>
+<div class="reviews-list">
+
+<?php if(mysqli_num_rows($reviews) == 0){ ?>
+
+    <p class="no-reviews">There are no reviews for this book.</p>
+
+<?php } else { ?>
+
+    <?php while($r = mysqli_fetch_assoc($reviews)) { ?>
+        <div class="review-card1">
+            <p class="stars"><?= str_repeat("⭐", (int)$r['rating']) ?></p>
+            <p class="review-text"><?= htmlspecialchars($r['reviewText']) ?></p>
+            <span class="review-user">By: <?= htmlspecialchars($r['firstName']) ?></span>
+            <br>
+            <a class="view-comments" href="reviewDetails.php?reviewId=<?= $r['reviewId'] ?>">
+                View Comments
+            </a>
         </div>
+    <?php } ?>
+
+<?php } ?>
+
+</div>
 
         </div>
 
@@ -242,25 +295,32 @@
                 <span class="close" onclick="closeReviewModal()">✖</span>
 
                 <form method="POST" action="action/addReview.php">
-                    <input type="hidden" name="bookId" value="<?= $bookId ?>">
-                    <input type="hidden" name="rating" id="ratingValue">
 
-                    <div class="star-input">
-                        <span onclick="setRating(1)">★</span>
-                        <span onclick="setRating(2)">★</span>
-                        <span onclick="setRating(3)">★</span>
-                        <span onclick="setRating(4)">★</span>
-                        <span onclick="setRating(5)">★</span>
-                    </div>
+    <input type="hidden" name="bookId" value="<?= $bookId ?>">  
+    <input type="hidden" name="rating" id="ratingValue" value="1">
 
-                    <textarea name="reviewText" required placeholder="  Write a review"></textarea>
+    <div class="star-input">
+        <span onclick="setRating(1)">★</span>
+        <span onclick="setRating(2)">★</span>
+        <span onclick="setRating(3)">★</span>
+        <span onclick="setRating(4)">★</span>
+        <span onclick="setRating(5)">★</span>
+    </div>
 
-                    <div style="overflow:hidden;">
-                        <button class="save-btn">Save</button>
-                    </div>
-                </form>
-            </div>
+    <textarea name="reviewText" required placeholder="  Write a review"></textarea>
+
+    <button type="submit" class="save-btn">Save</button>
+
+</form>
+         </div>
         </div>
+        <div id="reviewExistsModal" class="modal">
+<div class="modal-content" onclick="event.stopPropagation()">
+<span class="close" onclick="closeReviewExists()">✖</span>
+<h3>You already reviewed this book</h3>
+<button class="ok-btn" onclick="closeReviewExists()">OK</button>
+</div>
+</div>
         <?php include("Footer.php"); ?>
     </body>
 </html>

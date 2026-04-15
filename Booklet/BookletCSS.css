@@ -939,6 +939,7 @@ input[type="password"]::-ms-clear {
 .container{
     width:65%;
     margin:auto;
+    display: block;
 }
 
 /* ===== BACK BUTTON ===== */
@@ -949,6 +950,8 @@ input[type="password"]::-ms-clear {
     margin-left:-180px;
     margin-bottom:30px;
     display:inline-block;
+    position: fixed;
+    z-index: 1000;
 }
 
 /* ===== BOOK DETAILS ===== */
@@ -1022,7 +1025,7 @@ input[type="password"]::-ms-clear {
         color:lightgray;
     }
 
-    .star-input .active { color:gold; }
+.star-input .active { color:gold; }
 
 
 /* ===== REVIEWS ===== */
@@ -1046,6 +1049,41 @@ input[type="password"]::-ms-clear {
     margin-bottom:60px;
 }
 
+.no-reviews {
+    color: #483434;
+    font-style: italic;
+    margin-top: 15px;
+}
+
+.success-msg {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: #D3C1B4;
+    color: #483434;
+    padding: 12px 20px;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    font-size: 14px;
+    z-index: 9999;
+
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeIn 0.4s forwards, fadeOut 0.4s forwards 3s;
+}
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
 /* ===== COMMENTS ===== */
 .comment-card{
     background:#FFFDF8;
@@ -1068,7 +1106,7 @@ input[type="password"]::-ms-clear {
 }
 
 .no-comments {
-    color: #888;
+    color: #483434;
     font-style: italic;
     margin-top: 15px;
 }
@@ -1079,9 +1117,9 @@ input[type="password"]::-ms-clear {
 .modal textarea {
     width: 90%;
     height: 100px;
-    margin: 15px auto;
+    margin: 16px auto;
     display: block;
-    border-radius: 12px;
+    border-radius: 14px;
     border: 2px solid #D3C1B4;
 }
 
@@ -1102,6 +1140,16 @@ input[type="password"]::-ms-clear {
     
 }
 
+.ok-btn {
+    background:#D3C1B4;
+        border:none;
+        padding:10px 22px;
+        border-radius:20px;        
+        margin-top: 15px;  
+        justify-content: center;
+    
+}
+
 .delete-btn{
     background:#D3C1B4;
     border:none;
@@ -1119,6 +1167,7 @@ input[type="password"]::-ms-clear {
 .comment-btn:hover,
 .delete-btn:hover,
 .upload-btn:hover,
+.ok-btn:hover,
 .btn:hover{
     background:#FFFDF8;
     border:2px solid #483434;
@@ -1272,8 +1321,9 @@ input[type="password"]::-ms-clear {
     left:0;
     background:rgba(0,0,0,0.4);
     justify-content:center;
-    align-items:center;
+    align-items:flex-start;
     z-index:9999;
+    padding-top: 100px; 
 }
 
 .modal-content{

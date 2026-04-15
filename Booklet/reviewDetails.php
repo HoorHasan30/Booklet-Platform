@@ -11,7 +11,7 @@ $reviewId = $_GET['reviewId'];
 
 /* GET REVIEW */
 $review = mysqli_fetch_assoc(mysqli_query($dbc,"
-SELECT r.*, u.firstName
+SELECT r.*, u.firstName, r.bookId
 FROM dbProj_reviews r
 JOIN dbProj_users u ON r.userId = u.userId
 WHERE r.reviewId = $reviewId
@@ -78,7 +78,15 @@ window.onclick = function(e){
 </script>
 
 <body>
+    
+    <?php if(isset($_SESSION['success'])){ ?>
+    
+    <div id="success-msg" class="success-msg">
+        <?= $_SESSION['success'] ?>
+    </div>
 
+<?php unset($_SESSION['success']); } ?>
+    
 <!-- LOGIN MODAL -->
 <div id="loginModal" class="modal">
   <div class="modal-content">
@@ -125,7 +133,7 @@ if(isset($_SESSION['role'])){
 
 <div class="container">
 
-<a href="javascript:history.back()" class="back-btn">←</a>
+<a href="bookDetails.php?id=<?= $review['bookId'] ?>" class="back-btn">←</a>
 
 <!-- REVIEW -->
 <div class="review-card1">
