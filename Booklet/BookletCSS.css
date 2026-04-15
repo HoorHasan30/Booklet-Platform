@@ -1055,11 +1055,12 @@ input[type="password"]::-ms-clear {
     margin-top: 15px;
 }
 
+/* ===== success message ===== */
 .success-msg {
     position: fixed;
     top: 100px;
     right: 30px;
-    background: #D3C1B4;
+    background: #99ff99;
     color: #483434;
     padding: 12px 20px;
     border-radius: 20px;
