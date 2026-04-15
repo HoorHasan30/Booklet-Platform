@@ -33,10 +33,9 @@
 <html>
     <head>
         <title>Edit Book</title>
-
         <link rel="stylesheet" href="BookletCSS.css">
-
-        <script>
+        
+    <script>
             // VALIDATION
             function validateForm(){
                 let title = document.getElementById("title").value.trim();
@@ -99,7 +98,10 @@
 
         <?php loadNavBar(); ?>
 
+
+        
         <div class="edit-container">
+            <a href="bookDetails.php?id=<?= $bookId ?>" class="back-btn">←</a>
             <form method="POST" action="action/updateBook.php"
                   enctype="multipart/form-data"
                   onsubmit="return validateForm()">

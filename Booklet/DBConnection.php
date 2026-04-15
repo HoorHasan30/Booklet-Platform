@@ -4,7 +4,7 @@
     {
         //change the paramters in the function below to your user id 
 
-            $dbc = mysqli_connect('localhost', 'u202301820', 'asdASD123!', 'db202301820');            
+            $dbc = mysqli_connect('localhost', 'u202300513', 'pass', 'db202300513');            
            
             
             if (mysqli_connect_errno()) {
