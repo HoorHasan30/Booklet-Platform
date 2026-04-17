@@ -235,6 +235,26 @@ input{
     color: #483434;
 }
 
+#forgotPass{
+    width: 400px;
+    margin: auto; 
+    margin-top: 3px;
+    margin-bottom: 15px;
+    text-align: right;
+    
+}
+
+#forgotPass a {
+    color: #483434;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+#forgotPass a:hover {
+    text-decoration: underline;
+}
+
 .formBtn{
     padding: 0.5rem 1.5rem;
     border-radius: 20px;
@@ -266,6 +286,10 @@ input{
     color: #483434;
     text-decoration: none;
     font-weight: bold;
+}
+
+.regLink a:hover {
+    text-decoration: underline;
 }
 
 /* Hide default browser eye icon (Edge / Chrome) */
@@ -937,9 +961,10 @@ input[type="password"]::-ms-clear {
 
 
 .container{
-    width:65%;
-    margin:auto;
-    display: block;
+  width: 85%;
+  margin: auto;
+  display: block;
+  margin-top: 35px;
 }
 
 /* ===== BACK BUTTON ===== */
@@ -947,10 +972,12 @@ input[type="password"]::-ms-clear {
     font-size:25px;
     text-decoration:none;
     color:#483434;
-    margin-left:-180px;
-    margin-bottom:30px;
-    display:inline-block;
     position: fixed;
+    top: 80px;
+    left: 18px;
+    margin-left: 3px;
+    margin-bottom: 0;
+    display: inline-block;
     z-index: 1000;
 }
 
@@ -964,7 +991,7 @@ input[type="password"]::-ms-clear {
 
 .book-img{
     width:220px;
-    height:310px;
+    height:320px;
     border-radius:20px;
     object-fit:cover;
     border:3px solid #D3C1B4;
@@ -1117,8 +1144,9 @@ input[type="password"]::-ms-clear {
 
 .modal textarea {
     width: 90%;
-    height: 100px;
-    margin: 16px auto;
+    height: 80px;
+    margin: 10px auto 10px auto;
+    padding: 3px;
     display: block;
     border-radius: 14px;
     border: 2px solid #D3C1B4;
@@ -1296,7 +1324,7 @@ input[type="password"]::-ms-clear {
 
 /* DROPDOWN */
 .form-row select{
-     width:70%;
+    width:70%;
     padding:10px 15px;
     border-radius:20px;
     border:2px solid #D3C1B4;
@@ -1322,9 +1350,12 @@ input[type="password"]::-ms-clear {
     left:0;
     background:rgba(0,0,0,0.4);
     justify-content:center;
-    align-items:flex-start;
+    align-items:center;
     z-index:9999;
-    padding-top: 100px; 
+}
+
+.modal.show{
+    display: flex;
 }
 
 .modal-content{
