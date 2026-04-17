@@ -1,44 +1,44 @@
 <?php
-        session_start();
-        include("../DBConnection.php");
-        $dbc = getConnection();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-        $bookId = $_POST['bookId'];
-        $title = trim($_POST['title']);
-        $author = trim($_POST['author']);
-        $pages = $_POST['noPages'];
-        $description = $_POST['description'];
+session_start();
+include("../DBConnection.php");
+$dbc = getConnection();
 
-        $errors = [];
+/* GET DATA */
+$bookId = $_POST['bookId'] ?? null;
+$title = $_POST['title'] ?? '';
+$author = $_POST['author'] ?? '';
+$genreId = $_POST['genreId'] ?? null;
+$pages = $_POST['noPages'] ?? null;
+$description = $_POST['description'] ?? '';
 
-        /* VALIDATION */
-        if(empty($title) || empty($author) || empty($pages)){
-            $errors[] = "Please fill in all fields.";
-        }
+/* VALIDATION */
+if(!$bookId){
+    die("Book ID missing.");
+}
 
-      if($pages <= 0){
-            $errors[] = "Pages must be greater than 0.";
-        }
 
-        /* IF ERROR RETURN BACK */
-      if(!empty($errors)){
-            $_SESSION['error'] = implode("<br>", $errors);
-            header("Location: ../editBook.php?id=$bookId");
-            exit;
-        }
+$title = str_replace("'", "\\'", $title);
+$author = str_replace("'", "\\'", $author);
+$description = str_replace("'", "\\'", $description);
 
-        /* UPDATE */
-        mysqli_query($dbc,"
-        UPDATE dbProj_books 
-        SET title='$title',
-            author='$author',
-            noPages='$pages',
-            description='$description'
-        WHERE bookId=$bookId
-        ");
+/* UPDATE BOOK */
+mysqli_query($dbc, "
+UPDATE dbProj_books 
+SET title = '$title',
+    author = '$author',
+    genreId = $genreId,
+    noPages = $pages,
+    description = '$description'
+WHERE bookId = $bookId
+") or die("SQL ERROR: " . mysqli_error($dbc));
 
-        /* SUCCESS */
-        $_SESSION['success'] = "Book updated successfully.";
-        header("Location: ../bookDetails.php?id=$bookId");
-      exit;
+/* SUCCESS MESSAGE */
+$_SESSION['success'] = "Book updated successfully.";
+
+/* REDIRECT BACK */
+header("Location: ../bookDetails.php?id=".$bookId);
+exit;
 ?>
