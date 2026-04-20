@@ -35,27 +35,41 @@
         <title>Edit Book</title>
         <link rel="stylesheet" href="BookletCSS.css">
         
-    <script>
-            // VALIDATION
+        <script>
             function validateForm(){
                 let title = document.getElementById("title").value.trim();
                 let author = document.getElementById("author").value.trim();
                 let pages = document.getElementById("pages").value.trim();
 
-                if(title === "" || author === "" || pages === ""){
-                    alert("Please fill all fields.");
-                    return false;
+                document.getElementById("titleError").textContent = "";
+                document.getElementById("authorError").textContent = "";
+                document.getElementById("pagesError").textContent = "";
+                document.getElementById("bookCoverError").textContent = "";
+
+                let isValid = true;
+
+                if(title === ""){
+                    document.getElementById("titleError").textContent = "Please enter the book name.";
+                    isValid = false;
                 }
 
-                if(pages <= 0){
-                    alert("Pages must be greater than 0");
-                    return false;
+                if(author === ""){
+                    document.getElementById("authorError").textContent = "Please enter the author name.";
+                    isValid = false;
                 }
 
-                return true;
+                if(pages === ""){
+                    document.getElementById("pagesError").textContent = "Please enter number of pages.";
+                    isValid = false;
+                }
+                else if(parseInt(pages) <= 0){
+                    document.getElementById("pagesError").textContent = "Pages must be greater than 0.";
+                    isValid = false;
+                }
+
+                return isValid;
             }
 
-            // DELETE POPUP
             function openDelete(id){
                 document.getElementById("deleteModal").style.display="flex";
                 document.getElementById("deleteBookId").value=id;
@@ -65,19 +79,19 @@
                 document.getElementById("deleteModal").style.display="none";
             }
 
-            // IMAGE PREVIEW LIVE
             document.addEventListener("DOMContentLoaded", function(){
+                const input = document.getElementById("bookCoverInput");
+                const preview = document.getElementById("previewImage");
 
-                const input = document.getElementById('bookCoverInput');
-                const preview = document.getElementById('previewImage');
-
-                input.addEventListener('change', function () {
-
+                input.addEventListener("change", function () {
                     const file = this.files[0];
+                    document.getElementById("bookCoverError").textContent = "";
+
                     if (!file) return;
 
                     if (!file.type.startsWith("image/")) {
-                        alert("Please select an image file.");
+                        document.getElementById("bookCoverError").textContent = "Please select a valid image file.";
+                        this.value = "";
                         return;
                     }
 
@@ -91,78 +105,92 @@
                 });
             });
         </script>
-
     </head>
 
     <body>
 
         <?php loadNavBar(); ?>
 
-
-        
         <div class="edit-container">
             <a href="bookDetails.php?id=<?= $bookId ?>" class="back-btn">←</a>
+
             <form method="POST" action="action/updateBook.php"
                   enctype="multipart/form-data"
                   onsubmit="return validateForm()">
 
                 <input type="hidden" name="bookId" value="<?= $bookId ?>">
+
                 <div class="edit-layout">
 
                     <div class="left-side">
                         <div class="upload-box">
                             <img id="previewImage"
-                                 src="<?= $book['bookCover'] ?>?v=<?= time() ?>">
+                                 src="<?= htmlspecialchars($book['bookCover']) ?>?v=<?= time() ?>">
                         </div>
                         
                         <label class="upload-btn">
                             Add New Cover
                             <input type="file" id="bookCoverInput" name="bookCover" hidden>
                         </label>
+                        <p class="error" id="bookCoverError"></p>
                     </div>
+
                     <div class="form-side">
+
                         <div class="form-row">
                             <label>Book Name:</label>
-                            <input type="text" id="title" name="title" value="<?= $book['title'] ?>">
+                            <div>
+                                <input type="text" id="title" name="title" value="<?= htmlspecialchars($book['title']) ?>">
+                                <p class="error" id="titleError"></p>
+                            </div>
                         </div>
 
                         <div class="form-row">
                             <label>Author:</label>
-                            <input type="text" id="author" name="author" value="<?= $book['author'] ?>">
+                            <div>
+                                <input type="text" id="author" name="author" value="<?= htmlspecialchars($book['author']) ?>">
+                                <p class="error" id="authorError"></p>
+                            </div>
                         </div>
 
                         <div class="form-row">
                             <label>Genre:</label>
-                            <select name="genreId">
-                                <?php
-                                $genres = mysqli_query($dbc,"SELECT * FROM dbProj_Genres");
-                                while($g = mysqli_fetch_assoc($genres)){
-                                    $selected = ($g['genreId']==$book['genreId']) ? "selected":"";
-                                    echo "<option value='{$g['genreId']}' $selected>{$g['genreName']}</option>";
-                                }
-                                ?>
-                            </select>
+                            <div>
+                                <select name="genreId">
+                                    <?php
+                                    $genres = mysqli_query($dbc,"SELECT * FROM dbProj_Genres");
+                                    while($g = mysqli_fetch_assoc($genres)){
+                                        $selected = ($g['genreId']==$book['genreId']) ? "selected":"";
+                                        echo "<option value='{$g['genreId']}' $selected>{$g['genreName']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                         </div>
 
                         <div class="form-row">
                             <label>No. Pages:</label>
-                            <input type="number" id="pages" name="noPages" value="<?= $book['noPages'] ?>">
+                            <div>
+                                <input type="number" id="pages" name="noPages" value="<?= htmlspecialchars($book['noPages']) ?>">
+                                <p class="error" id="pagesError"></p>
+                            </div>
                         </div>
 
                         <div class="form-row">
                             <label>Description:</label>
-                            <textarea name="description"><?= $book['description'] ?></textarea>
+                            <div>
+                                <textarea name="description"><?= htmlspecialchars($book['description']) ?></textarea>
+                            </div>
                         </div>
 
                         <div class="form-actions">
 
                             <?php if($role == 'Admin'){ ?>
-                            <button type="button" class="btn"
-                            onclick="openDelete(<?= $bookId ?>)">Delete</button>
+                                <button type="button" class="btn"
+                                onclick="openDelete(<?= $bookId ?>)">Delete</button>
                             <?php } else { ?>
-                            
-                            <button type="button" class="btn"
-                            onclick="location.href='bookDetails.php?id=<?= $bookId ?>'">Cancel</button>
+                                <button type="button" class="btn"
+                                onclick="location.href='bookDetails.php?id=<?= $bookId ?>'">Cancel</button>
                             <?php } ?>
 
                             <button class="btn">Save</button>
@@ -173,24 +201,24 @@
         </div>
 
         <div id="deleteModal" class="modal">
-        <div class="modal-content">
+            <div class="modal-content">
 
-        <h3>Are you sure?</h3>
-        <p>This action cannot be undone.</p>
+                <h3>Are you sure?</h3>
+                <p>This action cannot be undone.</p>
 
-        <form method="POST" action="action/deleteBook.php">
-        <input type="hidden" name="bookId" id="deleteBookId">
+                <form method="POST" action="action/deleteBook.php">
+                    <input type="hidden" name="bookId" id="deleteBookId">
 
-        <br>
+                    <br>
 
-        <div class="modal-actions">
-                    <button type="submit" class="delete-confirm">Yes, Delete</button>
-                    <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
-                </div>
+                    <div class="modal-actions">
+                        <button type="submit" class="delete-confirm">Yes, Delete</button>
+                        <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
+                    </div>
 
-        </form>
+                </form>
 
-        </div>
+            </div>
         </div>
 
         <?php include("Footer.php"); ?>
