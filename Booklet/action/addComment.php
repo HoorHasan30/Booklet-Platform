@@ -15,6 +15,6 @@ mysqli_query($dbc,"
 INSERT INTO dbProj_comments (commentText, reviewId, userId, createdAt)
 VALUES ('$commentText', $reviewId, $userId, CURDATE())
 ");
-$_SESSION['success'] = "Comment added successfully.";
+$_SESSION['success'] = "Comment Added Successfully.";
 header("Location: ../reviewDetails.php?reviewId=$reviewId");
 ?>

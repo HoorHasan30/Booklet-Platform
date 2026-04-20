@@ -36,7 +36,7 @@ WHERE bookId = $bookId
 ") or die("SQL ERROR: " . mysqli_error($dbc));
 
 /* SUCCESS MESSAGE */
-$_SESSION['success'] = "Book updated successfully.";
+$_SESSION['success'] = "Book Updated Successfully.";
 
 /* REDIRECT BACK */
 header("Location: ../bookDetails.php?id=".$bookId);

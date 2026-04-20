@@ -19,7 +19,7 @@ DELETE FROM dbProj_reviews WHERE reviewId = $reviewId
 ");
 
 /* SUCCESS MESSAGE */
-$_SESSION['success'] = "Review deleted successfully.";
+$_SESSION['success'] = "Review Deleted Successfully.";
 
 /* REDIRECT */
 header("Location: ../bookDetails.php?id=$bookId");

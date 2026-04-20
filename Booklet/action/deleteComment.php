@@ -12,7 +12,7 @@ DELETE FROM dbProj_comments WHERE commentId = $commentId
 ");
 
 /* SUCCESS MESSAGE */
-$_SESSION['success'] = "Comment deleted successfully.";
+$_SESSION['success'] = "Comment Deleted Successfully.";
 
 /* REDIRECT BACK TO SAME REVIEW */
 header("Location: ../reviewDetails.php?reviewId=$reviewId");

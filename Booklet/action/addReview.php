@@ -46,7 +46,7 @@ INSERT INTO dbProj_reviews (userId, bookId, rating, reviewText, createdAt)
 VALUES ($userId, $bookId, $rating, '$reviewText', NOW())
 ") or die(mysqli_error($dbc));
 
-    $_SESSION['success'] = "Review added successfully.";
+    $_SESSION['success'] = "Review Added Ssuccessfully.";
 }
 
 /*  REDIRECT */
