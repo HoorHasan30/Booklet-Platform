@@ -118,17 +118,19 @@
 
 <?php
 $alreadyReviewed = false;
+$userReview = null;
 
 if(isset($_SESSION['userId'])){
     $uid = $_SESSION['userId'];
 
-    $checkUserReview = mysqli_query($dbc, "
-    SELECT reviewId FROM dbProj_reviews 
+    $check = mysqli_query($dbc,"
+    SELECT * FROM dbProj_reviews 
     WHERE userId = $uid AND bookId = $bookId
     ");
 
-    if(mysqli_num_rows($checkUserReview) > 0){
+    if($row = mysqli_fetch_assoc($check)){
         $alreadyReviewed = true;
+        $userReview = $row; // 🔥 store full review
     }
 }
 ?>
@@ -139,9 +141,28 @@ if(isset($_SESSION['userId'])){
     <link rel="stylesheet" href="/BookletCSS.css">
     
 <script>
-    function openReviewModal(){
-        document.getElementById("reviewModal").style.display="flex";
+  function openReviewModal(rating = 0, text = "", isEdit = false, reviewId = null){
+    document.getElementById("reviewModal").style.display="flex";
+
+    document.getElementById("ratingValue").value = rating;
+    document.querySelector("textarea[name='reviewText']").value = text;
+
+    let stars = document.querySelectorAll(".star-input span");
+    stars.forEach((s,i)=>{
+        s.style.color = i < rating ? "gold" : "lightgray";
+    });
+
+    let form = document.querySelector("#reviewModal form");
+
+    if(isEdit){
+        form.action = "action/updateReview.php";
+        document.getElementById("reviewIdInput").value = reviewId; 
+    } else {
+        form.action = "action/addReview.php";
+        document.getElementById("reviewIdInput").value = "";
     }
+}
+
 
     function closeReviewModal(){
         document.getElementById("reviewModal").style.display="none";
@@ -229,17 +250,27 @@ function closeReviewExists(){
                     </button>
                 <?php } ?>
 
-                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Creator') { ?>
+                  <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'Creator') { ?>
 
-                    <button class="review-btn" onclick="handleReviewClick(<?= $alreadyReviewed ? 'true' : 'false' ?>)">
-                        Add Review
-                    </button>
+    <button class="review-btn"
+onclick="openReviewModal(
+    <?= $alreadyReviewed ? $userReview['rating'] : 0 ?>,
+    `<?= $alreadyReviewed ? htmlspecialchars($userReview['reviewText']) : '' ?>`,
+    <?= $alreadyReviewed ? 'true' : 'false' ?>,
+    <?= $alreadyReviewed ? $userReview['reviewId'] : 'null' ?>
+)">
+<?= $alreadyReviewed ? '✏ Edit Review' : 'Add Review' ?>
+</button>
 
-                <?php } elseif (!isset($_SESSION['role'])) { ?>
+      
 
-                    <button class="review-btn" onclick="openLogin()">Add Review</button>
 
-                <?php } ?>
+
+<?php } elseif (!isset($_SESSION['role'])) { ?>
+
+    <button class="review-btn" onclick="openLogin()">Add Review</button>
+
+<?php } ?>
             </div>
         </div>
 
@@ -295,6 +326,7 @@ function closeReviewExists(){
                 <span class="close" onclick="closeReviewModal()">✖</span>
 
                 <form method="POST" action="action/addReview.php">
+                    <input type="hidden" name="reviewId" id="reviewIdInput">
 
     <input type="hidden" name="bookId" value="<?= $bookId ?>">  
     <input type="hidden" name="rating" id="ratingValue" value="1">
