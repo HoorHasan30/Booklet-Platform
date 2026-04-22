@@ -14,6 +14,8 @@ mysqli_query($dbc, "
 DELETE FROM dbProj_books WHERE bookId = $bookId
 ") or die(mysqli_error($dbc));
 
+/* SUCCESS MESSAGE */
+$_SESSION['success'] = "Book Deleted Successfully.";
 
 /* REDIRECT */
 header("Location: ../AllBooks.php");

@@ -1278,6 +1278,10 @@ input[type="password"]::-ms-clear {
 
 .form-side{ flex:1; }
 
+.form-row > div{
+    flex:1;
+}
+
 .form-row{
     width: 100%;
     display: flex;
