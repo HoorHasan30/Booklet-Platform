@@ -235,7 +235,7 @@ $coverPath = !empty($book['bookCover'])
                 ) { 
                 ?>
                     <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
-                        Edit
+                        📚 Edit Book
                     </button>
                 <?php } ?>
 
