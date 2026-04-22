@@ -63,7 +63,7 @@ $result = mysqli_stmt_get_result($stmt);
             display: inline-block;
             margin-top: 8px;
             font-weight: bold;
-            color: #6b4c3b;
+            color: #D3C1B4;
             text-decoration: none;
         }
         .view-more:hover {
@@ -111,8 +111,6 @@ $result = mysqli_stmt_get_result($stmt);
                     <div class="mybooks-info">
                         <h3><?php echo htmlspecialchars($row["title"]); ?></h3>
                         <p class="mybooks-author">by <?php echo htmlspecialchars($row["author"]); ?></p>
-                        <p>Pages: <?php echo htmlspecialchars($row["noPages"]); ?></p>
-                        <p>Rating: <?php echo number_format($row["avgRating"], 1); ?></p>
 
                         <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="view-more">View Details</a>
                     </div>

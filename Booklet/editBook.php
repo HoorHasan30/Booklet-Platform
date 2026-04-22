@@ -1,198 +1,227 @@
 <?php
-session_start();
-include("DBConnection.php");
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-function loadNavBar() {
-    if (isset($_SESSION["role"])) {
-        if ($_SESSION["role"] == "Admin") {
-            include("AdminNavBar.php");
+    session_start();
+    include("DBConnection.php");
+
+    function loadNavBar() {
+        if (isset($_SESSION["role"])) {
+            if ($_SESSION["role"] == "Admin") {
+                include("AdminNavBar.php");
+            } 
+            elseif ($_SESSION["role"] == "Creator") {
+                include("CreatorNavBar.php");
+            }
         } 
-        elseif ($_SESSION["role"] == "Creator") {
-            include("CreatorNavBar.php");
+        else {
+            include("VisitorNavBar.php");
         }
-    } 
-    else {
-        include("VisitorNavBar.php");
     }
-}
-    
-$dbc = getConnection();
 
-$bookId = intval($_GET['id']);
+    $dbc = getConnection();
+    $bookId = intval($_GET['id']);
 
-// GET BOOK DATA
-$book = mysqli_fetch_assoc(mysqli_query($dbc,"
-SELECT * FROM dbProj_books WHERE bookId = $bookId
-"));
+    $book = mysqli_fetch_assoc(mysqli_query($dbc,"
+    SELECT * FROM dbProj_books WHERE bookId = $bookId
+    "));
+
+    $role = $_SESSION['role'] ?? '';
 ?>
 
 <!DOCTYPE html>
 <html>
-<head>
-<title>Edit Book</title>
+    <head>
+        <title>Edit Book</title>
+        <link rel="stylesheet" href="BookletCSS.css">
+        
+        <script>
+            function validateForm(){
+                let title = document.getElementById("title").value.trim();
+                let author = document.getElementById("author").value.trim();
+                let pages = document.getElementById("pages").value.trim();
 
-<style>
-body { background:#F5EDE6; font-family:Arial; }
+                document.getElementById("titleError").textContent = "";
+                document.getElementById("authorError").textContent = "";
+                document.getElementById("pagesError").textContent = "";
+                document.getElementById("bookCoverError").textContent = "";
 
-/* CONTAINER */
-.edit-container {
-    width: 60%;
-    margin: 50px auto;
-}
+                let isValid = true;
 
-/* ROW */
-.form-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
+                if(title === ""){
+                    document.getElementById("titleError").textContent = "Please enter the book name.";
+                    isValid = false;
+                }
 
-/* LABEL */
-.form-row label {
-    width: 150px;
-    font-weight: bold;
-}
+                if(author === ""){
+                    document.getElementById("authorError").textContent = "Please enter the author name.";
+                    isValid = false;
+                }
 
-/* INPUTS */
-.form-row input,
-.form-row select {
-    width: 60%;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #aaa;
-}
+                if(pages === ""){
+                    document.getElementById("pagesError").textContent = "Please enter number of pages.";
+                    isValid = false;
+                }
+                else if(parseInt(pages) <= 0){
+                    document.getElementById("pagesError").textContent = "Pages must be greater than 0.";
+                    isValid = false;
+                }
 
-/* TEXTAREA */
-.textarea-row {
-    align-items: flex-start;
-}
+                return isValid;
+            }
 
-.textarea-row textarea {
-    width: 60%;
-    height: 120px;
-    padding: 10px;
-    border-radius: 15px;
-}
+            function openDelete(id){
+                document.getElementById("deleteModal").style.display="flex";
+                document.getElementById("deleteBookId").value=id;
+            }
 
-/* BUTTONS */
-.form-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-    margin-top: 30px;
-}
+            function closeDelete(){
+                document.getElementById("deleteModal").style.display="none";
+            }
 
-.btn {
-    padding: 10px 25px;
-    border-radius: 25px;
-    border: 1px solid #aaa;
-    background: #EFE7DF;
-    cursor: pointer;
-}
+            document.addEventListener("DOMContentLoaded", function(){
+                const input = document.getElementById("bookCoverInput");
+                const preview = document.getElementById("previewImage");
 
-.btn.primary {
-    background: #CBB6A6;
-}
+                input.addEventListener("change", function () {
+                    const file = this.files[0];
+                    document.getElementById("bookCoverError").textContent = "";
 
-.btn:hover {
-    background: #EFE7DF;
-    border: 2px solid #b8a08d;
-}
-</style>
-</head>
+                    if (!file) return;
 
-<body>
-<?php loadNavBar(); ?>
+                    if (!file.type.startsWith("image/")) {
+                        document.getElementById("bookCoverError").textContent = "Please select a valid image file.";
+                        this.value = "";
+                        return;
+                    }
 
-<div class="edit-container">
+                    const reader = new FileReader();
 
-<form method="POST" action="action/updateBook.php" enctype="multipart/form-data">
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                    };
 
-<input type="hidden" name="bookId" value="<?= $bookId ?>">
+                    reader.readAsDataURL(file);
+                });
+            });
+        </script>
+    </head>
 
-<!-- COVER -->
-<div class="form-row">
-    <label>Book Cover:</label>
-    <input type="file" name="bookCover">
-</div>
+    <body>
 
-<!-- TITLE -->
-<div class="form-row">
-    <label>Book Name:</label>
-    <input type="text" name="title" value="<?= $book['title'] ?>" required>
-</div>
+        <?php loadNavBar(); ?>
 
-<!-- AUTHOR -->
-<div class="form-row">
-    <label>Author:</label>
-    <input type="text" name="author" value="<?= $book['author'] ?>" required>
-</div>
+        <div class="edit-container">
+            <a href="bookDetails.php?id=<?= $bookId ?>" class="back-btn">←</a>
 
-<!-- GENRE -->
-<div class="form-row">
-    <label>Genre:</label>
-    <select name="genreId" required>
-        <option value="">Choose Genre</option>
-        <?php
-        $genres = mysqli_query($dbc,"SELECT * FROM dbProj_Genres");
-        while($g = mysqli_fetch_assoc($genres)){
-            $selected = ($g['genreId'] == $book['genreId']) ? "selected" : "";
-            echo "<option value='{$g['genreId']}' $selected>{$g['genreName']}</option>";
-        }
-        ?>
-    </select>
-</div>
+            <form method="POST" action="action/updateBook.php"
+                  enctype="multipart/form-data"
+                  onsubmit="return validateForm()">
 
-<!-- PAGES -->
-<div class="form-row">
-    <label>No. Pages:</label>
-    <input type="number" name="noPages" value="<?= $book['noPages'] ?>" required>
-</div>
+                <input type="hidden" name="bookId" value="<?= $bookId ?>">
 
-<!-- DESCRIPTION -->
-<div class="form-row textarea-row">
-    <label>Description:</label>
-    <textarea name="description"><?= $book['description'] ?></textarea>
-</div>
+                <div class="edit-layout">
 
-<!-- BUTTONS -->
-<div class="form-actions">
+                    <div class="left-side">
+                        <div class="upload-box">
+                            <img id="previewImage"
+                                 src="<?= htmlspecialchars($book['bookCover']) ?>?v=<?= time() ?>">
+                        </div>
+                        
+                        <label class="upload-btn">
+                            Add New Cover
+                            <input type="file" id="bookCoverInput" name="bookCover" hidden>
+                        </label>
+                        <p class="error" id="bookCoverError"></p>
+                    </div>
 
-<?php if($role == 'Admin'){ ?>
+                    <div class="form-side">
 
-  <button type="button" class="btn"
-    onclick="confirmDelete(<?= $bookId ?>)">
-    Delete Book
-</button>
+                        <div class="form-row">
+                            <label>Book Name:</label>
+                            <div>
+                                <input type="text" id="title" name="title" value="<?= htmlspecialchars($book['title']) ?>">
+                                <p class="error" id="titleError"></p>
+                            </div>
+                        </div>
 
-    <button class="btn primary">Save</button>
+                        <div class="form-row">
+                            <label>Author:</label>
+                            <div>
+                                <input type="text" id="author" name="author" value="<?= htmlspecialchars($book['author']) ?>">
+                                <p class="error" id="authorError"></p>
+                            </div>
+                        </div>
 
-<?php } else { ?>
+                        <div class="form-row">
+                            <label>Genre:</label>
+                            <div>
+                                <select name="genreId">
+                                    <?php
+                                    $genres = mysqli_query($dbc,"SELECT * FROM dbProj_Genres");
+                                    while($g = mysqli_fetch_assoc($genres)){
+                                        $selected = ($g['genreId']==$book['genreId']) ? "selected":"";
+                                        echo "<option value='{$g['genreId']}' $selected>{$g['genreName']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
 
-    <button type="button" class="btn"
-        onclick="location.href='bookDetails.php?id=<?= $bookId ?>'">
-        Cancel
-    </button>
+                        <div class="form-row">
+                            <label>No. Pages:</label>
+                            <div>
+                                <input type="number" id="pages" name="noPages" value="<?= htmlspecialchars($book['noPages']) ?>">
+                                <p class="error" id="pagesError"></p>
+                            </div>
+                        </div>
 
-    <button class="btn primary">Save</button>
+                        <div class="form-row">
+                            <label>Description:</label>
+                            <div>
+                                <textarea name="description"><?= htmlspecialchars($book['description']) ?></textarea>
+                            </div>
+                        </div>
 
-<?php } ?>
+                        <div class="form-actions">
 
-</div>
+                            <?php if($role == 'Admin'){ ?>
+                                <button type="button" class="btn"
+                                onclick="openDelete(<?= $bookId ?>)">Delete</button>
+                            <?php } else { ?>
+                                <button type="button" class="btn"
+                                onclick="location.href='bookDetails.php?id=<?= $bookId ?>'">Cancel</button>
+                            <?php } ?>
 
-</form>
+                            <button class="btn">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-</div>
-    <script id="y6z0sm">
-function confirmDelete(bookId){
-    if(confirm("Are you sure you want to delete this book?")){
-        window.location.href = "action/deleteBook.php?id=" + bookId;
-    }
-}
-</script>
+        <div id="deleteModal" class="modal">
+            <div class="modal-content">
 
-<!-- FOOTER -->
-<?php include("Footer.php"); ?>
+                <h3>Are you sure?</h3>
+                <p>This action cannot be undone.</p>
 
-</body>
+                <form method="POST" action="action/deleteBook.php">
+                    <input type="hidden" name="bookId" id="deleteBookId">
+
+                    <br>
+
+                    <div class="modal-actions">
+                        <button type="submit" class="delete-confirm">Yes, Delete</button>
+                        <button type="button" class="cancel-btn" onclick="closeDelete()">Cancel</button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+        <?php include("Footer.php"); ?>
+
+    </body>
 </html>

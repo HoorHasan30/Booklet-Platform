@@ -1,3 +1,4 @@
+
 <?php
 
     function getConnection()
@@ -15,3 +16,4 @@
     }
 
 ?>
+

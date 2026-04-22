@@ -84,24 +84,28 @@
             function validateForm() {
                 let email = document.getElementById("email").value.trim();
                 let password = document.getElementById("password").value.trim();
+                let errorBox = document.getElementById("formError");
+                
+                errorBox.textContent = "";
                 
                 //if either of the inputs empty
                 if (email === "" || password === "") {
-                    alert("Please fill all fields.");
+                    errorBox.textContent = "Please fill in all fields.";
                     return false;
                 }
                 return true;
             }
             
             //view hidden password
-            function seePassword(){
+            function seePassword(icon){
                 let pass = document.getElementById("password");
-                
+
                 if(pass.type === "password"){
                     pass.type = "text";
-                }
-                else{
+                    icon.textContent = "⌣";
+                } else {
                     pass.type = "password";
+                    icon.textContent = "👁";
                 }
             }
         </script>
@@ -119,7 +123,9 @@
                 <h2>Login</h2>
                 
                 <?php if (!empty($message)) { ?>
-                <p class="error"><?php echo $message; ?></p>
+                    <p class="error" id="formError"><?php echo $message; ?></p>
+                <?php } else { ?>
+                    <p class="error" id="formError"></p>
                 <?php } ?>
             
                 <form id="loginForm" method="POST" action="Login.php" onsubmit="return validateForm()">
@@ -129,7 +135,9 @@
                     <!-- password -->
                     <div class="passBox">
                         <input type="password" id="password" name="password" placeholder="Enter Your Password">
+                        <span class="passEye" onclick="seePassword(this)">👁</span>
                     </div>
+                    <p id="forgotPass"><a href="">Forgot Password?</a></p>
                     
                     <!-- Login Button -->
                     <button type="submit" class="formBtn" name="btnLogin">Login</button>
