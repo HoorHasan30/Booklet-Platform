@@ -137,7 +137,7 @@
                         <input type="password" id="password" name="password" placeholder="Enter Your Password">
                         <span class="passEye" onclick="seePassword(this)">👁</span>
                     </div>
-                    <p id="forgotPass"><a href="">Forgot Password?</a></p>
+                    <p id="forgotPass"><a href="ForgotPassword.php">Forgot Password?</a></p>
                     
                     <!-- Login Button -->
                     <button type="submit" class="formBtn" name="btnLogin">Login</button>

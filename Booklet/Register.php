@@ -30,6 +30,11 @@
             $errors[] = "Please fill in all fields.";
         }
         
+        //check password length
+        if ($password.length < 8) {
+            $errors[] = "Password must be at least 8 characters";
+        }
+        
         //check password and confirmed password match
         if ($password !== $confirmPassword){
             $errors[] = "Passwords do not match";

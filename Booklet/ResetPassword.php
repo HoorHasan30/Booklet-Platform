@@ -1,143 +1,186 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-include("DBConnection.php");
+    include("DBConnection.php");
 
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+    // Check for sessions
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
 
-$message = "";
-$token = $_GET["token"] ?? "";
+    $error = "";
+    $success = "";
 
-if (isset($_POST["btnReset"])) {
+    // check token from url
+    if(!isset($_GET["token"]) || empty($_GET["token"])){
+        die("Invalid link");
+    }
 
+    $token = $_GET["token"];
     $dbc = getConnection();
 
-    $token = $_POST["token"];
-    $password = $_POST["password"];
-    $confirmPassword = $_POST["confirmPassword"];
+    // check if token exists
+    $stmt = mysqli_prepare($dbc, "SELECT * FROM dbProj_users WHERE resetToken = ?");
 
-    if (empty($password) || empty($confirmPassword)) {
-        $message = "Please fill in all fields.";
-    } 
-    elseif ($password !== $confirmPassword) {
-        $message = "Passwords do not match.";
-    } 
-    else {
-        $sql = "SELECT userId FROM dbProj_users 
-                WHERE resetToken = ? AND resetExpires > NOW()";
-        $stmt = mysqli_prepare($dbc, $sql);
+    if (!$stmt) {
+        die("SQL Error: " . mysqli_error($dbc));
+    }
 
-        if (!$stmt) {
-            die("SQL Error: " . mysqli_error($dbc));
+    mysqli_stmt_bind_param($stmt, "s", $token);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    // if token not found
+    if(!$row = mysqli_fetch_assoc($result)){
+        die("Invalid or expired token");
+    }
+
+    // check expiry
+    if(strtotime($row["resetExpires"]) < time()){
+        die("Link expired");
+    }
+
+    // if button clicked
+    if(isset($_POST["btnReset"])){
+
+        $password = $_POST["password"];
+        $confirmPassword = $_POST["confirmPassword"];
+
+        // validate fields
+        if(empty($password) || empty($confirmPassword)){
+            $error = "Please fill in all fields.";
         }
+        elseif(strlen($password) < 8){
+            $error = "Password must be at least 8 characters";
+        }
+        elseif($password !== $confirmPassword){
+            $error = "Passwords do not match";
+        }
+        else{
 
-        mysqli_stmt_bind_param($stmt, "s", $token);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        if ($user = mysqli_fetch_assoc($result)) {
-
+            // hash new password
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-            $updateSql = "UPDATE dbProj_users
-                          SET password = ?, resetToken = NULL, resetExpires = NULL
-                          WHERE userId = ?";
-            $updateStmt = mysqli_prepare($dbc, $updateSql);
+            // update password and clear reset fields
+            $updateStmt = mysqli_prepare(
+                $dbc,
+                "UPDATE dbProj_users 
+                 SET password = ?, resetToken = NULL, resetExpires = NULL
+                 WHERE resetToken = ?"
+            );
 
             if (!$updateStmt) {
                 die("SQL Error: " . mysqli_error($dbc));
             }
 
-            mysqli_stmt_bind_param($updateStmt, "si", $hashedPassword, $user["userId"]);
+            mysqli_stmt_bind_param($updateStmt, "ss", $hashedPassword, $token);
             mysqli_stmt_execute($updateStmt);
 
-            $message = "Password reset successfully. You can now login.";
-
-        } else {
-            $message = "Invalid or expired reset link.";
+            $success = "Password reset successful";
         }
     }
-}
 ?>
 
 <html>
-<head>
-    <title>Reset Password</title>
-    <link rel="stylesheet" href="/BookletCSS.css">
+    <head>
+        <title>Reset Password</title>
+        <link rel="stylesheet" href="/BookletCSS.css">
 
-    <script>
-        function validateForm() {
-            let password = document.getElementById("password").value.trim();
-            let confirmPassword = document.getElementById("confirmPassword").value.trim();
-            let errorBox = document.getElementById("formError");
+        <script>
+            function validateForm() {
+                let password = document.getElementById("password").value.trim();
+                let confirmPassword = document.getElementById("confirmPassword").value.trim();
+                let errorBox = document.getElementById("formError");
 
-            errorBox.textContent = "";
+                errorBox.textContent = "";
 
-            if (password === "" || confirmPassword === "") {
-                errorBox.textContent = "Please fill in all fields.";
-                return false;
+                if (password === "" || confirmPassword === "") {
+                    errorBox.textContent = "Please fill in all fields.";
+                    return false;
+                }
+
+                if (password.length < 6) {
+                    errorBox.textContent = "Password must be at least 8 characters";
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    errorBox.textContent = "Passwords do not match";
+                    return false;
+                }
+
+                return true;
             }
 
-            if (password !== confirmPassword) {
-                errorBox.textContent = "Passwords do not match.";
-                return false;
+            // view hidden password
+            function seePassword(icon, inputId){
+                let pass = document.getElementById(inputId);
+
+                if(pass.type === "password"){
+                    pass.type = "text";
+                    icon.textContent = "⌣";
+                } else {
+                    pass.type = "password";
+                    icon.textContent = "👁";
+                }
             }
+        </script>
+    </head>
 
-            return true;
-        }
+    <body class="authBody">
+        <?php include("VisitorNavBar.php");?>
 
-        function seePassword(icon){
-            let pass = icon.parentElement.querySelector("input");
+        <div class="login-page">
 
-            if(pass.type === "password"){
-                pass.type = "text";
-                icon.textContent = "⌣";
-            } else {
-                pass.type = "password";
-                icon.textContent = "👁";
-            }
-        }
-    </script>
-</head>
+            <div class="login-container">
+                <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
 
-<body class="authBody">
-    <?php include("VisitorNavBar.php"); ?>
+                <h2>Reset Password</h2>
 
-    <div class="login-page">
-        <div class="login-container">
-            <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
+                <?php if (!empty($error)) { ?>
+                    <p class="error" id="formError"><?php echo $error; ?></p>
+                <?php } ?>
 
-            <h2>Reset Password</h2>
+                <?php if (!empty($success)) { ?>
+                    <p class="error" id="formError" style="color:green;"><?php echo $success; ?></p>
+                <?php } ?>
 
-            <?php if (!empty($message)) { ?>
-                <p class="error" id="formError"><?php echo $message; ?></p>
-            <?php } else { ?>
-                <p class="error" id="formError"></p>
-            <?php } ?>
+                <?php if (empty($error) && empty($success)) { ?>
+                    <p class="error" id="formError"></p>
+                <?php } ?>
 
-            <form method="POST" action="ResetPassword.php?token=<?php echo htmlspecialchars($token); ?>" onsubmit="return validateForm()">
-                <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
+                <?php if (empty($success)) { ?>
 
-                <div class="passBox">
-                    <input type="password" id="password" name="password" placeholder="Enter New Password">
-                    <span class="passEye" onclick="seePassword(this)">👁</span>
-                </div>
+                <form method="POST" action="" onsubmit="return validateForm()">
 
-                <div class="passBox">
-                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm New Password">
-                    <span class="passEye" onclick="seePassword(this)">👁</span>
-                </div>
+                    <!-- new password -->
+                    <div class="passBox">
+                        <input type="password" id="password" name="password" placeholder="Enter New Password">
+                        <span class="passEye" onclick="seePassword(this, 'password')">👁</span>
+                    </div>
 
-                <button type="submit" class="formBtn" name="btnReset">Reset Password</button>
-            </form>
+                    <!-- confirm password -->
+                    <div class="passBox">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm New Password">
+                        <span class="passEye" onclick="seePassword(this, 'confirmPassword')">👁</span>
+                    </div>
 
-            <p class="regLink"><a href="Login.php">Back to Login</a></p>
+                    <!-- reset button -->
+                    <button type="submit" class="formBtn" name="btnReset">Reset Password</button>
+
+                </form>
+
+                <?php } else { ?>
+
+                    <p class="regLink"><a href="Login.php">Go to Login</a></p>
+
+                <?php } ?>
+
+            </div>
+
         </div>
-    </div>
 
-    <?php include("Footer.php"); ?>
-</body>
+        <?php include("Footer.php");?>
+    </body>
 </html>

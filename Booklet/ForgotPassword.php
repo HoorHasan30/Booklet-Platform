@@ -3,24 +3,32 @@
     ini_set('display_errors', 1);
 
     include("DBConnection.php");
+    include(__DIR__ . "/action/mail_config.php");
 
+    // Check for sessions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
-    $message = "";
+    $error = "";
+    $success = "";
 
-    if (isset($_POST["btnSendReset"])) {
+    // if button clicked
+    if(isset($_POST["btnSend"])){
 
         $dbc = getConnection();
+
+        // get email from input
         $email = trim($_POST["email"]);
 
-        if (empty($email)) {
-            $message = "Please enter your email.";
-        } 
-        else {
-            $sql = "SELECT userId, firstName, email FROM dbProj_users WHERE email = ?";
-            $stmt = mysqli_prepare($dbc, $sql);
+        // validate
+        if(empty($email)){
+            $error = "Please enter your email";
+        }
+        else{
+
+            // check if email exists
+            $stmt = mysqli_prepare($dbc, "SELECT * FROM dbProj_users WHERE email = ?");
 
             if (!$stmt) {
                 die("SQL Error: " . mysqli_error($dbc));
@@ -30,92 +38,87 @@
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);
 
-            if ($user = mysqli_fetch_assoc($result)) {
+            // email found
+            if($row = mysqli_fetch_assoc($result)){
 
+                // generate secure token
                 $token = bin2hex(random_bytes(32));
-                $expires = date("Y-m-d H:i:s", strtotime("+1 hour"));
 
-                $updateSql = "UPDATE dbProj_users SET resetToken = ?, resetExpires = ? WHERE email = ?";
-                $updateStmt = mysqli_prepare($dbc, $updateSql);
+                // set expiry time -> 1 hour
+                $expiry = date("Y-m-d H:i:s", strtotime("+1 hour"));
+
+                // save token and expiry in MySQL
+                $updateStmt = mysqli_prepare(
+                    $dbc,
+                    "UPDATE dbProj_users SET resetToken = ?, resetExpires = ? WHERE email = ?"
+                );
 
                 if (!$updateStmt) {
                     die("SQL Error: " . mysqli_error($dbc));
                 }
 
-                mysqli_stmt_bind_param($updateStmt, "sss", $token, $expires, $email);
+                mysqli_stmt_bind_param($updateStmt, "sss", $token, $expiry, $email);
                 mysqli_stmt_execute($updateStmt);
 
                 $resetLink = "http://20.74.143.233/~u202301820/Booklet/ResetPassword.php?token=" . $token;
 
-                $subject = "Booklet Password Reset";
-                $body  = "Hello " . $user["firstName"] . ",\n\n";
-                $body .= "Click the link below to reset your password:\n";
-                $body .= $resetLink . "\n\n";
-                $body .= "This link will expire in 1 hour.";
+                // send email
+                $mailResult = sendResetEmail($email, $resetLink);
 
-                $headers = "From: no-reply@booklet.com\r\n";
-                $headers .= "Reply-To: no-reply@booklet.com\r\n";
-
-                if (mail($email, $subject, $body, $headers)) {
-                    $message = "Password reset email has been sent.";
-                } else {
-                    $message = "Email could not be sent.";
+                if($mailResult === true){
+                    $success = "Reset link sent to your email";
+                } 
+                else {
+                    $error = "Email failed: " . $mailResult;
                 }
 
-            } else {
-                $message = "Email not found.";
+            }
+            // email not found
+            else{
+                $error = "Email not found";
             }
         }
     }
 ?>
 
 <html>
-<head>
-    <title>Forgot Password</title>
-    <link rel="stylesheet" href="/BookletCSS.css">
+    <head>
+        <title>Forgot Password</title>
+        <link rel="stylesheet" href="/BookletCSS.css">
+    </head>
 
-    <script>
-        function validateForm() {
-            let email = document.getElementById("email").value.trim();
-            let errorBox = document.getElementById("formError");
+    <body class="authBody">
+        <?php include("VisitorNavBar.php");?>
 
-            errorBox.textContent = "";
+        <div class="login-page">
 
-            if (email === "") {
-                errorBox.textContent = "Please enter your email.";
-                return false;
-            }
+            <div class="login-container">
+                <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
 
-            return true;
-        }
-    </script>
-</head>
+                <h2>Forgot Password</h2>
 
-<body class="authBody">
-    <?php include("VisitorNavBar.php"); ?>
+                <?php if (!empty($error)) { ?>
+                    <p class="error"><?php echo $error; ?></p>
+                <?php } ?>
 
-    <div class="login-page">
-        <div class="login-container">
-            <img class="formLogo" src="images/LogoDark_1.png" alt="Booklet Logo">
+                <?php if (!empty($success)) { ?>
+                    <p class="error" style="color:green;"><?php echo $success; ?></p>
+                <?php } ?>
 
-            <h2>Forgot Password</h2>
+                <form method="POST" action="ForgotPassword.php">
+                    <!-- email -->
+                    <input type="email" name="email" placeholder="Enter Your Email">
+                    
+                    <!-- send reset link button -->
+                    <button type="submit" class="formBtn" name="btnSend">Send Reset Link</button>
+                </form>
 
-            <?php if (!empty($message)) { ?>
-                <p class="error" id="formError"><?php echo $message; ?></p>
-            <?php } 
-            else { ?>
-                <p class="error" id="formError"></p>
-            <?php } ?>
+                <p class="regLink"><a href="Login.php">Back to Login</a></p>
 
-            <form method="POST" action="ForgotPassword.php" onsubmit="return validateForm()">
-                <input type="email" id="email" name="email" placeholder="Enter Your Email">
-                <button type="submit" class="formBtn" name="btnSendReset">Send Reset Email</button>
-            </form>
+            </div>
 
-            <p class="regLink"><a href="Login.php">Back to Login</a></p>
         </div>
-    </div>
 
-    <?php include("Footer.php"); ?>
-</body>
+        <?php include("Footer.php");?>
+    </body>
 </html>
