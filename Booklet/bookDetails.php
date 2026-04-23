@@ -25,6 +25,10 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 }
 
 $bookId = (int)$_GET['id'];
+$reviewError = $_SESSION['reviewError'] ?? '';
+$reviewOld = $_SESSION['reviewOld'] ?? [];
+
+unset($_SESSION['reviewError'], $_SESSION['reviewOld']);
 
 /* UPDATE VIEW COUNT */
 $updateSql = "UPDATE dbProj_books 
@@ -141,14 +145,15 @@ $coverPath = !empty($book['bookCover'])
             document.getElementById("reviewModal").style.display = "flex";
 
             document.getElementById("ratingValue").value = rating;
-            document.querySelector("textarea[name='reviewText']").value = text;
+            document.getElementById("reviewText").value = text;
+            document.getElementById("reviewModalError").textContent = "";
 
             let stars = document.querySelectorAll(".star-input span");
             stars.forEach((s, i) => {
                 s.style.color = i < rating ? "gold" : "lightgray";
             });
 
-            let form = document.querySelector("#reviewModal form");
+            let form = document.getElementById("reviewForm");
 
             if (isEdit) {
                 form.action = "action/updateReview.php";
@@ -161,6 +166,7 @@ $coverPath = !empty($book['bookCover'])
 
         function closeReviewModal() {
             document.getElementById("reviewModal").style.display = "none";
+            document.getElementById("reviewModalError").textContent = "";
         }
 
         function closeReviewExists() {
@@ -169,10 +175,41 @@ $coverPath = !empty($book['bookCover'])
 
         function setRating(value) {
             document.getElementById("ratingValue").value = value;
+
             let stars = document.querySelectorAll(".star-input span");
             stars.forEach((s, i) => {
                 s.style.color = i < value ? "gold" : "lightgray";
             });
+
+            document.getElementById("reviewModalError").textContent = "";
+        }
+
+        function validateReviewForm() {
+            const rating = document.getElementById("ratingValue").value;
+            const reviewText = document.getElementById("reviewText").value.trim();
+            const reviewId = document.getElementById("reviewIdInput").value;
+            const errorBox = document.getElementById("reviewModalError");
+            const alreadyReviewed = <?= $alreadyReviewed ? 'true' : 'false' ?>;
+
+            errorBox.textContent = "";
+
+            if (!rating || parseInt(rating) < 1) {
+                errorBox.textContent = "Please select a rating.";
+                return false;
+            }
+
+            if (reviewText === "") {
+                errorBox.textContent = "Please write a review.";
+                return false;
+            }
+
+            // prevent adding a second review without refresh
+            if (alreadyReviewed && reviewId === "") {
+                errorBox.textContent = "You already made a review for this book.";
+                return false;
+            }
+
+            return true;
         }
 
         function openLogin() {
@@ -235,7 +272,7 @@ $coverPath = !empty($book['bookCover'])
                 ) { 
                 ?>
                     <button class="edit-btn" onclick="location.href='editBook.php?id=<?= $bookId ?>'">
-                        📚 Edit Book
+                        🕮 Edit Book
                     </button>
                 <?php } ?>
 
@@ -250,7 +287,7 @@ $coverPath = !empty($book['bookCover'])
                         <?= $alreadyReviewed ? '✏ Edit Review' : 'Add Review' ?>
                     </button>
                 <?php } elseif (!isset($_SESSION['role'])) { ?>
-                    <button class="review-btn" onclick="openLogin()">Add Review</button>
+                    <button class="review-btn" onclick="openLogin()">🖊 Add Review</button>
                 <?php } ?>
             </div>
         </div>
@@ -300,10 +337,10 @@ $coverPath = !empty($book['bookCover'])
         <div class="modal-content">
             <span class="close" onclick="closeReviewModal()">✖</span>
 
-            <form method="POST" action="action/addReview.php">
+            <form method="POST" action="action/addReview.php" id="reviewForm" onsubmit="return validateReviewForm()">
                 <input type="hidden" name="reviewId" id="reviewIdInput">
                 <input type="hidden" name="bookId" value="<?= $bookId ?>">
-                <input type="hidden" name="rating" id="ratingValue" value="1">
+                <input type="hidden" name="rating" id="ratingValue" value="0">
 
                 <div class="star-input">
                     <span onclick="setRating(1)">★</span>
@@ -313,7 +350,9 @@ $coverPath = !empty($book['bookCover'])
                     <span onclick="setRating(5)">★</span>
                 </div>
 
-                <textarea name="reviewText" required placeholder="  Write a review"></textarea>
+                <p class="error" id="reviewModalError"></p>
+
+                <textarea name="reviewText" id="reviewText" placeholder="  Write a review"></textarea>
 
                 <button type="submit" class="save-btn">Save</button>
             </form>

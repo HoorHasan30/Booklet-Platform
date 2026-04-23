@@ -1,338 +1,199 @@
 <?php
-session_start();
-if (!isset($_SESSION['userId'])) {
-    header("Location: Login.php");
-    exit();
-}
-include("DBConnection.php");
+    session_start();
 
-chmod(__DIR__ . '/BookCovers/', 0777);
+    include("DBConnection.php");
 
-$errors  = [];
-$success = false;
+    $dbc = getConnection();
 
-// fetch genres for dropdown
-$dbc    = getConnection();
-$genres = mysqli_fetch_all(mysqli_query($dbc, "SELECT genreId, genreName FROM dbProj_Genres ORDER BY genreName"), MYSQLI_ASSOC);
+    $genres = mysqli_fetch_all(
+        mysqli_query($dbc, "SELECT genreId, genreName FROM dbProj_Genres ORDER BY genreName"),
+        MYSQLI_ASSOC
+    );
 
-// handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    mysqli_close($dbc);
 
-    // --- server-side validation ---
-    $title       = trim($_POST['title']       ?? '');
-    $author      = trim($_POST['author']      ?? '');
-    $genreId     = intval($_POST['genreId']   ?? 0);
-    $noPages     = intval($_POST['noPages']   ?? 0);
-    $description = trim($_POST['description'] ?? '');
+    $errors = $_SESSION['addBookErrors'] ?? [];
+    $old    = $_SESSION['addBookOld'] ?? [];
 
-    if ($title === '')       $errors[] = "Book name is required.";
-    if ($author === '')      $errors[] = "Author is required.";
-    if ($genreId <= 0)       $errors[] = "Please choose a genre.";
-    if ($noPages <= 0)       $errors[] = "Number of pages must be greater than 0.";
-    if ($description === '') $errors[] = "Description is required.";
-
-    // --- cover upload ---
-    $bookCoverPath = '';
-    if (isset($_FILES['bookCover']) && $_FILES['bookCover']['error'] === UPLOAD_ERR_OK) {
-        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'jfif', 'webp'];
-        $ext     = strtolower(pathinfo($_FILES['bookCover']['name'], PATHINFO_EXTENSION));
-
-        if (!in_array($ext, $allowed)) {
-            $errors[] = "Only image files are allowed (jpg, png, gif).";
-        } else {
-            $filename      = uniqid('cover_') . '.' . $ext;
-            $uploadDir     = __DIR__ . '/BookCovers/';
-            $uploadTarget  = $uploadDir . $filename;
-
-            if (move_uploaded_file($_FILES['bookCover']['tmp_name'], $uploadTarget)) {
-                $bookCoverPath = 'BookCovers/' . $filename;
-            } else {
-                $errors[] = "Failed to upload cover image. Dir: " . $uploadDir . " | Writable: " . (is_writable($uploadDir) ? 'yes' : 'no') . " | Exists: " . (is_dir($uploadDir) ? 'yes' : 'no');
-            }
-        }
-    } else {
-        $errors[] = "A book cover image is required.";
-    }
-
-    // --- insert ---
-    if (empty($errors)) {
-        $userId = $_SESSION['userId'];
-        $stmt = mysqli_prepare($dbc,
-            "INSERT INTO dbProj_books (title, author, description, noPages, userId, bookCover, createdAt, genreId)
-             VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)"
-        );
-        mysqli_stmt_bind_param($stmt, "sssiisi", $title, $author, $description, $noPages, $userId, $bookCoverPath, $genreId);
-
-        if (mysqli_stmt_execute($stmt)) {
-            mysqli_close($dbc);
-            header("Location: MyBooks.php");
-            exit();
-        } else {
-            $errors[] = "Database error. Please try again.";
-        }
-    }
-}
-
-mysqli_close($dbc);
+    unset($_SESSION['addBookErrors'], $_SESSION['addBookOld']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Add Book – Booklet</title>
-    <link rel="stylesheet" href="BookletCSS.css">
-    <style>
-        body { background: #FFF7EE; }
-        .page-wrapper { padding: 1.5rem 2.5rem; }
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Book</title>
+        <link rel="stylesheet" href="BookletCSS.css">
 
-        .back-arrow {
-            font-size: 1.4rem;
-            color: #483434;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 1.8rem;
-            transition: opacity 0.2s;
-        }
-        .back-arrow:hover { opacity: 0.6; }
+        <script>
+            function validateForm() {
+                let title = document.getElementById("title").value.trim();
+                let author = document.getElementById("author").value.trim();
+                let genreId = document.getElementById("genreId").value;
+                let pages = document.getElementById("noPages").value.trim();
+                let description = document.getElementById("description").value.trim();
+                let bookCover = document.getElementById("bookCoverInput").files.length;
 
-        .form-layout {
-            display: flex;
-            gap: 2.5rem;
-            align-items: flex-start;
-        }
+                document.getElementById("titleError").textContent = "";
+                document.getElementById("authorError").textContent = "";
+                document.getElementById("genreError").textContent = "";
+                document.getElementById("pagesError").textContent = "";
+                document.getElementById("descriptionError").textContent = "";
+                document.getElementById("bookCoverError").textContent = "";
 
-        /* cover upload box */
-        .cover-upload-box {
-            flex: 0 0 160px;
-            height: 220px;
-            border-radius: 12px;
-            background: #D3C1B4;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: hidden;
-            position: relative;
-        }
-        .cover-upload-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0; left: 0;
-            border-radius: 12px;
-        }
-        .cover-upload-box .upload-icon {
-            font-size: 2rem;
-            color: #483434;
-            z-index: 1;
-        }
-        .cover-upload-box input[type="file"] {
-            position: absolute;
-            width: 100%; height: 100%;
-            opacity: 0;
-            cursor: pointer;
-            z-index: 2;
-        }
+                let isValid = true;
 
-        /* fields */
-        .form-fields { flex: 1; }
+                if (title === "") {
+                    document.getElementById("titleError").textContent = "Please enter the book name.";
+                    isValid = false;
+                }
 
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-            gap: 1rem;
-        }
-        .form-row label {
-            width: 120px;
-            font-size: 1rem;
-            color: #483434;
-            flex-shrink: 0;
-        }
-        .form-row input[type="text"],
-        .form-row input[type="number"],
-        .form-row select,
-        .form-row textarea {
-            flex: 1;
-            padding: 0.45rem 0.9rem;
-            border-radius: 8px;
-            border: 1px solid #D3C1B4;
-            background: #FFF7EE;
-            font-family: Alice, serif;
-            font-size: 0.95rem;
-            color: #483434;
-            outline: none;
-        }
-        .form-row textarea {
-            height: 100px;
-            resize: vertical;
-            align-self: flex-start;
-        }
-        .form-row select { cursor: pointer; }
+                if (author === "") {
+                    document.getElementById("authorError").textContent = "Please enter the author name.";
+                    isValid = false;
+                }
 
-        .btn-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 1.5rem;
-        }
-        .btn-add {
-            padding: 0.5rem 2rem;
-            border-radius: 20px;
-            background: #D3C1B4;
-            color: #483434;
-            border: none;
-            font-family: Alice, serif;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.3s, color 0.3s;
-        }
-        .btn-add:hover { background: #483434; color: #FFF7EE; }
+                if (genreId === "0") {
+                    document.getElementById("genreError").textContent = "Please choose a genre.";
+                    isValid = false;
+                }
 
-        /* errors */
-        .error-list {
-            background: #D3C1B4;
-            border-left: 5px solid #483434;
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 1.2rem;
-            color: #483434;
-            font-size: 0.95rem;
-            box-shadow: 0 2px 8px rgba(72,52,52,0.15);
-            animation: fadeIn 0.3s ease;
-        }
-        .error-list::before {
-            content: "⚠ Please fix the following:";
-            font-weight: bold;
-            display: block;
-            margin-bottom: 0.5rem;
-            font-size: 1rem;
-        }
-        .error-list li {
-            margin-bottom: 0.3rem;
-            margin-left: 1rem;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-    </style>
-</head>
-<body>
+                if (pages === "") {
+                    document.getElementById("pagesError").textContent = "Please enter number of pages.";
+                    isValid = false;
+                } else if (parseInt(pages) <= 0) {
+                    document.getElementById("pagesError").textContent = "Pages must be greater than 0.";
+                    isValid = false;
+                }
 
-<?php include("CreatorNavBar.php"); ?>
+                if (description === "") {
+                    document.getElementById("descriptionError").textContent = "Please enter the description.";
+                    isValid = false;
+                }
 
-<div class="page-wrapper">
-    <a href="MyBooks.php" class="back-arrow">&#8592;</a>
+                if (document.getElementById("hasRealImage").value === "0") {
+                    document.getElementById("bookCoverError").textContent = "Please add a book cover.";
+                    isValid = false;
+                }
 
-    <?php if (!empty($errors)): ?>
-    <ul class="error-list">
-        <?php foreach ($errors as $e): ?>
-        <li><?= htmlspecialchars($e) ?></li>
-        <?php endforeach; ?>
-    </ul>
-    <?php endif; ?>
+                return isValid;
+            }
 
-    <form method="POST" enctype="multipart/form-data" id="addBookForm" novalidate>
-        <div class="form-layout">
+            document.addEventListener("DOMContentLoaded", function () {
+                const input = document.getElementById("bookCoverInput");
+                const preview = document.getElementById("previewImage");
+                const hasRealImage = document.getElementById("hasRealImage");
 
-            <!-- cover upload -->
-            <div class="cover-upload-box" id="coverBox">
-                <span class="upload-icon">&#x2B06;</span>
-                <img id="coverPreview" src="" alt="" style="display:none;">
-                <input type="file" name="bookCover" id="bookCoverInput" accept="image/*">
-            </div>
+                input.addEventListener("change", function () {
+                    const file = this.files[0];
 
-            <!-- fields -->
-            <div class="form-fields">
-                <div class="form-row">
-                    <label for="title">Book Name:</label>
-                    <input type="text" name="title" id="title"
-                           value="<?= htmlspecialchars($_POST['title'] ?? '') ?>">
+                    document.getElementById("bookCoverError").textContent = "";
+
+                    if (!file) return;
+
+                    if (!file.type.startsWith("image/")) {
+                        document.getElementById("bookCoverError").textContent = "Please select a valid image file.";
+                        this.value = "";
+                        hasRealImage.value = "0";
+                        preview.src = "images/noCoverYet.png"; // reset
+                        return;
+                    }
+
+                    const reader = new FileReader();
+
+                    reader.onload = function (e) {
+                        preview.src = e.target.result;
+                        hasRealImage.value = "1"; // ✅ real image selected
+                    };
+
+                    reader.readAsDataURL(file);
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+
+        <?php include("CreatorNavBar.php"); ?>
+
+        <div class="edit-container">
+            <a href="MyBooks.php" class="back-btn">←</a>
+
+            <form method="POST" action="action/addBook.php" enctype="multipart/form-data" onsubmit="return validateForm()">
+
+                <div class="edit-layout">
+
+                    <div class="left-side">
+                        <div class="upload-box">
+                            <img id="previewImage" src="images/noCoverYet.png" alt="Book Cover Preview" value="0">
+                        </div>
+
+                        <label class="upload-btn">
+                            Add Cover
+                            <input type="file" id="bookCoverInput" name="bookCover" hidden>
+                        </label>
+                        <p class="error" id="bookCoverError"><?= htmlspecialchars($errors['cover'] ?? '') ?></p>
+                    </div>
+
+                    <div class="form-side">
+
+                        <div class="form-row">
+                            <label>Book Name:</label>
+                            <div>
+                                <input type="text" placeholder="Enter Book Name" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
+                                <p class="error" id="titleError"><?= htmlspecialchars($errors['title'] ?? '') ?></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Author:</label>
+                            <div>
+                                <input type="text" placeholder="Enter Book Author" id="author" name="author" value="<?= htmlspecialchars($old['author'] ?? '') ?>">
+                                <p class="error" id="authorError"><?= htmlspecialchars($errors['author'] ?? '') ?></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Genre:</label>
+                            <div>
+                                <select name="genreId" id="genreId">
+                                    <option value="0">Choose Genre</option>
+                                    <?php foreach ($genres as $g): ?>
+                                        <option value="<?= $g['genreId'] ?>" <?= (($old['genreId'] ?? 0) == $g['genreId']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($g['genreName']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <p class="error" id="genreError"><?= htmlspecialchars($errors['genre'] ?? '') ?></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>No. Pages:</label>
+                            <div>
+                                <input type="number" placeholder="Enter Number of Pages" id="noPages" name="noPages" value="<?= htmlspecialchars($old['noPages'] ?? '') ?>">
+                                <p class="error" id="pagesError"><?= htmlspecialchars($errors['pages'] ?? '') ?></p>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <label>Description:</label>
+                            <div>
+                                <textarea name="description" placeholder="Enter Book Description" id="description"><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
+                                <p class="error" id="descriptionError"><?= htmlspecialchars($errors['description'] ?? '') ?></p>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="btn" onclick="location.href='MyBooks.php'">Cancel</button>
+                            <button type="submit" class="btn">Add</button>
+                        </div>
+
+                    </div>
                 </div>
-                <div class="form-row">
-                    <label for="author">Author:</label>
-                    <input type="text" name="author" id="author"
-                           value="<?= htmlspecialchars($_POST['author'] ?? '') ?>">
-                </div>
-                <div class="form-row">
-                    <label for="genreId">Genre:</label>
-                    <select name="genreId" id="genreId">
-                        <option value="0">Choose Genre</option>
-                        <?php foreach ($genres as $g): ?>
-                        <option value="<?= $g['genreId'] ?>"
-                            <?= (isset($_POST['genreId']) && $_POST['genreId'] == $g['genreId']) ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($g['genreName']) ?>
-                        </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <label for="noPages">No. Pages:</label>
-                    <input type="number" name="noPages" id="noPages" min="1"
-                           value="<?= htmlspecialchars($_POST['noPages'] ?? '0') ?>">
-                </div>
-                <div class="form-row">
-                    <label for="description">Description:</label>
-                    <textarea name="description" id="description"
-                              placeholder="Write a description..."><?= htmlspecialchars($_POST['description'] ?? '') ?></textarea>
-                </div>
-
-                <div class="btn-row">
-                    <button type="submit" class="btn-add">Add</button>
-                </div>
-            </div>
-
+            </form>
         </div>
-    </form>
-</div>
 
-<script>
-// live cover preview
-document.getElementById('bookCoverInput').addEventListener('change', function () {
-    const file = this.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function (e) {
-        const preview = document.getElementById('coverPreview');
-        preview.src = e.target.result;
-        preview.style.display = 'block';
-        document.querySelector('.upload-icon').style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-});
+        <?php include("Footer.php"); ?>
 
-// JS validation
-document.getElementById('addBookForm').addEventListener('submit', function (e) {
-    const title   = document.getElementById('title').value.trim();
-    const author  = document.getElementById('author').value.trim();
-    const genre   = document.getElementById('genreId').value;
-    const pages   = parseInt(document.getElementById('noPages').value);
-    const desc    = document.getElementById('description').value.trim();
-    const cover   = document.getElementById('bookCoverInput').files.length;
-    const msgs    = [];
-
-    if (!title)          msgs.push("Book name is required.");
-    if (!author)         msgs.push("Author is required.");
-    if (genre === '0')   msgs.push("Please choose a genre.");
-    if (!pages || pages < 1) msgs.push("Number of pages must be greater than 0.");
-    if (!desc)           msgs.push("Description is required.");
-    if (!cover)          msgs.push("A book cover image is required.");
-
-    if (msgs.length > 0) {
-        e.preventDefault();
-        let errorBox = document.getElementById('jsErrorList');
-        if (!errorBox) {
-            errorBox = document.createElement('ul');
-            errorBox.id = 'jsErrorList';
-            errorBox.className = 'error-list';
-            document.getElementById('addBookForm').before(errorBox);
-        }
-        errorBox.innerHTML = msgs.map(m => '<li>' + m + '</li>').join('');
-        errorBox.scrollIntoView({ behavior: 'smooth' });
-    }
-});
-</script>
-</body>
+    </body>
 </html>

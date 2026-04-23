@@ -82,8 +82,9 @@ $sql = "
 
 mysqli_query($dbc, $sql) or die("SQL ERROR: " . mysqli_error($dbc));
 
+header("Location: ../bookDetails.php?id=" . $bookId);
+
 $_SESSION['success'] = "Book Updated Successfully.";
 
-header("Location: ../bookDetails.php?id=" . $bookId);
 exit;
 ?>

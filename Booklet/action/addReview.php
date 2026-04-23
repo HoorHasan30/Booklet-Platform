@@ -1,55 +1,45 @@
-<?php
-session_start();
-include("../DBConnection.php");
-$dbc = getConnection();
+<?php 
+    session_start();
+    include("../DBConnection.php");
+    $dbc = getConnection();
 
-/* GET DATA */
-$userId = $_SESSION['userId'] ?? null;
-$bookId = $_POST['bookId'] ?? null;
-$rating = $_POST['rating'] ?? null;
-$reviewText = trim($_POST['reviewText'] ?? '');
+    $userId = $_SESSION['userId'] ?? null;
+    $bookId = $_POST['bookId'] ?? null;
+    $rating = $_POST['rating'] ?? null;
+    $reviewText = trim($_POST['reviewText'] ?? '');
 
-/* VALIDATION */
-if(!$userId || !$bookId){
-    die("Missing user or book ID.");
-}
+    if (!$userId || !$bookId) {
+        die("Missing user or book ID.");
+    }
 
-/* REQUIRE RATING */
-if(empty($rating)){
-    $_SESSION['error'] = "Please select a rating.";
-    header("Location: ../bookDetails.php?id=".$bookId);
-    exit;
-}
+    /* CHECK IF USER ALREADY REVIEWED THIS BOOK */
+    $checkStmt = mysqli_prepare($dbc, "
+        SELECT reviewId FROM dbProj_reviews 
+        WHERE userId = ? AND bookId = ?
+    ");
+    mysqli_stmt_bind_param($checkStmt, "ii", $userId, $bookId);
+    mysqli_stmt_execute($checkStmt);
+    $checkResult = mysqli_stmt_get_result($checkStmt);
 
-/* REQUIRE TEXT */
-if(empty($reviewText)){
-    $_SESSION['error'] = "Please write a review.";
-    header("Location: ../bookDetails.php?id=".$bookId);
-    exit;
-}
-
-/* CHECK IF USER ALREADY REVIEWED THIS BOOK */
-$check = mysqli_query($dbc, "
-SELECT reviewId FROM dbProj_reviews 
-WHERE userId = $userId AND bookId = $bookId
-");
-
-if(mysqli_num_rows($check) > 0){
-
-    $_SESSION['error'] = "You already made a review for this book.";
-
-} else {
+    if (mysqli_num_rows($checkResult) > 0) {
+        $_SESSION['error'] = "You already made a review for this book.";
+        header("Location: ../bookDetails.php?id=" . $bookId);
+        exit;
+    }
 
     /* INSERT REVIEW */
-    mysqli_query($dbc, "
-INSERT INTO dbProj_reviews (userId, bookId, rating, reviewText, createdAt)
-VALUES ($userId, $bookId, $rating, '$reviewText', NOW())
-") or die(mysqli_error($dbc));
+    $insertStmt = mysqli_prepare($dbc, "
+        INSERT INTO dbProj_reviews (userId, bookId, rating, reviewText, createdAt)
+        VALUES (?, ?, ?, ?, NOW())
+    ");
+    mysqli_stmt_bind_param($insertStmt, "iiis", $userId, $bookId, $rating, $reviewText);
 
-    $_SESSION['success'] = "Review Added Ssuccessfully.";
-}
+    if (mysqli_stmt_execute($insertStmt)) {
+        $_SESSION['success'] = "Review added successfully.";
+    } else {
+        $_SESSION['error'] = "Failed to add review.";
+    }
 
-/*  REDIRECT */
-header("Location: ../bookDetails.php?id=$bookId");
-exit;
+    header("Location: ../bookDetails.php?id=" . $bookId);
+    exit;
 ?>
