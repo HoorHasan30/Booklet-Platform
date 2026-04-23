@@ -192,15 +192,31 @@ mysqli_close($dbc);
 
         /* errors */
         .error-list {
-            background: #fde8e8;
-            border: 1px solid #e57373;
+            background: #D3C1B4;
+            border-left: 5px solid #483434;
             border-radius: 8px;
-            padding: 0.8rem 1.2rem;
+            padding: 1rem 1.5rem;
             margin-bottom: 1.2rem;
-            color: #c62828;
-            font-size: 0.9rem;
+            color: #483434;
+            font-size: 0.95rem;
+            box-shadow: 0 2px 8px rgba(72,52,52,0.15);
+            animation: fadeIn 0.3s ease;
         }
-        .error-list li { margin-bottom: 0.3rem; }
+        .error-list::before {
+            content: "⚠ Please fix the following:";
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        .error-list li {
+            margin-bottom: 0.3rem;
+            margin-left: 1rem;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -306,7 +322,15 @@ document.getElementById('addBookForm').addEventListener('submit', function (e) {
 
     if (msgs.length > 0) {
         e.preventDefault();
-        alert(msgs.join('\n'));
+        let errorBox = document.getElementById('jsErrorList');
+        if (!errorBox) {
+            errorBox = document.createElement('ul');
+            errorBox.id = 'jsErrorList';
+            errorBox.className = 'error-list';
+            document.getElementById('addBookForm').before(errorBox);
+        }
+        errorBox.innerHTML = msgs.map(m => '<li>' + m + '</li>').join('');
+        errorBox.scrollIntoView({ behavior: 'smooth' });
     }
 });
 </script>
