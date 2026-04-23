@@ -31,7 +31,7 @@
         }
         
         //check password length
-        if ($password.length < 8) {
+        if (strlen($password) < 8) {
             $errors[] = "Password must be at least 8 characters";
         }
         
@@ -169,23 +169,26 @@
             
                 <form id="registerForm" method="POST" action="Register.php" onsubmit="return validateForm()">
                     <!-- first name -->
-                    <input type="text" id="firstName" name="firstName" placeholder="Enter Your First Name">
+                    <input type="text" id="firstName" name="firstName" placeholder="Enter Your First Name"
+                           value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>">
 
                     <!-- last name -->
-                    <input type="text" id="lastName" name="lastName" placeholder="Enter Your Last Name">
+                    <input type="text" id="lastName" name="lastName" placeholder="Enter Your Last Name"
+                           value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>">
 
                     <!-- email -->
-                    <input type="email" id="email" name="email" placeholder="Enter Your Email">
+                    <input type="email" id="email" name="email" placeholder="Enter Your Email"
+                           value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
 
                     <!-- password -->
                     <div class="passBox">
-                        <input type="password" name="password" placeholder="Enter Your Password">
+                        <input type="password" id="password" name="password" placeholder="Enter Your Password">
                         <span class="passEye" onclick="seePassword(this)">👁</span>
                     </div>
 
                     <!-- confirm password -->
                     <div class="passBox">
-                        <input type="password" name="confirmPassword" placeholder="Confirm Password">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password">
                         <span class="passEye" onclick="seePassword(this)">👁</span>
                     </div>
                     

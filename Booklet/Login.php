@@ -130,7 +130,8 @@
             
                 <form id="loginForm" method="POST" action="Login.php" onsubmit="return validateForm()">
                     <!-- email -->
-                    <input type="email" id="email" name="email" placeholder="Enter Your Email">
+                    <input type="email" id="email" name="email" placeholder="Enter Your Email"
+                           value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
 
                     <!-- password -->
                     <div class="passBox">
