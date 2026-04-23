@@ -115,6 +115,12 @@
     </head>
     <body>
         <?php loadNavBar(); ?>
+        
+        <?php if (isset($_SESSION['success'])) { ?>
+            <div class="success-msg">
+                <?= $_SESSION['success'] ?>
+            </div>
+        <?php unset($_SESSION['success']); } ?>
 
         <div class="allBooks-page">
             <h1 class="page-title">All Books</h1>
