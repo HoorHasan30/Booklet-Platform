@@ -53,6 +53,7 @@ mysqli_stmt_bind_param($stmt, $types, ...$params);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,6 +80,7 @@ $result = mysqli_stmt_get_result($stmt);
 
     <form method="GET" action="MyBooks.php" class="mybooks-topbar">
         <div class="mybooks-left-controls">
+
             <select name="sort" class="mybooks-select">
                 <option value="newest" <?php if ($sortBy == "newest") echo "selected"; ?>>Newest To Oldest</option>
                 <option value="oldest" <?php if ($sortBy == "oldest") echo "selected"; ?>>Oldest To Newest</option>
@@ -95,30 +97,47 @@ $result = mysqli_stmt_get_result($stmt);
             </select>
 
             <button type="submit" class="mybooks-small-btn">Apply</button>
+
         </div>
 
         <a href="AddBook.php" class="mybooks-add-btn">Add Book</a>
     </form>
 
     <div class="mybooks-grid">
+
         <?php if (mysqli_num_rows($result) > 0) { ?>
+            
             <?php while ($row = mysqli_fetch_assoc($result)) { ?>
+
                 <div class="mybooks-card">
+
                     <div class="mybooks-image-box">
-                        <img src="<?php echo htmlspecialchars($row["bookCover"]); ?>" alt="<?php echo htmlspecialchars($row["title"]); ?>">
+                        <img src="<?php echo htmlspecialchars($row["bookCover"]); ?>" 
+                             alt="<?php echo htmlspecialchars($row["title"]); ?>">
                     </div>
 
                     <div class="mybooks-info">
                         <h3><?php echo htmlspecialchars($row["title"]); ?></h3>
-                        <p class="mybooks-author">by <?php echo htmlspecialchars($row["author"]); ?></p>
+                        <p class="mybooks-author">
+                            by <?php echo htmlspecialchars($row["author"]); ?>
+                        </p>
 
-                        <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="view-more">View Details</a>
+                        <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" 
+                           class="view-more">
+                           View Details
+                        </a>
                     </div>
+
                 </div>
+
             <?php } ?>
+
         <?php } else { ?>
+
             <p>No books found.</p>
+
         <?php } ?>
+
     </div>
 
 </div>
