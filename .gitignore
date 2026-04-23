@@ -35,9 +35,6 @@ Booklet/DBConnection.php
 # Database dumps
 *.sql
 
-# Uploaded images (optional)
-images/uploads/
-
 # Cache
 cache/
 tmp/
