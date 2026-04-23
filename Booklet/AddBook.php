@@ -1,12 +1,8 @@
 <?php
 session_start();
-// TODO: restore this after login page is ready
-// if (!isset($_SESSION['userId'])) { header("Location: index.php"); exit(); }
 if (!isset($_SESSION['userId'])) {
-    $_SESSION['userId']    = 2;
-    $_SESSION['firstName'] = 'Sara';
-    $_SESSION['lastName']  = 'Ahmed';
-    $_SESSION['role']      = 'Creator';
+    header("Location: Login.php");
+    exit();
 }
 include("DBConnection.php");
 
