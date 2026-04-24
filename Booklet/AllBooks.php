@@ -11,8 +11,7 @@ function loadNavBar() {
             include("AdminNavBar.php");
         } elseif ($_SESSION["role"] == "Creator") {
             include("CreatorNavBar.php");
-        } 
-        else {
+        } else {
             include("VisitorNavBar.php");
         }
     } else {
@@ -22,7 +21,6 @@ function loadNavBar() {
 
 $dbc = getConnection();
 
-/* GET VALUES */
 $search       = isset($_GET["search"]) ? trim($_GET["search"]) : "";
 $authorFilter = isset($_GET["author"]) ? trim($_GET["author"]) : "";
 $genreFilter  = isset($_GET["genre"]) ? trim($_GET["genre"]) : "";
@@ -31,7 +29,6 @@ $dateFrom     = isset($_GET["dateFrom"]) ? trim($_GET["dateFrom"]) : "";
 $dateTo       = isset($_GET["dateTo"]) ? trim($_GET["dateTo"]) : "";
 $sortDate     = isset($_GET["date"]) ? trim($_GET["date"]) : "";
 
-/* MAIN QUERY */
 $sql = "SELECT 
             b.bookId,
             b.title,
@@ -52,9 +49,9 @@ $sql = "SELECT
 $params = [];
 $types = "";
 
-/* SEARCH (FULLTEXT) */
+/* FULLTEXT SEARCH: title + author */
 if ($search !== "") {
-    $sql .= " AND MATCH(b.title) AGAINST (? IN BOOLEAN MODE)";
+    $sql .= " AND MATCH(b.title, b.author) AGAINST (? IN BOOLEAN MODE)";
     $params[] = $search;
     $types .= "s";
 }
@@ -73,7 +70,7 @@ if ($genreFilter !== "") {
     $types .= "s";
 }
 
-/* DATE FILTER */
+/* DATE RANGE */
 if ($dateFrom !== "") {
     $sql .= " AND DATE(b.createdAt) >= ?";
     $params[] = $dateFrom;
@@ -86,7 +83,6 @@ if ($dateTo !== "") {
     $types .= "s";
 }
 
-/* GROUP */
 $sql .= " GROUP BY 
             b.bookId,
             b.title,
@@ -98,7 +94,7 @@ $sql .= " GROUP BY
             u.firstName,
             u.lastName";
 
-/* RATING FILTER */
+/* POPULARITY / RATING FILTER */
 if ($ratingFilter !== "") {
     $sql .= " HAVING ROUND(avgRating) = ?";
     $params[] = (int)$ratingFilter;
@@ -112,7 +108,6 @@ if ($sortDate === "oldest") {
     $sql .= " ORDER BY b.createdAt DESC";
 }
 
-/* EXECUTE */
 $stmt = mysqli_prepare($dbc, $sql);
 
 if (!$stmt) {
@@ -129,11 +124,9 @@ if (!mysqli_stmt_execute($stmt)) {
 
 $result = mysqli_stmt_get_result($stmt);
 
-/* GENRE DROPDOWN */
 $genreQuery = "SELECT genreName FROM dbProj_Genres ORDER BY genreName ASC";
 $genreResult = mysqli_query($dbc, $genreQuery);
 
-/* AUTHOR DROPDOWN */
 $authorQuery = "SELECT DISTINCT author FROM dbProj_books ORDER BY author ASC";
 $authorResult = mysqli_query($dbc, $authorQuery);
 ?>
@@ -151,11 +144,13 @@ $authorResult = mysqli_query($dbc, $authorQuery);
             color: #D3C1B4;
             text-decoration: none;
         }
+
         .view-more:hover {
             text-decoration: underline;
         }
     </style>
 </head>
+
 <body>
 
 <?php loadNavBar(); ?>
@@ -164,23 +159,25 @@ $authorResult = mysqli_query($dbc, $authorQuery);
 
     <h1 class="page-title">All Books</h1>
 
-    <!-- SEARCH -->
     <form method="GET" action="AllBooks.php" class="allbooks-filter-form">
 
         <div class="search-row">
-            <input type="text" name="search" class="search-input"
-                   placeholder="Search by title"
-                   value="<?php echo htmlspecialchars($search); ?>">
+            <input 
+                type="text" 
+                name="search" 
+                class="search-input"
+                placeholder="Search by title or author"
+                value="<?php echo htmlspecialchars($search); ?>"
+            >
 
             <button type="submit" class="search-btn">Search</button>
         </div>
 
-        <!-- FILTERS -->
         <div class="filter-row">
 
-            <!-- AUTHOR -->
             <select name="author" class="filter-select">
                 <option value="">Author</option>
+
                 <?php while ($authorRow = mysqli_fetch_assoc($authorResult)) { ?>
                     <option value="<?php echo htmlspecialchars($authorRow['author']); ?>"
                         <?php if ($authorFilter == $authorRow['author']) echo "selected"; ?>>
@@ -189,7 +186,6 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                 <?php } ?>
             </select>
 
-            <!-- RATING -->
             <select name="rating" class="filter-select">
                 <option value="">Rating</option>
                 <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
@@ -200,9 +196,9 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                 <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
             </select>
 
-            <!-- GENRE -->
             <select name="genre" class="filter-select">
                 <option value="">Genre</option>
+
                 <?php while ($genreRow = mysqli_fetch_assoc($genreResult)) { ?>
                     <option value="<?php echo htmlspecialchars($genreRow['genreName']); ?>"
                         <?php if ($genreFilter == $genreRow['genreName']) echo "selected"; ?>>
@@ -211,21 +207,26 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                 <?php } ?>
             </select>
 
-            <!-- DATE FROM -->
             <div class="date-inline">
                 <span>From</span>
-                <input type="date" name="dateFrom" class="filter-select"
-                       value="<?php echo htmlspecialchars($dateFrom); ?>">
+                <input 
+                    type="date" 
+                    name="dateFrom" 
+                    class="filter-select"
+                    value="<?php echo htmlspecialchars($dateFrom); ?>"
+                >
             </div>
 
-            <!-- DATE TO -->
             <div class="date-inline">
                 <span>To</span>
-                <input type="date" name="dateTo" class="filter-select"
-                       value="<?php echo htmlspecialchars($dateTo); ?>">
+                <input 
+                    type="date" 
+                    name="dateTo" 
+                    class="filter-select"
+                    value="<?php echo htmlspecialchars($dateTo); ?>"
+                >
             </div>
-            
-            <!-- SORT -->
+
             <select name="date" class="filter-select">
                 <option value="">Sort By</option>
                 <option value="newest" <?php if ($sortDate == "newest") echo "selected"; ?>>
@@ -242,7 +243,6 @@ $authorResult = mysqli_query($dbc, $authorQuery);
         </div>
     </form>
 
-    <!-- BOOKS -->
     <div class="books-container">
 
         <?php if ($result && mysqli_num_rows($result) > 0) { ?>
@@ -252,8 +252,10 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                 <div class="book-card">
 
                     <div class="book-image-box">
-                        <img src="<?php echo htmlspecialchars($row['bookCover']); ?>"
-                             alt="<?php echo htmlspecialchars($row['title']); ?>">
+                        <img 
+                            src="<?php echo htmlspecialchars($row['bookCover']); ?>"
+                            alt="<?php echo htmlspecialchars($row['title']); ?>"
+                        >
                     </div>
 
                     <div class="book-info">
