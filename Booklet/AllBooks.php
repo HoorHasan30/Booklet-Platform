@@ -11,7 +11,8 @@ function loadNavBar() {
             include("AdminNavBar.php");
         } elseif ($_SESSION["role"] == "Creator") {
             include("CreatorNavBar.php");
-        } else {
+        } 
+        else {
             include("VisitorNavBar.php");
         }
     } else {
@@ -28,7 +29,7 @@ $genreFilter  = isset($_GET["genre"]) ? trim($_GET["genre"]) : "";
 $ratingFilter = isset($_GET["rating"]) ? trim($_GET["rating"]) : "";
 $dateFrom     = isset($_GET["dateFrom"]) ? trim($_GET["dateFrom"]) : "";
 $dateTo       = isset($_GET["dateTo"]) ? trim($_GET["dateTo"]) : "";
-$sortDate     = isset($_GET["date"]) ? trim($_GET["date"]) : "newest";
+$sortDate     = isset($_GET["date"]) ? trim($_GET["date"]) : "";
 
 /* MAIN QUERY */
 $sql = "SELECT 
@@ -190,12 +191,13 @@ $authorResult = mysqli_query($dbc, $authorQuery);
 
             <!-- RATING -->
             <select name="rating" class="filter-select">
-                <option value="">Popularity</option>
+                <option value="">Rating</option>
                 <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
                 <option value="4" <?php if ($ratingFilter == "4") echo "selected"; ?>>4 Stars</option>
                 <option value="3" <?php if ($ratingFilter == "3") echo "selected"; ?>>3 Stars</option>
                 <option value="2" <?php if ($ratingFilter == "2") echo "selected"; ?>>2 Stars</option>
                 <option value="1" <?php if ($ratingFilter == "1") echo "selected"; ?>>1 Star</option>
+                <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
             </select>
 
             <!-- GENRE -->
@@ -209,15 +211,23 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                 <?php } ?>
             </select>
 
-            <!-- DATE -->
-            <input type="date" name="dateFrom" class="filter-select"
-                   value="<?php echo htmlspecialchars($dateFrom); ?>">
+            <!-- DATE FROM -->
+            <div class="date-inline">
+                <span>From</span>
+                <input type="date" name="dateFrom" class="filter-select"
+                       value="<?php echo htmlspecialchars($dateFrom); ?>">
+            </div>
 
-            <input type="date" name="dateTo" class="filter-select"
-                   value="<?php echo htmlspecialchars($dateTo); ?>">
-
+            <!-- DATE TO -->
+            <div class="date-inline">
+                <span>To</span>
+                <input type="date" name="dateTo" class="filter-select"
+                       value="<?php echo htmlspecialchars($dateTo); ?>">
+            </div>
+            
             <!-- SORT -->
             <select name="date" class="filter-select">
+                <option value="">Sort By</option>
                 <option value="newest" <?php if ($sortDate == "newest") echo "selected"; ?>>
                     Newest to Oldest
                 </option>
@@ -227,7 +237,7 @@ $authorResult = mysqli_query($dbc, $authorQuery);
             </select>
 
             <a href="AllBooks.php" class="reset-btn">Reset</a>
-            <button type="submit" class="filter-btn">Filter</button>
+            <button type="submit" class="filter-btn">Apply</button>
 
         </div>
     </form>
@@ -252,19 +262,6 @@ $authorResult = mysqli_query($dbc, $authorQuery);
                         <p class="author">
                             by <?php echo htmlspecialchars($row['author']); ?>
                         </p>
-
-                        <p>
-                            <?php
-                            $desc = trim($row['description']);
-                            if ($desc !== "") {
-                                echo htmlspecialchars(substr($desc, 0, 100)) . "...";
-                            } else {
-                                echo "No description available.";
-                            }
-                            ?>
-                        </p>
-
-                        <p>Rating: <?php echo number_format($row['avgRating'], 1); ?>/5</p>
 
                         <a href="bookDetails.php?id=<?php echo $row['bookId']; ?>" class="view-more">
                             View More

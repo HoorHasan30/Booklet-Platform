@@ -17,7 +17,7 @@ function loadNavBar() {
 $dbc = getConnection();
 
 $userId = (int)$_SESSION["userId"];
-$sortBy = isset($_GET["sort"]) ? trim($_GET["sort"]) : "newest";
+$sortBy = isset($_GET["sort"]) ? trim($_GET["sort"]) : "";
 $ratingFilter = isset($_GET["rating"]) ? trim($_GET["rating"]) : "";
 
 $sql = "SELECT b.*, 
@@ -82,6 +82,7 @@ $result = mysqli_stmt_get_result($stmt);
         <div class="mybooks-left-controls">
 
             <select name="sort" class="mybooks-select">
+                <option>Sort By</option>
                 <option value="newest" <?php if ($sortBy == "newest") echo "selected"; ?>>Newest To Oldest</option>
                 <option value="oldest" <?php if ($sortBy == "oldest") echo "selected"; ?>>Oldest To Newest</option>
             </select>
