@@ -5,7 +5,7 @@
     {
         //change the paramters in the function below to your user id
 
-            $dbc = mysqli_connect('localhost', 'u202200344', 'asdASD123!', 'db202200344');
+            $dbc = mysqli_connect('localhost', 'u202301820', 'asdASD123!', 'db202301820');
 
             if (mysqli_connect_errno()) {
                 printf("Connect failed: %s\n", mysqli_connect_error());

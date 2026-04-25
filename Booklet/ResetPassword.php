@@ -8,6 +8,21 @@
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
+    
+    function loadNavBar(){
+        if (isset($_SESSION["role"])) {
+
+            if ($_SESSION["role"] == "Admin") {
+                include("AdminNavBar.php");
+            }
+            elseif ($_SESSION["role"] == "Creator") {
+                include("CreatorNavBar.php");
+            }
+        } 
+        else {
+            include("VisitorNavBar.php");
+        }
+    }
 
     $error = "";
     $success = "";
@@ -129,7 +144,7 @@
     </head>
 
     <body class="authBody">
-        <?php include("VisitorNavBar.php");?>
+        <?php loadNavBar();?>
 
         <div class="login-page">
 

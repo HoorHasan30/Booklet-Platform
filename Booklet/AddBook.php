@@ -17,6 +17,7 @@
 
     unset($_SESSION['addBookErrors'], $_SESSION['addBookOld']);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
     <head>

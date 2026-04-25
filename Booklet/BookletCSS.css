@@ -1,3 +1,5 @@
+/* SHARED STYLES */
+
 /*Global*/
 *{
     margin: 0;
@@ -73,7 +75,6 @@ nav {
 }
 
 /*Creator - Admin*/
-
 .nav-links2 {
     list-style: none;
     display: flex;
@@ -141,7 +142,7 @@ nav {
     border-radius: 20px;
 }
 
-/*Footer --> in style tag in the Footer.php*/    
+/*Footer */ 
 #pageFooter{
     background: #483434;
     height: 50px;
@@ -156,6 +157,202 @@ nav {
     font-size: 1rem;
     color: #FFF7EE;
 }
+
+
+/* 
+   SHARED SEARCH + FILTER SIDEBAR
+   Used by: AllBooks.php, MyBooks.php
+ */
+
+/* Top Search + Filter */
+.allbooks-filter-form {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto 26px auto;
+}
+
+.search-row {
+    display: grid;
+    grid-template-columns: 1fr 120px 120px;
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.search-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 16px;
+    border: 2px solid #D3C1B4;
+    border-radius: 22px;
+    background: #FFFDF8;
+    font-size: 14px;
+    color: #483434;
+    outline: none;
+}
+
+.search-btn {
+    width: 100%;
+    height: 40px;
+    background: #D3C1B4;
+    color: #483434;
+    border: none;
+    border-radius: 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.filter-icon-btn {
+    width: 100%;
+    height: 40px;
+    border-radius: 22px;
+    border: none;
+    background: #483434;
+    color: #FFF7EE;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+/* Sidebar Filter*/
+.filter-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 9998;
+}
+
+.filter-overlay.active {
+    display: block;
+}
+
+/* Sidebar */
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    right: -370px;
+    width: 300px;
+    height: 100vh;
+    background: #FFF7EE;
+    border-left: 3px solid #483434;
+    padding: 26px;
+    z-index: 9999;
+    transition: 0.3s;
+    overflow-y: auto;
+}
+
+.filter-sidebar.active {
+    right: 0;
+}
+
+.close-filter {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 30px;
+    color: #483434;
+    cursor: pointer;
+}
+
+.filter-title {
+    margin-top: 45px;
+    margin-bottom: 20px;
+    color: #483434;
+    font-size: 24px;
+}
+
+/* Sidebar Form */
+.sidebar-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.filter-select {
+    width: 100%;
+    height: 40px;
+    padding: 0 34px 0 14px;
+    border: 2px solid #D3C1B4;
+    border-radius: 22px;
+    background: #FFFDF8;
+    font-size: 14px;
+    color: #483434;
+    outline: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg fill='%23483434' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 16px;
+}
+
+.sidebar-date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-date span {
+    width: 45px;
+    font-size: 14px;
+    color: #483434;
+}
+
+.sidebar-date input {
+    flex: 1;
+}
+
+/* Sidebar Buttons */
+.sidebar-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.reset-btn,
+.filter-btn {
+    flex: 1;
+    width: 100%;
+    height: 40px;
+    border-radius: 22px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.reset-btn {
+    background: #483434;
+    color: #FFF7EE;
+    border: none;
+}
+
+.filter-btn {
+    background: #D3C1B4;
+    color: #483434;
+    border: none;
+}
+
+/* Hover Effects */
+.search-btn:hover,
+.filter-btn:hover {
+    background: #FFFDF8;
+    border: 2px solid #483434;
+}
+
+.filter-icon-btn:hover,
+.reset-btn:hover {
+    background: #FFFDF8;
+    color: #483434;
+    border: 2px solid #483434;
+}
+
+/* Auth Pages --> Login.php / Register.php / ForgotPassword.php / ResetPassword.php */
 
 /*Login Form & Register Form*/
 .authBody{
@@ -292,11 +489,14 @@ input{
     text-decoration: underline;
 }
 
-/* Hide default browser eye icon (Edge / Chrome) */
+/* Hide default browser eye icon */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
 }
+
+
+/* ===== AboutUs.php ===== */
 
 /*About us*/
 .about{
@@ -371,6 +571,9 @@ input[type="password"]::-ms-clear {
     line-height: 1;
 }
 
+
+/* ===== AllBooks.php ===== */
+
 /*All Books Page*/
 .allBooks-page {
     padding: 34px 40px 40px;
@@ -385,142 +588,6 @@ input[type="password"]::-ms-clear {
     font-size: 2.5rem;
 }
 
-/*Top Search + Filter*/
-.allbooks-filter-form {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto 26px auto;
-}
-
-.search-row
-{
-    display: grid;
-    grid-template-columns: repeat(8, 1fr);
-    gap: 12px;
-    align-items: center;
-    width: 100%;
-    margin-bottom: 14px;
-}
-
-.search-input {
-    grid-column: 1 / 8;
-    width: 100%;
-    height: 40px;
-    padding: 0 16px;
-    border: 2px solid #D3C1B4;
-    border-radius: 22px;
-    background: #FFFDF8;
-    font-size: 14px;
-    color: #483434;
-    outline: none;
-}
-
-.search-btn {
-    grid-column: 8 / 9;
-    width: 100%;
-    height: 40px;
-    background: #D3C1B4;
-    color: #483434;
-    border: none;
-    border-radius: 22px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.filter-row {
-    display: grid;
-    grid-template-columns: 
-        1.2fr   /* Author */
-        1.2fr   /* Rating */
-        1.2fr   /* Genre */
-        1.8fr   /* From */
-        1.8fr   /* To */
-        1.3fr   /* Sort */
-        1fr     /* Reset */
-        1fr;    /* Filter */
-    gap: 12px;
-    align-items: center;
-    width: 100%;
-}
-
-.filter-select {
-    width: 100%;
-    height: 40px;
-    padding: 0 34px 0 14px;
-    border: 2px solid #D3C1B4;
-    border-radius: 22px;
-    background: #FFFDF8;
-    font-size: 14px;
-    color: #483434;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%23483434' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px;
-}
-
-.date-inline {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-}
-
-.date-inline span {
-    font-size: 13px;
-    color: #483434;
-    white-space: nowrap;
-}
-
-.date-inline input {
-    flex: 1;
-}
-
-.reset-btn {
-    grid-column: 7 / 8;
-    width: 100%;
-    height: 40px;
-    background: #483434;
-    color: #FFF7EE;
-    border-radius: 22px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
-.filter-btn {
-    grid-column: 8 / 9;
-    width: 100%;
-    height: 40px;
-    background: #D3C1B4;
-    color: #483434;
-    border: none;
-    border-radius: 22px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.search-btn:hover,
-.filter-btn:hover {
-    background: #FFFDF8;
-    border: 2px solid #483434;
-}
-
-.reset-btn:hover {
-    background: #FFFDF8;
-    color: #483434;
-    border: 2px solid #483434;
-}
 
 /* Books Grid*/
 .books-container {
@@ -585,72 +652,19 @@ input[type="password"]::-ms-clear {
     margin-top: 6px;
 }
 
-/*Responsive*/
-@media (max-width: 1200px) {
-    .books-container {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .filter-row {
-        grid-template-columns: repeat(3, 140px);
-        justify-content: center;
-    }
+.view-more {
+    display: inline-block;
+    margin-top: 8px;
+    color: #D3C1B4;
+    text-decoration: none;
 }
 
-@media (max-width: 992px) {
-    .books-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .search-row {
-        grid-template-columns: 1fr;
-        justify-items: center;
-    }
-
-    .search-btn {
-        width: 180px;
-    }
-
-    .filter-row {
-        grid-template-columns: repeat(2, 160px);
-        justify-content: center;
-    }
+.view-more:hover {
+    text-decoration: underline;
 }
 
-@media (max-width: 768px) {
-    .books-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
 
-    .filter-row {
-        grid-template-columns: 1fr;
-    }
-
-    .filter-select,
-    .reset-btn,
-    .filter-btn {
-        width: 100%;
-        max-width: 320px;
-        margin: 0 auto;
-    }
-}
-
-@media (max-width: 500px) {
-    .allBooks-page {
-        padding: 24px 16px 30px;
-    }
-
-    .books-container {
-        grid-template-columns: 1fr;
-    }
-
-    .search-input,
-    .search-btn {
-        width: 100%;
-        max-width: 320px;
-        margin: 0 auto;
-    }
-}
+/* ===== Home.php ===== */
 
 /*Home Page*/
 .home-hero {
@@ -801,82 +815,17 @@ input[type="password"]::-ms-clear {
     font-size: 0.9rem;
 }
 
-/*Responsive*/
-@media (max-width: 1100px) {
-    .home-books-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 800px) {
-    .home-books-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .home-reviews-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 500px) {
-    .home-books-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-
+/* ===== MyBooks.php ===== */
 /*My Books Page*/
 .mybooks-page {
     padding: 34px 40px 40px;
     min-height: 100vh;
     background-color: #FFF7EE;
 }
-
-.mybooks-topbar {
-    max-width: 100%;
-    margin: 0 auto 26px auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-}
-
-.mybooks-left-controls {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.mybooks-select {
-    width: 210px;
-    height: 42px;
-    padding: 0 34px 0 14px;
-    border: 2px solid #D3C1B4;
-    border-radius: 22px;
-    background: #FFFDF8;
-    font-size: 14px;
-    color: #483434;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;utf8,<svg fill='%23483434' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px;
-}
-
-.mybooks-small-btn {
-    height: 42px;
-    padding: 0 18px;
-    border-radius: 22px;
-    border: none;
-    background: #D3C1B4;
-    color: #483434;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.mybooks-add-btn {
+.mybooks-fixed-add-btn {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
     width: 150px;
     height: 42px;
     border-radius: 22px;
@@ -887,10 +836,10 @@ input[type="password"]::-ms-clear {
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 9997;
 }
 
-.mybooks-small-btn:hover,
-.mybooks-add-btn:hover {
+.mybooks-fixed-add-btn:hover {
     background: #FFFDF8;
     border: 2px solid #483434;
 }
@@ -952,61 +901,14 @@ input[type="password"]::-ms-clear {
     font-size: 13px;
 }
 
-@media (max-width: 1200px) {
-    .mybooks-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    .mybooks-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .mybooks-topbar {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-@media (max-width: 768px) {
-    .mybooks-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .mybooks-left-controls {
-        justify-content: center;
-    }
-}
-
-@media (max-width: 500px) {
-    .mybooks-page {
-        padding: 24px 16px 30px;
-    }
-
-    .mybooks-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .mybooks-select,
-    .mybooks-small-btn,
-    .mybooks-add-btn {
-        width: 100%;
-        max-width: 320px;
-    }
-
-    .mybooks-left-controls {
-        width: 100%;
-    }
-} 
-
-
 .container{
   width: 85%;
   margin: auto;
   display: block;
   margin-top: 35px;
 }
+
+/* Books & Review Pages --> bookDetails.php / reviewDetails.php / editBook.php / AddBook.php */
 
 /* ===== BACK BUTTON ===== */
 .back-btn{
@@ -1140,6 +1042,7 @@ input[type="password"]::-ms-clear {
     transform: translateY(-20px);
     animation: fadeIn 0.4s forwards, fadeOut 0.4s forwards 3s;
 }
+
 @keyframes fadeIn {
     to {
         opacity: 1;
@@ -1153,6 +1056,7 @@ input[type="password"]::-ms-clear {
         transform: translateY(-20px);
     }
 }
+
 /* ===== COMMENTS ===== */
 .comment-card{
     background:#FFFDF8;
@@ -1430,4 +1334,122 @@ input[type="password"]::-ms-clear {
 .delete-confirm:hover,
 .cancel-btn:hover{
     background:#FFFDF8;
+}
+
+
+/* RESPONSIVE CSS */
+
+@media (max-width: 1200px) {
+
+    /* AllBooks + MyBooks */
+    .books-container,
+    .mybooks-grid,
+    .home-books-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+
+    /* Grids */
+    .books-container,
+    .mybooks-grid,
+    .home-books-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Search row */
+    .search-row {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .search-btn {
+        width: 180px;
+    }
+
+    /* Home reviews */
+    .home-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Layout padding */
+    .allBooks-page,
+    .mybooks-page {
+        padding: 24px 18px 30px;
+    }
+
+    /* Grids */
+    .books-container,
+    .mybooks-grid,
+    .home-books-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Sidebar */
+    .filter-sidebar {
+        width: 85%;
+        right: -90%;
+    }
+
+    .filter-sidebar.active {
+        right: 0;
+    }
+
+    /* MyBooks button */
+    .mybooks-fixed-add-btn {
+        right: 18px;
+        bottom: 18px;
+    }
+}
+
+@media (max-width: 500px) {
+
+    /* Grids */
+    .books-container,
+    .mybooks-grid,
+    .home-books-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Home */
+    .home-reviews-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Images */
+    .book-image-box,
+    .mybooks-image-box {
+        height: 280px;
+    }
+
+    /* Sidebar full screen */
+    .filter-sidebar {
+        width: 100%;
+        right: -100%;
+        border-left: none;
+    }
+
+    /* Sidebar buttons */
+    .sidebar-actions {
+        flex-direction: column;
+    }
+
+    /* Search */
+    .search-input,
+    .search-btn {
+        width: 100%;
+        max-width: 320px;
+        margin: 0 auto;
+    }
+
+    /* Floating button */
+    .mybooks-fixed-add-btn {
+        width: auto;
+        padding: 0 18px;
+        height: 44px;
+    }
 }

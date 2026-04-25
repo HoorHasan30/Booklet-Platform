@@ -109,7 +109,6 @@
                 }
             }
         </script>
-        
     </head>
     
     <body class="authBody">
