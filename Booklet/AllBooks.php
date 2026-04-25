@@ -139,11 +139,12 @@
         <link rel="stylesheet" href="BookletCSS.css">
         
         <script>
+             // Open filter sidebar and show overlay
             function openFilterSidebar() {
                 document.getElementById("filterSidebar").classList.add("active");
                 document.getElementById("filterOverlay").classList.add("active");
             }
-
+   // Close filter sidebar and hide overlay
             function closeFilterSidebar() {
                 document.getElementById("filterSidebar").classList.remove("active");
                 document.getElementById("filterOverlay").classList.remove("active");
@@ -162,6 +163,7 @@
             <form method="GET" action="AllBooks.php" class="allbooks-filter-form">
 
             <div class="search-row">
+        <!-- Search input (keeps old value after submit) -->
 
                 <input 
                     type="text" 
@@ -180,6 +182,7 @@
             </div>
 
             </form>
+            <!-- Overlay background (click to close sidebar) -->
 
             <div id="filterOverlay" class="filter-overlay" onclick="closeFilterSidebar()"></div>
 
@@ -190,11 +193,13 @@
                 <h2 class="filter-title">Filter Books</h2>
 
                 <form method="GET" action="AllBooks.php" class="sidebar-filter-form">
+    <!-- Keep search value when filtering -->
 
                     <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
 
                     <select name="author" class="filter-select">
                         <option value="">Author</option>
+                            <!-- Loop through authors from DB -->
                         <?php while ($authorRow = mysqli_fetch_assoc($authorResult)) { ?>
                             <option value="<?php echo htmlspecialchars($authorRow['author']); ?>"
                                 <?php if ($authorFilter == $authorRow['author']) echo "selected"; ?>>
@@ -205,6 +210,7 @@
 
                     <select name="rating" class="filter-select">
                         <option value="">Rating</option>
+                            <!-- Each option checks if selected -->
                         <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
                         <option value="4" <?php if ($ratingFilter == "4") echo "selected"; ?>>4 Stars</option>
                         <option value="3" <?php if ($ratingFilter == "3") echo "selected"; ?>>3 Stars</option>
@@ -215,6 +221,7 @@
 
                     <select name="genre" class="filter-select">
                         <option value="">Genre</option>
+                            <!-- Loop through genres -->
                         <?php while ($genreRow = mysqli_fetch_assoc($genreResult)) { ?>
                             <option value="<?php echo htmlspecialchars($genreRow['genreName']); ?>"
                                 <?php if ($genreFilter == $genreRow['genreName']) echo "selected"; ?>>
@@ -246,7 +253,9 @@
                     </select>
 
                     <div class="sidebar-actions">
+                            <!-- Reset filters -->
                         <a href="AllBooks.php" class="reset-btn">Reset</a>
+                            <!-- Apply filters -->
                         <button type="submit" class="filter-btn">Apply</button>
                     </div>
 
@@ -254,8 +263,9 @@
             </div>
 
             <div class="books-container">
-
+    <!-- Check if there are books -->
                 <?php if ($result && mysqli_num_rows($result) > 0) { ?>
+        <!-- Loop through books -->
 
                     <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 

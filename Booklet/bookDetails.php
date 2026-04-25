@@ -141,20 +141,21 @@
         <link rel="stylesheet" href="/BookletCSS.css">
 
         <script>
+              // Open the review modal 
             function openReviewModal(rating = 0, text = "", isEdit = false, reviewId = null) {
                 document.getElementById("reviewModal").style.display = "flex";
-
+  // Set rating and review text
                 document.getElementById("ratingValue").value = rating;
                 document.getElementById("reviewText").value = text;
                 document.getElementById("reviewModalError").textContent = "";
-
+// Highlight selected stars
                 let stars = document.querySelectorAll(".star-input span");
                 stars.forEach((s, i) => {
                     s.style.color = i < rating ? "gold" : "lightgray";
                 });
 
                 let form = document.getElementById("reviewForm");
-
+   // Switch between add or update review
                 if (isEdit) {
                     form.action = "action/updateReview.php";
                     document.getElementById("reviewIdInput").value = reviewId;
@@ -163,16 +164,16 @@
                     document.getElementById("reviewIdInput").value = "";
                 }
             }
-
+ // Close the review modal and clear error messages
             function closeReviewModal() {
                 document.getElementById("reviewModal").style.display = "none";
                 document.getElementById("reviewModalError").textContent = "";
             }
-
+// Close the "review already exists" modal
             function closeReviewExists() {
                 document.getElementById("reviewExistsModal").style.display = "none";
             }
-
+ // Set selected rating and update star colors
             function setRating(value) {
                 document.getElementById("ratingValue").value = value;
 
@@ -183,12 +184,13 @@
 
                 document.getElementById("reviewModalError").textContent = "";
             }
-
+ // Validate review form before submission
             function validateReviewForm() {
                 const rating = document.getElementById("ratingValue").value;
                 const reviewText = document.getElementById("reviewText").value.trim();
                 const reviewId = document.getElementById("reviewIdInput").value;
                 const errorBox = document.getElementById("reviewModalError");
+                  // Check if user already reviewed (from PHP)
                 const alreadyReviewed = <?= $alreadyReviewed ? 'true' : 'false' ?>;
 
                 errorBox.textContent = "";
@@ -211,15 +213,15 @@
 
                 return true;
             }
-
+  // Open login modal if user is not logged in
             function openLogin() {
                 document.getElementById("loginModal").style.display = "flex";
             }
-
+// Close login modal
             function closeLogin() {
                 document.getElementById("loginModal").style.display = "none";
             }
-
+  // Close modals when clicking outside them
             window.onclick = function(e) {
                 let m1 = document.getElementById("reviewModal");
                 let m2 = document.getElementById("reviewExistsModal");
@@ -232,7 +234,7 @@
         </script>
     </head>
     <body>
-
+  <!-- Login modal content -->
         <div id="loginModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeLogin()">✖</span>
@@ -246,21 +248,23 @@
         </div>
 
         <?php loadNavBar(); ?>
-
+<!-- Success message container -->
         <?php if (isset($_SESSION['success'])) { ?>
             <div id="success-msg" class="success-msg">
                 <?= $_SESSION['success'] ?>
             </div>
         <?php unset($_SESSION['success']); } ?>
 
+<!-- Main page container -->
         <div class="container">
 
             <a href="AllBooks.php" class="back-btn">←</a>
-
+  <!-- Top section (title + actions) -->
             <div class="top">
                 <h2 class="title-row"><?= htmlspecialchars($book['title']) ?></h2>
                 <p class="views"><span>👁 </span> <?= htmlspecialchars($book['viewCount'] ?? 0) ?></p>
 
+                <!-- Buttons container -->
                 <div class="top-actions">
                     <?php 
                     if (
@@ -292,9 +296,10 @@
                 </div>
             </div>
 
+  <!-- Book details container -->
             <div class="book-box">
                 <img src="<?= $coverPath ?>" class="book-img" alt="Book Cover">
-
+ <!-- Book information section -->
                 <div class="book-info">
                     <p><span class="label">Author:</span> <?= htmlspecialchars($book['author']) ?></p>
                     <p><span class="label">Genre:</span> <?= htmlspecialchars($book['genreName']) ?></p>
@@ -312,7 +317,7 @@
             </div>
 
             <h2 class="space">(<?= htmlspecialchars($countRow['total'] ?? 0) ?>) Reviews</h2>
-
+  <!-- Reviews list container -->
             <div class="reviews-list">
                 <?php if (mysqli_num_rows($reviews) == 0) { ?>
                     <p class="no-reviews">There are no reviews for this book.</p>
@@ -332,8 +337,9 @@
             </div>
 
         </div>
-
+  <!-- Review modal container -->
         <div id="reviewModal" class="modal">
+              <!-- Review modal content -->
             <div class="modal-content">
                 <span class="close" onclick="closeReviewModal()">✖</span>
 
@@ -341,7 +347,7 @@
                     <input type="hidden" name="reviewId" id="reviewIdInput">
                     <input type="hidden" name="bookId" value="<?= $bookId ?>">
                     <input type="hidden" name="rating" id="ratingValue" value="0">
-
+ <!-- Star rating input -->
                     <div class="star-input">
                         <span onclick="setRating(1)">★</span>
                         <span onclick="setRating(2)">★</span>
@@ -358,8 +364,9 @@
                 </form>
             </div>
         </div>
-
+  <!-- Review exists modal container -->
         <div id="reviewExistsModal" class="modal">
+             <!-- Review exists modal content -->
             <div class="modal-content" onclick="event.stopPropagation()">
                 <span class="close" onclick="closeReviewExists()">✖</span>
                 <h3>You already reviewed this book</h3>

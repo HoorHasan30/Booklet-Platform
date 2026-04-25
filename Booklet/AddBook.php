@@ -4,6 +4,7 @@
     include("DBConnection.php");
 
     $dbc = getConnection();
+    // Fetch all genres from database to display in dropdown
 
     $genres = mysqli_fetch_all(
         mysqli_query($dbc, "SELECT genreId, genreName FROM dbProj_Genres ORDER BY genreName"),
@@ -26,6 +27,8 @@
         <link rel="stylesheet" href="BookletCSS.css">
 
         <script>
+                // Function to validate form before submitting
+
             function validateForm() {
                 let title = document.getElementById("title").value.trim();
                 let author = document.getElementById("author").value.trim();
@@ -90,6 +93,7 @@
                     document.getElementById("bookCoverError").textContent = "";
 
                     if (!file) return;
+            // Validate file type (must be image)
 
                     if (!file.type.startsWith("image/")) {
                         document.getElementById("bookCoverError").textContent = "Please select a valid image file.";
@@ -115,15 +119,16 @@
     <body>
 
         <?php include("CreatorNavBar.php"); ?>
-
+ <!-- Main container for Add book page -->
         <div class="edit-container">
             <a href="MyBooks.php" class="back-btn">←</a>
-
+              <!-- Form for adding a new book (enctype for file upload) -->
             <form method="POST" action="action/addBook.php" enctype="multipart/form-data" onsubmit="return validateForm()">
 
                 <div class="edit-layout">
-
+ <!-- Left side: image preview and upload -->
                     <div class="left-side">
+                        <!-- Image preview box -->
                         <div class="upload-box">
                             <img id="previewImage" src="images/noCoverYet.png" alt="Book Cover Preview" value="0">
                         </div>
@@ -135,10 +140,12 @@
                         <p class="error" id="bookCoverError"><?= htmlspecialchars($errors['cover'] ?? '') ?></p>
                     </div>
 
+  <!-- Right side: form fields -->
                     <div class="form-side">
 
                         <div class="form-row">
                             <label>Book Name:</label>
+                               <!-- Input container -->
                             <div>
                                 <input type="text" placeholder="Enter Book Name" id="title" name="title" value="<?= htmlspecialchars($old['title'] ?? '') ?>">
                                 <p class="error" id="titleError"><?= htmlspecialchars($errors['title'] ?? '') ?></p>
@@ -147,6 +154,7 @@
 
                         <div class="form-row">
                             <label>Author:</label>
+                               <!-- Input container -->
                             <div>
                                 <input type="text" placeholder="Enter Book Author" id="author" name="author" value="<?= htmlspecialchars($old['author'] ?? '') ?>">
                                 <p class="error" id="authorError"><?= htmlspecialchars($errors['author'] ?? '') ?></p>
@@ -155,6 +163,7 @@
 
                         <div class="form-row">
                             <label>Genre:</label>
+                            <!-- Select container -->
                             <div>
                                 <select name="genreId" id="genreId">
                                     <option value="0">Choose Genre</option>
@@ -170,6 +179,7 @@
 
                         <div class="form-row">
                             <label>No. Pages:</label>
+                             <!-- Input container -->
                             <div>
                                 <input type="number" placeholder="Enter Number of Pages" id="noPages" name="noPages" value="<?= htmlspecialchars($old['noPages'] ?? '') ?>">
                                 <p class="error" id="pagesError"><?= htmlspecialchars($errors['pages'] ?? '') ?></p>
@@ -178,12 +188,13 @@
 
                         <div class="form-row">
                             <label>Description:</label>
+                            <!-- Textarea container -->
                             <div>
                                 <textarea name="description" placeholder="Enter Book Description" id="description"><?= htmlspecialchars($old['description'] ?? '') ?></textarea>
                                 <p class="error" id="descriptionError"><?= htmlspecialchars($errors['description'] ?? '') ?></p>
                             </div>
                         </div>
-
+  <!-- Form action buttons -->
                         <div class="form-actions">
                             <button type="button" class="btn" onclick="location.href='MyBooks.php'">Cancel</button>
                             <button type="submit" class="btn">Add</button>

@@ -4,7 +4,7 @@
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-
+    // Protect page: only logged-in creators can access
     if (!isset($_SESSION["userId"]) || !isset($_SESSION["role"]) || $_SESSION["role"] != "Creator") {
         header("Location: Login.php");
         exit();
@@ -16,7 +16,7 @@
 
     $dbc = getConnection();
     $userId = (int)$_SESSION["userId"];
-
+    // Read filters safely from URL
     $search       = isset($_GET["search"]) ? trim($_GET["search"]) : "";
     $genreFilter  = isset($_GET["genre"]) ? trim($_GET["genre"]) : "";
     $ratingFilter = isset($_GET["rating"]) ? trim($_GET["rating"]) : "";
@@ -131,9 +131,10 @@
 
             <a href="AddBook.php" class="mybooks-fixed-add-btn">+ Add Book</a>
 
+                    <!-- Search form container -->
             <form method="GET" action="MyBooks.php" class="allbooks-filter-form">
-
                 <div class="search-row">
+        <!-- Search input (keeps value after refresh) -->
 
                     <input 
                         type="text" 
@@ -152,19 +153,19 @@
                 </div>
 
             </form>
-
+ <!-- Overlay background for sidebar -->
             <div id="filterOverlay" class="filter-overlay" onclick="closeFilterSidebar()"></div>
-
+        <!-- Filter sidebar container -->
             <div id="filterSidebar" class="filter-sidebar">
 
                 <button type="button" class="close-filter" onclick="closeFilterSidebar()">×</button>
-
+<!-- Sidebar title -->
                 <h2 class="filter-title">Filter Books</h2>
-
+<!-- Sidebar filter form -->
                 <form method="GET" action="MyBooks.php" class="sidebar-filter-form">
 
                     <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
-
+ <!-- Rating filter -->
                     <select name="rating" class="filter-select">
                         <option value="">Rating</option>
                         <option value="5" <?php if ($ratingFilter == "5") echo "selected"; ?>>5 Stars</option>
@@ -174,7 +175,7 @@
                         <option value="1" <?php if ($ratingFilter == "1") echo "selected"; ?>>1 Star</option>
                         <option value="0" <?php if ($ratingFilter == "0") echo "selected"; ?>>0 Star</option>
                     </select>
-
+ <!-- Genre filter -->
                     <select name="genre" class="filter-select">
                         <option value="">Genre</option>
                         <?php while ($genreRow = mysqli_fetch_assoc($genreResult)) { ?>
@@ -184,7 +185,7 @@
                             </option>
                         <?php } ?>
                     </select>
-
+  <!-- Date filters container -->
                     <div class="sidebar-date">
                         <span>From</span>
                         <input type="date" name="dateFrom" class="filter-select"
@@ -196,7 +197,7 @@
                         <input type="date" name="dateTo" class="filter-select"
                                value="<?php echo htmlspecialchars($dateTo); ?>">
                     </div>
-
+   <!-- Sorting options -->
                     <select name="date" class="filter-select">
                         <option value="">Sort By</option>
                         <option value="newest" <?php if ($sortDate == "newest") echo "selected"; ?>>
@@ -206,7 +207,7 @@
                             Oldest
                         </option>
                     </select>
-
+  <!-- Filter actions (reset + apply) -->
                     <div class="sidebar-actions">
                         <a href="MyBooks.php" class="reset-btn">Reset</a>
                         <button type="submit" class="filter-btn">Apply</button>

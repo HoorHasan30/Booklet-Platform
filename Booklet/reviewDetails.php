@@ -34,25 +34,27 @@
         <link rel="stylesheet" href="BookletCSS.css">
         
         <script>
+             // Open comment modal to allow user to add a comment
             function openComment(){
                 document.getElementById("commentModal").style.display = "flex";
             }
             function closeComment(){
                 document.getElementById("commentModal").style.display = "none";
             }
+             // Open login modal (for users not logged in)
             function openLogin(){
                 document.getElementById("loginModal").style.display = "flex";
             }
             function closeLogin(){
                 document.getElementById("loginModal").style.display = "none";
             }
-
+ // Open delete modal and decide whether deleting a review or a comment
             function openDelete(id, type){
                 document.getElementById("deleteModal").style.display = "flex";
                 document.getElementById("deleteId").value = id;
 
                 let form = document.getElementById("deleteForm");
-
+    // Choose correct delete action based on type
                 if(type === 'review'){
                     form.action = "action/deleteReview.php";
                 } else {
