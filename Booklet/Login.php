@@ -60,12 +60,12 @@
                 }
                 //worng password 
                 else {
-                  $message = "Incorrect Password";  
+                  $message = "Incorrect Email or Password";  
                 } 
             }
             //user not found
             else{
-                $message = "Email not found";
+                $message = "Incorrect Email or Password";
             }    
         }
         else {
