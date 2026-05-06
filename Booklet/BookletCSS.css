@@ -546,6 +546,18 @@ input[type="password"]::-ms-clear {
     margin-bottom: 40px;
 }
 
+#emailTo {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    text-decoration: none;
+}
+
+#emailTo:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .contactInfo {
     display: flex;
     flex-direction: column;

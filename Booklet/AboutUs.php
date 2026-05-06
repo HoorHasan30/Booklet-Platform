@@ -45,7 +45,9 @@
                     
                     <div class="contact-Item">
                         <img class="contactImg" src="images/mailIcon.png">
-                        <p>Booklet@gmail.com</p>
+                        <p>
+                            <a href="mailto:Booklet8415@gmail.com" id="emailTo">Booklet8415@gmail.com</a>
+                        </p>
                     </div>
                     
                     <div class="contact-Item">
