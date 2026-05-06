@@ -1098,7 +1098,6 @@ input[type="password"]::-ms-clear {
 }
 
 /* ===== BUTTONS ===== */
-.save-btn,
 .review-btn,
 .edit-btn,
 .comment-btn,
@@ -1125,27 +1124,53 @@ input[type="password"]::-ms-clear {
 }
 
 .delete-btn{
-    background:#D3C1B4;
+    background-color: #ff8080;
+    color: #FFF7EE;
     border:none;
     padding:8px 18px;
     border-radius:20px;
     cursor:pointer;
     bottom: 15px; 
     margin-left: auto;
-     display: block; 
+    display: block; 
 }
 
-.save-btn:hover,
+.save-btn{
+    background: #00cc00;
+    color: #FFF7EE;
+    border:none;
+    padding:10px 22px;
+    border-radius:20px;        
+    float:right;
+    margin-top: 15px;  
+    margin-bottom: 10px;
+}
+
+
 .review-btn:hover,
 .edit-btn:hover,
 .comment-btn:hover,
-.delete-btn:hover,
 .upload-btn:hover,
 .ok-btn:hover,
 .btn:hover{
     background:#FFFDF8;
     border:2px solid #483434;
 }
+
+.save-btn:hover
+{
+    background:#FFFDF8;
+    color:#00cc00;
+    border:2px solid #483434;
+}
+
+.delete-btn:hover
+{
+    background:#FFFDF8;
+    color:#ff8080;
+    border:2px solid #483434;
+}
+
 
 /* ===== CLOSE  ===== */
 .close {

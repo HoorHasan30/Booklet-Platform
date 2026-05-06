@@ -219,14 +219,14 @@
                         <div class="form-actions">
 
                             <?php if($role == 'Admin'){ ?>
-                                <button type="button" class="btn"
+                                <button type="button" class="btn delete-btn"
                                 onclick="openDelete(<?= $bookId ?>)">Delete</button>
                             <?php } else { ?>
                                 <button type="button" class="btn"
                                 onclick="location.href='bookDetails.php?id=<?= $bookId ?>'">Cancel</button>
                             <?php } ?>
 
-                            <button class="btn">Save</button>
+                            <button class="btn save-btn">Save</button>
                         </div>
                     </div>
                 </div>
