@@ -176,7 +176,16 @@
         <?php loadNavBar(); ?>
 
         <div class="allBooks-page">
+<?php if(isset($_SESSION['success'])) { ?>
 
+    <p class="success-msg">
+        <?php
+            echo $_SESSION['success'];
+            unset($_SESSION['success']);
+        ?>
+    </p>
+
+<?php } ?>
             <h1 class="page-title">All Books</h1>
 
             <form method="GET" action="AllBooks.php" class="allbooks-filter-form">

@@ -55,10 +55,12 @@
                 let title = document.getElementById("title").value.trim();
                 let author = document.getElementById("author").value.trim();
                 let pages = document.getElementById("pages").value.trim();
+                let description = document.getElementById("description").value.trim();
 
                 document.getElementById("titleError").textContent = "";
                 document.getElementById("authorError").textContent = "";
                 document.getElementById("pagesError").textContent = "";
+                document.getElementById("descriptionError").textContent = "";
                 document.getElementById("bookCoverError").textContent = "";
 
                 let isValid = true;
@@ -72,15 +74,21 @@
                     document.getElementById("authorError").textContent = "Please enter the author name.";
                     isValid = false;
                 }
+                 if(description === ""){
+                document.getElementById("descriptionError").textContent = "Please enter the description.";
+                isValid = false;
 
                 if(pages === ""){
                     document.getElementById("pagesError").textContent = "Please enter number of pages.";
                     isValid = false;
                 }
+                
                 else if(parseInt(pages) <= 0){
                     document.getElementById("pagesError").textContent = "Pages must be greater than 0.";
                     isValid = false;
                 }
+               
+}
 
                 return isValid;
             }
@@ -212,7 +220,9 @@
                             <label>Description:</label>
                                <!-- Textarea container -->
                             <div>
-                                <textarea name="description"><?= htmlspecialchars($book['description']) ?></textarea>
+                                <textarea name="description" id="description"><?= htmlspecialchars($book['description']) ?></textarea>
+
+                                    <p class="error" id="descriptionError"></p>
                             </div>
                         </div>
  <!-- Form action buttons -->
