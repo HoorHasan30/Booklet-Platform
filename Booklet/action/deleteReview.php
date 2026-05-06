@@ -1,27 +1,68 @@
 <?php
-session_start();
-include("../DBConnection.php");
-$dbc = getConnection();
+    session_start();
 
-$reviewId = $_POST['id'];
+    include("../DBConnection.php");
 
-/* GET bookId BEFORE DELETE */
-$result = mysqli_query($dbc, "
-SELECT bookId FROM dbProj_reviews WHERE reviewId = $reviewId
-");
+    $dbc = getConnection();
 
-$row = mysqli_fetch_assoc($result);
-$bookId = $row['bookId'];
+    $reviewId = $_POST['id'];
 
-/* DELETE REVIEW */
-mysqli_query($dbc, "
-DELETE FROM dbProj_reviews WHERE reviewId = $reviewId
-");
+    /* GET bookId BEFORE DELETE */
 
-/* SUCCESS MESSAGE */
-$_SESSION['success'] = "Review Deleted Successfully.";
+    // PREPARE QUERY
+    $selectQuery = "SELECT bookId 
+                    FROM dbProj_reviews 
+                    WHERE reviewId = ?";
 
-/* REDIRECT */
-header("Location: ../bookDetails.php?id=$bookId");
-exit;
+    $selectStmt = mysqli_prepare($dbc, $selectQuery);
+
+    // BIND PARAMETER
+    mysqli_stmt_bind_param(
+        $selectStmt,
+        "i",
+        $reviewId
+    );
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($selectStmt);
+
+    // GET RESULT
+    $result = mysqli_stmt_get_result($selectStmt);
+
+    $row = mysqli_fetch_assoc($result);
+
+    $bookId = $row['bookId'];
+
+    /* DELETE REVIEW */
+
+    // PREPARE QUERY
+    $deleteQuery = "DELETE FROM dbProj_reviews 
+                    WHERE reviewId = ?";
+
+    $deleteStmt = mysqli_prepare($dbc, $deleteQuery);
+
+    // BIND PARAMETER
+    mysqli_stmt_bind_param(
+        $deleteStmt,
+        "i",
+        $reviewId
+    );
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($deleteStmt);
+
+    /* SUCCESS MESSAGE */
+    $_SESSION['success'] = "Review Deleted Successfully.";
+
+    // CLOSE STATEMENTS
+    mysqli_stmt_close($selectStmt);
+    mysqli_stmt_close($deleteStmt);
+
+    // CLOSE CONNECTION
+    mysqli_close($dbc);
+
+    /* REDIRECT */
+    header("Location: ../bookDetails.php?id=$bookId");
+
+    exit;
 ?>

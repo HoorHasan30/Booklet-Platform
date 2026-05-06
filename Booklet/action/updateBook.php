@@ -1,90 +1,187 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
 
-session_start();
-include("../DBConnection.php");
-$dbc = getConnection();
+    session_start();
 
-/* GET DATA */
-$bookId = $_POST['bookId'] ?? null;
-$title = trim($_POST['title'] ?? '');
-$author = trim($_POST['author'] ?? '');
-$genreId = $_POST['genreId'] ?? null;
-$pages = $_POST['noPages'] ?? null;
-$description = trim($_POST['description'] ?? '');
+    include("../DBConnection.php");
 
-/* VALIDATION */
-if (!$bookId) {
-    die("Book ID missing.");
-}
+    $dbc = getConnection();
 
-if ($title === "" || $author === "" || $pages === "" || !is_numeric($pages) || $pages <= 0) {
-    die("Invalid input.");
-}
+    /* GET DATA */
+    $bookId = $_POST['bookId'] ?? null;
+    $title = trim($_POST['title'] ?? '');
+    $author = trim($_POST['author'] ?? '');
+    $genreId = $_POST['genreId'] ?? null;
+    $pages = $_POST['noPages'] ?? null;
+    $description = trim($_POST['description'] ?? '');
 
-$bookId = (int)$bookId;
-$genreId = (int)$genreId;
-$pages = (int)$pages;
-
-$title = mysqli_real_escape_string($dbc, $title);
-$author = mysqli_real_escape_string($dbc, $author);
-$description = mysqli_real_escape_string($dbc, $description);
-
-$coverSql = "";
-
-/* HANDLE BOOK COVER UPLOAD */
-if (isset($_FILES['bookCover']) && $_FILES['bookCover']['error'] === 0) {
-
-    $allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
-    $fileType = $_FILES['bookCover']['type'];
-
-    if (!in_array($fileType, $allowedTypes)) {
-        die("Invalid image type. Only JPG, JPEG, PNG, and WEBP are allowed.");
+    /* VALIDATION */
+    if (!$bookId) {
+        die("Book ID missing.");
     }
 
-    $uploadDir = "../BookCovers/";
-
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    if (
+        $title === "" ||
+        $author === "" ||
+        $pages === "" ||
+        !is_numeric($pages) ||
+        $pages <= 0
+    ) {
+        die("Invalid input.");
     }
 
-    $ext = strtolower(pathinfo($_FILES['bookCover']['name'], PATHINFO_EXTENSION));
-    $newFileName = "book_" . $bookId . "_" . time() . "." . $ext;
-    $targetPath = $uploadDir . $newFileName;
+    $bookId = (int)$bookId;
+    $genreId = (int)$genreId;
+    $pages = (int)$pages;
 
-    if (move_uploaded_file($_FILES['bookCover']['tmp_name'], $targetPath)) {
+    /* GET OLD COVER */
 
-        $dbPath = "BookCovers/" . $newFileName;
-        $coverSql = ", bookCover = '" . mysqli_real_escape_string($dbc, $dbPath) . "'";
+    // PREPARE QUERY
+    $coverQuery = "SELECT bookCover
+                   FROM dbProj_books
+                   WHERE bookId = ?";
 
-        /* DELETE OLD COVER IF EXISTS */
-        if (!empty($oldCover) && file_exists("../" . $oldCover)) {
-            unlink("../" . $oldCover);
+    $coverStmt = mysqli_prepare($dbc, $coverQuery);
+
+    // BIND PARAMETER
+    mysqli_stmt_bind_param(
+        $coverStmt,
+        "i",
+        $bookId
+    );
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($coverStmt);
+
+    // GET RESULT
+    $coverResult = mysqli_stmt_get_result($coverStmt);
+
+    $coverRow = mysqli_fetch_assoc($coverResult);
+
+    $oldCover = $coverRow['bookCover'] ?? '';
+
+    /* HANDLE BOOK COVER UPLOAD */
+
+    $dbPath = null;
+
+    if (isset($_FILES['bookCover']) && $_FILES['bookCover']['error'] === 0) {
+
+        $allowedTypes = [
+            'image/jpeg',
+            'image/png',
+            'image/jpg',
+            'image/webp'
+        ];
+
+        $fileType = $_FILES['bookCover']['type'];
+
+        if (!in_array($fileType, $allowedTypes)) {
+            die("Invalid image type. Only JPG, JPEG, PNG, and WEBP are allowed.");
         }
 
-    } else {
-        die("Failed to upload book cover.");
+       $uploadDir = __DIR__ . '/../BookCovers/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $ext = strtolower(
+            pathinfo(
+                $_FILES['bookCover']['name'],
+                PATHINFO_EXTENSION
+            )
+        );
+
+        $newFileName = "book_" . $bookId . "_" . time() . "." . $ext;
+
+        $targetPath = $uploadDir . $newFileName;
+
+        if (move_uploaded_file($_FILES['bookCover']['tmp_name'], $targetPath)) {
+
+            $dbPath = "BookCovers/" . $newFileName;
+
+            /* DELETE OLD COVER */
+            if (!empty($oldCover) && file_exists(__DIR__ . '/../' . $oldCover)) {
+    unlink(__DIR__ . '/../' . $oldCover);
+
+            }
+
+        } 
+        else {
+            die("Failed to upload book cover.");
+        }
     }
-}
 
-/* UPDATE BOOK */
-$sql = "
-    UPDATE dbProj_books 
-    SET title = '$title',
-        author = '$author',
-        genreId = $genreId,
-        noPages = $pages,
-        description = '$description'
-        $coverSql
-    WHERE bookId = $bookId
-";
+    /* UPDATE BOOK */
 
-mysqli_query($dbc, $sql) or die("SQL ERROR: " . mysqli_error($dbc));
+    if ($dbPath) {
 
-header("Location: ../bookDetails.php?id=" . $bookId);
+        // PREPARE QUERY
+        $updateQuery = "UPDATE dbProj_books
+                        SET title = ?,
+                            author = ?,
+                            genreId = ?,
+                            noPages = ?,
+                            description = ?,
+                            bookCover = ?
+                        WHERE bookId = ?";
 
-$_SESSION['success'] = "Book Updated Successfully.";
+        $updateStmt = mysqli_prepare($dbc, $updateQuery);
 
-exit;
+        // BIND PARAMETERS
+        mysqli_stmt_bind_param(
+            $updateStmt,
+            "ssiissi",
+            $title,
+            $author,
+            $genreId,
+            $pages,
+            $description,
+            $dbPath,
+            $bookId
+        );
+
+    } 
+    else {
+
+        // PREPARE QUERY
+        $updateQuery = "UPDATE dbProj_books
+                        SET title = ?,
+                            author = ?,
+                            genreId = ?,
+                            noPages = ?,
+                            description = ?
+                        WHERE bookId = ?";
+
+        $updateStmt = mysqli_prepare($dbc, $updateQuery);
+
+        // BIND PARAMETERS
+        mysqli_stmt_bind_param(
+            $updateStmt,
+            "ssiisi",
+            $title,
+            $author,
+            $genreId,
+            $pages,
+            $description,
+            $bookId
+        );
+    }
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($updateStmt);
+
+    $_SESSION['success'] = "Book Updated Successfully.";
+
+    // CLOSE STATEMENTS
+    mysqli_stmt_close($coverStmt);
+    mysqli_stmt_close($updateStmt);
+
+    // CLOSE CONNECTION
+    mysqli_close($dbc);
+
+    header("Location: ../bookDetails.php?id=" . $bookId);
+
+    exit;
 ?>

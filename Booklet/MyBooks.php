@@ -85,22 +85,30 @@
         $sql .= " ORDER BY b.createdAt DESC";
     }
 
-    $stmt = mysqli_prepare($dbc, $sql);
+   // PREPARE QUERY
+        $stmt = mysqli_prepare($dbc, $sql);
 
-    if (!$stmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        // BIND PARAMETERS
+        mysqli_stmt_bind_param($stmt, $types, ...$params);
 
-    mysqli_stmt_bind_param($stmt, $types, ...$params);
+        // EXECUTE QUERY
+        mysqli_stmt_execute($stmt);
 
-    if (!mysqli_stmt_execute($stmt)) {
-        die("Execute Error: " . mysqli_stmt_error($stmt));
-    }
+        // GET RESULT
+        $result = mysqli_stmt_get_result($stmt);
 
-    $result = mysqli_stmt_get_result($stmt);
+        // PREPARE QUERY
+     $genreQuery = "SELECT genreName 
+                    FROM dbProj_Genres 
+                    ORDER BY genreName ASC";
 
-    $genreQuery = "SELECT genreName FROM dbProj_Genres ORDER BY genreName ASC";
-    $genreResult = mysqli_query($dbc, $genreQuery);
+     $genreStmt = mysqli_prepare($dbc, $genreQuery);
+
+     // EXECUTE QUERY
+     mysqli_stmt_execute($genreStmt);
+
+     // GET RESULT
+     $genreResult = mysqli_stmt_get_result($genreStmt);
 ?>
 
 <!DOCTYPE html>
@@ -257,5 +265,11 @@
         </div>
 
         <?php include("Footer.php"); ?>
+        <?php
+    mysqli_stmt_close($stmt);
+    mysqli_stmt_close($genreStmt);
+
+    mysqli_close($dbc);
+?>
     </body>
 </html>

@@ -44,17 +44,21 @@
         if(empty($errors)){
             
             // Check if email already exists
-            $sql = "SELECT * FROM dbProj_users WHERE email = ?";
-            $stmt = mysqli_prepare($dbc, $sql);
+          // PREPARE QUERY
+            $query = "SELECT * 
+                      FROM dbProj_users 
+                      WHERE email = ?";
 
-            if (!$stmt) {
-                die("SQL Error: " . mysqli_error($dbc));
-            }
+            $stmt = mysqli_prepare($dbc, $query);
 
+            // BIND PARAMETER
             mysqli_stmt_bind_param($stmt, "s", $email);
+
+            // EXECUTE QUERY
             mysqli_stmt_execute($stmt);
+
+            // GET RESULT
             $result = mysqli_stmt_get_result($stmt);
-            
             //if existed
             if (mysqli_fetch_assoc($result)) {
                 $message = "Email already exists";
@@ -68,16 +72,26 @@
                 $role = "Creator";
                 
                 //Insert new user
-                $insertSql = "INSERT INTO dbProj_users (firstName, lastName, email, password, role) VALUES (?, ?, ?, ?, ?)";
-                $insertStmt = mysqli_prepare($dbc, $insertSql);
-                
-                if (!$insertStmt) {
-                    die("SQL Error: " . mysqli_error($dbc));
-                }
-                
-                mysqli_stmt_bind_param($insertStmt, "sssss", $firstName, $lastName, $email, $hashedPassword, $role);
-                
-                if (mysqli_stmt_execute($insertStmt)) {
+               // PREPARE QUERY
+                $insertQuery = "INSERT INTO dbProj_users
+                                (firstName, lastName, email, password, role)
+                                VALUES (?, ?, ?, ?, ?)";
+
+                $insertStmt = mysqli_prepare($dbc, $insertQuery);
+
+                // BIND PARAMETERS
+                mysqli_stmt_bind_param(
+                    $insertStmt,
+                    "sssss",
+                    $firstName,
+                    $lastName,
+                    $email,
+                    $hashedPassword,
+                    $role
+                );
+
+                // EXECUTE QUERY
+                if (mysqli_stmt_execute($insertStmt))  {
                     
                     // Get inserted user ID
                     $userId = mysqli_insert_id($dbc);
@@ -204,6 +218,19 @@
         </div>
         
         <?php include("Footer.php");?>
+        <?php
+    if (isset($stmt)) {
+        mysqli_stmt_close($stmt);
+    }
+
+    if (isset($insertStmt)) {
+        mysqli_stmt_close($insertStmt);
+    }
+
+    if (isset($dbc)) {
+        mysqli_close($dbc);
+    }
+?>
     </body>
 </html>
 

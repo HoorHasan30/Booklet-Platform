@@ -31,17 +31,18 @@
     unset($_SESSION['reviewError'], $_SESSION['reviewOld']);
 
     /* UPDATE VIEW COUNT */
-    $updateSql = "UPDATE dbProj_books 
-                  SET viewCount = IFNULL(viewCount, 0) + 1
-                  WHERE bookId = ?";
-    $updateStmt = mysqli_prepare($dbc, $updateSql);
+    // PREPARE QUERY
+        $updateQuery = "UPDATE dbProj_books 
+                        SET viewCount = IFNULL(viewCount, 0) + 1
+                        WHERE bookId = ?";
 
-    if (!$updateStmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        $updateStmt = mysqli_prepare($dbc, $updateQuery);
 
-    mysqli_stmt_bind_param($updateStmt, "i", $bookId);
-    mysqli_stmt_execute($updateStmt);
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($updateStmt, "i", $bookId);
+
+        // EXECUTE QUERY
+        mysqli_stmt_execute($updateStmt);
 
     /* GET BOOK + GENRE + CREATOR */
     $bookSql = "SELECT b.*, g.genreName, u.firstName, u.lastName
@@ -50,31 +51,37 @@
                 LEFT JOIN dbProj_users u ON b.userId = u.userId
                 WHERE b.bookId = ?";
 
-    $bookStmt = mysqli_prepare($dbc, $bookSql);
+  // PREPARE QUERY
+        $bookStmt = mysqli_prepare($dbc, $bookSql);
 
-    if (!$bookStmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($bookStmt, "i", $bookId);
 
-    mysqli_stmt_bind_param($bookStmt, "i", $bookId);
-    mysqli_stmt_execute($bookStmt);
-    $bookResult = mysqli_stmt_get_result($bookStmt);
+        // EXECUTE QUERY
+        mysqli_stmt_execute($bookStmt);
+
+        // GET RESULT
+        $bookResult = mysqli_stmt_get_result($bookStmt);
     $book = mysqli_fetch_assoc($bookResult);
 
     if (!$book) {
         die("Book not found.");
     }
 
-    /* GET AVG RATING (PROCEDURE) */
-    $avgStmt = mysqli_prepare($dbc, "CALL GetAverageRating(?)");
+    //GET AVG RATING 
+    // PREPARE QUERY
+        $avgQuery = "CALL GetAverageRating(?)";
 
-    if (!$avgStmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        $avgStmt = mysqli_prepare($dbc, $avgQuery);
 
-    mysqli_stmt_bind_param($avgStmt, "i", $bookId);
-    mysqli_stmt_execute($avgStmt);
-    $avgResult = mysqli_stmt_get_result($avgStmt);
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($avgStmt, "i", $bookId);
+
+        // EXECUTE QUERY
+        mysqli_stmt_execute($avgStmt);
+
+// GET RESULT
+$avgResult = mysqli_stmt_get_result($avgStmt);
     $avg = mysqli_fetch_assoc($avgResult);
     $avgRating = ($avg && isset($avg['AverageRating'])) ? round($avg['AverageRating'], 1) : 0.0;
     mysqli_next_result($dbc);
@@ -83,14 +90,16 @@
     $countSql = "SELECT COUNT(*) as total 
                  FROM dbProj_reviews 
                  WHERE bookId = ?";
+   // PREPARE QUERY
     $countStmt = mysqli_prepare($dbc, $countSql);
 
-    if (!$countStmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
-
+    // BIND PARAMETER
     mysqli_stmt_bind_param($countStmt, "i", $bookId);
+
+    // EXECUTE QUERY
     mysqli_stmt_execute($countStmt);
+
+    // GET RESULT
     $countResult = mysqli_stmt_get_result($countStmt);
     $countRow = mysqli_fetch_assoc($countResult);
 
@@ -101,15 +110,17 @@
                    WHERE r.bookId = ?
                    ORDER BY r.createdAt DESC";
 
-    $reviewsStmt = mysqli_prepare($dbc, $reviewsSql);
+   // PREPARE QUERY
+        $reviewsStmt = mysqli_prepare($dbc, $reviewsSql);
 
-    if (!$reviewsStmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($reviewsStmt, "i", $bookId);
 
-    mysqli_stmt_bind_param($reviewsStmt, "i", $bookId);
-    mysqli_stmt_execute($reviewsStmt);
-    $reviews = mysqli_stmt_get_result($reviewsStmt);
+        // EXECUTE QUERY
+        mysqli_stmt_execute($reviewsStmt);
+
+        // GET RESULT
+        $reviews = mysqli_stmt_get_result($reviewsStmt);
 
     /* CHECK IF CURRENT USER ALREADY REVIEWED */
     $alreadyReviewed = false;
@@ -118,10 +129,21 @@
     if (isset($_SESSION['userId'])) {
         $uid = (int)$_SESSION['userId'];
 
-        $check = mysqli_query($dbc, "
-            SELECT * FROM dbProj_reviews 
-            WHERE userId = $uid AND bookId = $bookId
-        ");
+      // PREPARE QUERY
+        $checkQuery = "SELECT * 
+                       FROM dbProj_reviews
+                       WHERE userId = ? AND bookId = ?";
+
+        $checkStmt = mysqli_prepare($dbc, $checkQuery);
+
+        // BIND PARAMETERS
+        mysqli_stmt_bind_param($checkStmt, "ii", $uid, $bookId);
+
+        // EXECUTE QUERY
+        mysqli_stmt_execute($checkStmt);
+
+        // GET RESULT
+        $check = mysqli_stmt_get_result($checkStmt);
 
         if ($row = mysqli_fetch_assoc($check)) {
             $alreadyReviewed = true;
@@ -375,5 +397,18 @@
         </div>
 
         <?php include("Footer.php"); ?>
+  <?php
+    mysqli_stmt_close($updateStmt);
+    mysqli_stmt_close($bookStmt);
+    mysqli_stmt_close($avgStmt);
+    mysqli_stmt_close($countStmt);
+    mysqli_stmt_close($reviewsStmt);
+
+    if (isset($checkStmt)) {
+        mysqli_stmt_close($checkStmt);
+    }
+
+    mysqli_close($dbc);
+?>
     </body>
 </html>

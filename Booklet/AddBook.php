@@ -124,7 +124,7 @@
             <a href="MyBooks.php" class="back-btn">←</a>
               <!-- Form for adding a new book (enctype for file upload) -->
             <form method="POST" action="action/addBook.php" enctype="multipart/form-data" onsubmit="return validateForm()">
-
+ <input type="hidden" id="hasRealImage" value="0">
                 <div class="edit-layout">
  <!-- Left side: image preview and upload -->
                     <div class="left-side">

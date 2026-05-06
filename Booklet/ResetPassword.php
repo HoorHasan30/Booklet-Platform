@@ -36,17 +36,23 @@
     $dbc = getConnection();
 
     // check if token exists
-    $stmt = mysqli_prepare($dbc, "SELECT * FROM dbProj_users WHERE resetToken = ?");
+    // PREPARE QUERY
+        $query = "SELECT * 
+                  FROM dbProj_users 
+                  WHERE resetToken = ?";
 
-    if (!$stmt) {
-        die("SQL Error: " . mysqli_error($dbc));
-    }
+        $stmt = mysqli_prepare($dbc, $query);
 
-    mysqli_stmt_bind_param($stmt, "s", $token);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($stmt, "s", $token);
 
-    // if token not found
+        // EXECUTE QUERY
+        mysqli_stmt_execute($stmt);
+
+        // GET RESULT
+        $result = mysqli_stmt_get_result($stmt);
+        
+            // if token not found
     if(!$row = mysqli_fetch_assoc($result)){
         die("Invalid or expired token");
     }
@@ -78,19 +84,23 @@
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
             // update password and clear reset fields
-            $updateStmt = mysqli_prepare(
-                $dbc,
-                "UPDATE dbProj_users 
-                 SET password = ?, resetToken = NULL, resetExpires = NULL
-                 WHERE resetToken = ?"
-            );
+            // PREPARE QUERY
+                $updateQuery = "UPDATE dbProj_users 
+                                SET password = ?, resetToken = NULL, resetExpires = NULL
+                                WHERE resetToken = ?";
 
-            if (!$updateStmt) {
-                die("SQL Error: " . mysqli_error($dbc));
-            }
+                $updateStmt = mysqli_prepare($dbc, $updateQuery);
 
-            mysqli_stmt_bind_param($updateStmt, "ss", $hashedPassword, $token);
-            mysqli_stmt_execute($updateStmt);
+                // BIND PARAMETERS
+                mysqli_stmt_bind_param(
+                    $updateStmt,
+                    "ss",
+                    $hashedPassword,
+                    $token
+                );
+
+                // EXECUTE QUERY
+                mysqli_stmt_execute($updateStmt);
 
             $success = "Password reset successful";
         }
@@ -197,5 +207,18 @@
         </div>
 
         <?php include("Footer.php");?>
+        <?php
+    if (isset($stmt)) {
+        mysqli_stmt_close($stmt);
+    }
+
+    if (isset($updateStmt)) {
+        mysqli_stmt_close($updateStmt);
+    }
+
+    if (isset($dbc)) {
+        mysqli_close($dbc);
+    }
+?>
     </body>
 </html>

@@ -1,20 +1,42 @@
 <?php
-session_start();
-include("../DBConnection.php");
-$dbc = getConnection();
+    session_start();
 
-$commentId = $_POST['id'];
-$reviewId = $_POST['reviewId'];
+    include("../DBConnection.php");
 
-/* DELETE COMMENT */
-mysqli_query($dbc, "
-DELETE FROM dbProj_comments WHERE commentId = $commentId
-");
+    $dbc = getConnection();
 
-/* SUCCESS MESSAGE */
-$_SESSION['success'] = "Comment Deleted Successfully.";
+    $commentId = $_POST['id'];
+    $reviewId = $_POST['reviewId'];
 
-/* REDIRECT BACK TO SAME REVIEW */
-header("Location: ../reviewDetails.php?reviewId=$reviewId");
-exit;
+    /* DELETE COMMENT */
+
+    // PREPARE QUERY
+    $deleteQuery = "DELETE FROM dbProj_comments 
+                    WHERE commentId = ?";
+
+    $deleteStmt = mysqli_prepare($dbc, $deleteQuery);
+
+    // BIND PARAMETER
+    mysqli_stmt_bind_param(
+        $deleteStmt,
+        "i",
+        $commentId
+    );
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($deleteStmt);
+
+    /* SUCCESS MESSAGE */
+    $_SESSION['success'] = "Comment Deleted Successfully.";
+
+    // CLOSE STATEMENT
+    mysqli_stmt_close($deleteStmt);
+
+    // CLOSE CONNECTION
+    mysqli_close($dbc);
+
+    /* REDIRECT BACK TO SAME REVIEW */
+    header("Location: ../reviewDetails.php?reviewId=$reviewId");
+
+    exit;
 ?>

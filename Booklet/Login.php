@@ -31,16 +31,21 @@
         if(empty($errors)){
             
             //Find user
-            $sql = "SELECT * FROM dbProj_users WHERE email = ?";
-            $stmt = mysqli_prepare($dbc, $sql);
-            
-            if (!$stmt) {
-                die("SQL Error: " . mysqli_error($dbc));
-            }
-            
-            mysqli_stmt_bind_param($stmt, "s", $email);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+           // PREPARE QUERY
+                $query = "SELECT * 
+                          FROM dbProj_users 
+                          WHERE email = ?";
+
+                $stmt = mysqli_prepare($dbc, $query);
+
+                // BIND PARAMETER
+                mysqli_stmt_bind_param($stmt, "s", $email);
+
+                // EXECUTE QUERY
+                mysqli_stmt_execute($stmt);
+
+                // GET RESULT
+                $result = mysqli_stmt_get_result($stmt);
             
             //check if email existed
             if($row = mysqli_fetch_assoc($result)){
@@ -151,5 +156,14 @@
         </div>
         
         <?php include("Footer.php");?>
+        <?php
+    if (isset($stmt)) {
+        mysqli_stmt_close($stmt);
+    }
+
+    if (isset($dbc)) {
+        mysqli_close($dbc);
+    }
+?>
     </body>
 </html>

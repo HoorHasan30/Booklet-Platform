@@ -5,11 +5,10 @@
     include("DBConnection.php");
     include(__DIR__ . "/action/mail_config.php");
 
-    // Check for sessions
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
-    
+
     function loadNavBar(){
         if (isset($_SESSION["role"])) {
 
@@ -28,70 +27,78 @@
     $error = "";
     $success = "";
 
-    // if button clicked
     if(isset($_POST["btnSend"])){
 
         $dbc = getConnection();
 
-        // get email from input
         $email = trim($_POST["email"]);
 
-        // validate
         if(empty($email)){
             $error = "Please enter your email";
         }
         else{
 
-            // check if email exists
-            $stmt = mysqli_prepare($dbc, "SELECT * FROM dbProj_users WHERE email = ?");
+            // PREPARE SELECT QUERY
+            $query = "SELECT * 
+                      FROM dbProj_users 
+                      WHERE email = ?";
 
-            if (!$stmt) {
-                die("SQL Error: " . mysqli_error($dbc));
-            }
+            $stmt = mysqli_prepare($dbc, $query);
 
+            // BIND PARAMETER
             mysqli_stmt_bind_param($stmt, "s", $email);
+
+            // EXECUTE QUERY
             mysqli_stmt_execute($stmt);
+
+            // GET RESULT
             $result = mysqli_stmt_get_result($stmt);
 
-            // email found
             if($row = mysqli_fetch_assoc($result)){
 
-                // generate secure token
                 $token = bin2hex(random_bytes(32));
 
-                // set expiry time -> 1 hour
                 $expiry = date("Y-m-d H:i:s", strtotime("+1 hour"));
 
-                // save token and expiry in MySQL
-                $updateStmt = mysqli_prepare(
-                    $dbc,
-                    "UPDATE dbProj_users SET resetToken = ?, resetExpires = ? WHERE email = ?"
+                // PREPARE UPDATE QUERY
+                $updateQuery = "UPDATE dbProj_users 
+                                SET resetToken = ?, resetExpires = ?
+                                WHERE email = ?";
+
+                $updateStmt = mysqli_prepare($dbc, $updateQuery);
+
+                // BIND PARAMETERS
+                mysqli_stmt_bind_param(
+                    $updateStmt,
+                    "sss",
+                    $token,
+                    $expiry,
+                    $email
                 );
 
-                if (!$updateStmt) {
-                    die("SQL Error: " . mysqli_error($dbc));
-                }
-
-                mysqli_stmt_bind_param($updateStmt, "sss", $token, $expiry, $email);
+                // EXECUTE UPDATE
                 mysqli_stmt_execute($updateStmt);
 
                 $resetLink = "http://20.74.143.233/~u202301820/Booklet/ResetPassword.php?token=" . $token;
 
-                // send email
                 $mailResult = sendResetEmail($email, $resetLink);
 
                 if($mailResult === true){
                     $success = "Reset link sent to your email";
-                } 
-                else {
+                }
+                else{
                     $error = "Email failed: " . $mailResult;
                 }
 
+                mysqli_stmt_close($updateStmt);
             }
-            // email not found
             else{
                 $error = "Email not found";
             }
+
+            mysqli_stmt_close($stmt);
+
+            mysqli_close($dbc);
         }
     }
 ?>

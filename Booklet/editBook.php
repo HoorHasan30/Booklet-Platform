@@ -22,9 +22,23 @@
     $dbc = getConnection();
     $bookId = intval($_GET['id']);
 
-    $book = mysqli_fetch_assoc(mysqli_query($dbc,"
-    SELECT * FROM dbProj_books WHERE bookId = $bookId
-    "));
+    // PREPARE QUERY
+    $bookQuery = "SELECT * 
+                  FROM dbProj_books 
+                  WHERE bookId = ?";
+
+    $bookStmt = mysqli_prepare($dbc, $bookQuery);
+
+    // BIND PARAMETER
+    mysqli_stmt_bind_param($bookStmt, "i", $bookId);
+
+    // EXECUTE QUERY
+    mysqli_stmt_execute($bookStmt);
+
+    // GET RESULT
+    $bookResult = mysqli_stmt_get_result($bookStmt);
+
+    $book = mysqli_fetch_assoc($bookResult);
 
     $role = $_SESSION['role'] ?? '';
 ?>
@@ -164,7 +178,18 @@
                             <div>
                                 <select name="genreId">
                                     <?php
-                                    $genres = mysqli_query($dbc,"SELECT * FROM dbProj_Genres");
+                                    // PREPARE QUERY
+                                    $genreQuery = "SELECT * 
+                                                   FROM dbProj_Genres";
+
+                                    $genreStmt = mysqli_prepare($dbc, $genreQuery);
+
+                                    // EXECUTE QUERY
+                                    mysqli_stmt_execute($genreStmt);
+
+                                    // GET RESULT
+                                    $genres = mysqli_stmt_get_result($genreStmt);
+
                                     while($g = mysqli_fetch_assoc($genres)){
                                         $selected = ($g['genreId']==$book['genreId']) ? "selected":"";
                                         echo "<option value='{$g['genreId']}' $selected>{$g['genreName']}</option>";
@@ -231,6 +256,11 @@
         </div>
 
         <?php include("Footer.php"); ?>
+<?php
+    mysqli_stmt_close($bookStmt);
+    mysqli_stmt_close($genreStmt);
 
+    mysqli_close($dbc);
+?>
     </body>
 </html>

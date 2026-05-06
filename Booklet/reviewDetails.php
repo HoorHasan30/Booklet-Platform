@@ -9,23 +9,45 @@
 
     $reviewId = $_GET['reviewId'];
 
-    /* GET REVIEW */
-    $review = mysqli_fetch_assoc(mysqli_query($dbc,"
-    SELECT r.*, u.firstName, r.bookId
-    FROM dbProj_reviews r
-    JOIN dbProj_users u ON r.userId = u.userId
-    WHERE r.reviewId = $reviewId
-    "));
+    // GET REVIEW 
+    // PREPARE QUERY
+        $reviewQuery = "SELECT r.*, u.firstName, r.bookId
+                        FROM dbProj_reviews r
+                        JOIN dbProj_users u ON r.userId = u.userId
+                        WHERE r.reviewId = ?";
 
-    /* GET COMMENTS */
-    $comments = mysqli_query($dbc,"
-    SELECT c.*, u.firstName
-    FROM dbProj_comments c
-    JOIN dbProj_users u ON c.userId = u.userId
-    WHERE c.reviewId = $reviewId
-    ORDER BY c.createdAt ASC
-    ");
-?>
+        $reviewStmt = mysqli_prepare($dbc, $reviewQuery);
+
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($reviewStmt, "i", $reviewId);
+
+        // EXECUTE QUERY
+        mysqli_stmt_execute($reviewStmt);
+
+        // GET RESULT
+        $reviewResult = mysqli_stmt_get_result($reviewStmt);
+
+        $review = mysqli_fetch_assoc($reviewResult);
+
+    // GET COMMENTS 
+    // PREPARE QUERY
+        $commentsQuery = "SELECT c.*, u.firstName
+                          FROM dbProj_comments c
+                          JOIN dbProj_users u ON c.userId = u.userId
+                          WHERE c.reviewId = ?
+                          ORDER BY c.createdAt ASC";
+
+        $commentsStmt = mysqli_prepare($dbc, $commentsQuery);
+
+        // BIND PARAMETER
+        mysqli_stmt_bind_param($commentsStmt, "i", $reviewId);
+
+        // EXECUTE QUERY
+        mysqli_stmt_execute($commentsStmt);
+
+        // GET RESULT
+        $comments = mysqli_stmt_get_result($commentsStmt);
+        ?>
 
 <!DOCTYPE html>
 <html>
@@ -210,6 +232,11 @@
         </div>
 
         <?php include("Footer.php"); ?>
+<?php
+    mysqli_stmt_close($reviewStmt);
+    mysqli_stmt_close($commentsStmt);
 
+    mysqli_close($dbc);
+?>
     </body>
 </html>
