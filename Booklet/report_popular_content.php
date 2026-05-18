@@ -9,14 +9,7 @@ if (!isset($_SESSION["role"]) || $_SESSION["role"] !== "Admin") {
 
 $dbc = getConnection();
 
-// ── Date range from form (default: current month) ─────────────
-$date_from = isset($_GET['date_from']) && $_GET['date_from'] !== ''
-    ? $_GET['date_from'] : date('Y-m-01');
-$date_to   = isset($_GET['date_to']) && $_GET['date_to'] !== ''
-    ? $_GET['date_to']   : date('Y-m-d');
-
-// ── Query: most popular books by view count in date range ─────
-// Uses: dbProj_books, dbProj_users, dbProj_Genres, dbProj_reviews
+// ── Query: most popular books by view count ─────
 $stmt = mysqli_prepare($dbc, "
     SELECT
         b.bookId,
@@ -34,7 +27,6 @@ $stmt = mysqli_prepare($dbc, "
     JOIN dbProj_users  u ON b.userId  = u.userId
     JOIN dbProj_Genres g ON b.genreId = g.genreId
     LEFT JOIN dbProj_reviews r ON b.bookId = r.bookId
-    WHERE DATE(b.createdAt) BETWEEN ? AND ?
     GROUP BY
         b.bookId, b.title, b.author, b.bookCover,
         b.viewCount, b.createdAt, g.genreName,
@@ -43,7 +35,6 @@ $stmt = mysqli_prepare($dbc, "
     LIMIT 50
 ");
 
-mysqli_stmt_bind_param($stmt, "ss", $date_from, $date_to);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $rows   = [];
@@ -62,14 +53,12 @@ $total_books   = count($rows);
     <title>Popular Content Report – Booklet Admin</title>
     <link rel="stylesheet" href="BookletCSS.css">
     <style>
-        /* ── Page wrapper ── */
         .report-page {
             padding: 34px 40px 60px;
             min-height: 100vh;
             background: #FFF7EE;
         }
 
-        /* ── Page header ── */
         .report-header {
             display: flex;
             align-items: center;
@@ -90,50 +79,6 @@ $total_books   = count($rows);
             flex-wrap: wrap;
         }
 
-        /* ── Filter card ── */
-        .filter-card {
-            background: #FFFDF8;
-            border: 2px solid #D3C1B4;
-            border-radius: 18px;
-            padding: 22px 28px;
-            margin-bottom: 28px;
-        }
-
-        .filter-card h2 {
-            font-size: 1.1rem;
-            color: #483434;
-            margin-bottom: 16px;
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 14px;
-            align-items: flex-end;
-            flex-wrap: wrap;
-        }
-
-        .filter-field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .filter-field label {
-            font-size: 0.78rem;
-            color: #483434;
-            font-weight: bold;
-        }
-
-        .filter-field input[type="date"] {
-            width: auto;
-            padding: 8px 14px;
-            border: 2px solid #D3C1B4;
-            border-radius: 22px;
-            background: #FFF7EE;
-            color: #483434;
-            font-size: 0.9rem;
-        }
-
         .report-btn {
             padding: 9px 22px;
             border-radius: 22px;
@@ -142,17 +87,6 @@ $total_books   = count($rows);
             font-size: 0.9rem;
             font-family: Alice;
             transition: 0.3s;
-        }
-
-        .report-btn-primary {
-            background: #483434;
-            color: #FFF7EE;
-        }
-
-        .report-btn-primary:hover {
-            background: #FFFDF8;
-            color: #483434;
-            border: 2px solid #483434;
         }
 
         .report-btn-secondary {
@@ -165,7 +99,6 @@ $total_books   = count($rows);
             border: 2px solid #483434;
         }
 
-        /* ── Stat boxes ── */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -199,7 +132,6 @@ $total_books   = count($rows);
             margin-top: 2px;
         }
 
-        /* ── Table ── */
         .report-table-wrap {
             background: #FFFDF8;
             border: 2px solid #D3C1B4;
@@ -243,7 +175,6 @@ $total_books   = count($rows);
             vertical-align: middle;
         }
 
-        /* Rank badge */
         .rank-badge {
             display: inline-flex;
             align-items: center;
@@ -260,7 +191,6 @@ $total_books   = count($rows);
         .rank-3 { background: #fee2e2; color: #991b1b; }
         .rank-n { background: #D3C1B4; color: #483434; }
 
-        /* Book cover thumb */
         .cover-thumb {
             width: 38px;
             height: 52px;
@@ -269,7 +199,6 @@ $total_books   = count($rows);
             border: 1px solid #D3C1B4;
         }
 
-        /* Genre pill */
         .genre-pill {
             display: inline-block;
             padding: 3px 12px;
@@ -279,10 +208,8 @@ $total_books   = count($rows);
             font-size: 0.78rem;
         }
 
-        /* Stars */
         .stars-gold { color: gold; }
 
-        /* Empty state */
         .empty-state {
             text-align: center;
             padding: 50px 20px;
@@ -291,7 +218,6 @@ $total_books   = count($rows);
 
         .empty-state p { margin-top: 8px; font-size: 0.95rem; }
 
-        /* Date info line */
         .report-meta {
             font-size: 0.82rem;
             color: #D3C1B4;
@@ -302,7 +228,6 @@ $total_books   = count($rows);
             gap: 6px;
         }
 
-        /* Switch between reports link */
         .switch-link {
             display: inline-block;
             padding: 9px 22px;
@@ -319,7 +244,6 @@ $total_books   = count($rows);
             border: 2px solid #483434;
         }
 
-        /* ── Print ── */
         @media print {
             .no-print { display: none !important; }
             nav, #pageFooter { display: none !important; }
@@ -336,29 +260,11 @@ $total_books   = count($rows);
 
         <!-- Header -->
         <div class="report-header">
-            <h1>📊 Most Popular Content</h1>
+            <h1>Most Popular Content</h1>
             <div class="report-actions no-print">
-                <a href="report_by_user.php" class="switch-link">→ Report by User</a>
-                <button class="report-btn report-btn-secondary" onclick="window.print()">🖨 Print / Save PDF</button>
+                <a href="report_by_user.php" class="switch-link">Report by User</a>
+                <button class="report-btn report-btn-secondary" onclick="window.print()">Print / Save PDF</button>
             </div>
-        </div>
-
-        <!-- Filter -->
-        <div class="filter-card no-print">
-            <h2>Filter by Date Range</h2>
-            <form method="GET" action="report_popular_content.php">
-                <div class="filter-row">
-                    <div class="filter-field">
-                        <label>From</label>
-                        <input type="date" name="date_from" value="<?= htmlspecialchars($date_from) ?>">
-                    </div>
-                    <div class="filter-field">
-                        <label>To</label>
-                        <input type="date" name="date_to" value="<?= htmlspecialchars($date_to) ?>">
-                    </div>
-                    <button type="submit" class="report-btn report-btn-primary">Generate</button>
-                </div>
-            </form>
         </div>
 
         <?php if (!empty($rows)): ?>
@@ -368,7 +274,7 @@ $total_books   = count($rows);
             <div class="stat-box">
                 <div class="stat-label">Books Found</div>
                 <div class="stat-value"><?= $total_books ?></div>
-                <div class="stat-sub">in selected range</div>
+                <div class="stat-sub">total books</div>
             </div>
             <div class="stat-box">
                 <div class="stat-label">Total Views</div>
@@ -379,13 +285,6 @@ $total_books   = count($rows);
                 <div class="stat-label">Total Reviews</div>
                 <div class="stat-value"><?= number_format($total_reviews) ?></div>
                 <div class="stat-sub">across all books</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Date Range</div>
-                <div class="stat-value" style="font-size:1rem; padding-top:6px;">
-                    <?= date('M d, Y', strtotime($date_from)) ?>
-                    <br>→ <?= date('M d, Y', strtotime($date_to)) ?>
-                </div>
             </div>
         </div>
 
@@ -447,14 +346,9 @@ $total_books   = count($rows);
 
         <?php else: ?>
 
-        <!-- Empty state -->
         <div class="report-table-wrap">
             <div class="empty-state">
-                <div style="font-size:2.5rem;">📭</div>
-                <p>No books found for the selected date range.</p>
-                <p style="font-size:0.82rem; color:#D3C1B4; margin-top:6px;">
-                    Try expanding the date range above.
-                </p>
+                <p>No books found.</p>
             </div>
         </div>
 
