@@ -29,11 +29,10 @@
             <img class="logo" src="images/Logo.png" alt="Booklet Logo">
             
             <ul class="nav-links2">
-                <li><a href="Dashboard.php">Dashboard</a></li>
+                <li><a href="report_popular_content.php">Dashboard</a></li>
                 <li><a href="Home.php">Home</a></li>
                 <li><a href="AllBooks.php">All Books</a></li>
                 <li><a href="">All Users</a></li>
-                <li><a href="report_popular_content.php">Reports</a></li>
                 <li><a href="AboutUs.php">About Us</a></li>
                 
                 <li class="userInfo" onclick="toggleMenu()">🕮 <?php echo getUserInfo(); ?>
