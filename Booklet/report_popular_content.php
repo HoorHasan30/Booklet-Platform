@@ -322,8 +322,7 @@
                         $avg = round((float)$row['avgRating'], 1);
                         $stars = str_repeat('★', (int)round($avg)) . str_repeat('☆', 5 - (int)round($avg));
                     ?>
-
-                    <tr>
+                    <tr class="clickable-row" onclick="window.location.href='bookDetails.php?id=<?= $row['bookId'] ?>'">
                         <td>
                             <span class="rank-badge <?= $rankClass ?>"><?= $rank ?></span>
                         </td>

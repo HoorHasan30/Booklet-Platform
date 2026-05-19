@@ -1642,6 +1642,14 @@ input[type="password"]::-ms-clear {
     font-size: 0.95rem;
 }
 
+.clickable-row {
+    cursor: pointer;
+}
+
+.clickable-row:hover {
+    background: #FFF7EE;
+}
+
 .report-meta {
     font-size: 0.82rem;
     color: #D3C1B4;

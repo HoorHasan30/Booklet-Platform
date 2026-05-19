@@ -230,7 +230,7 @@
                                 $stars = str_repeat('★', (int)round($avg)) . str_repeat('☆', 5 - (int)round($avg));
                             ?>
 
-                            <tr>
+                            <tr class="clickable-row" onclick="window.location.href='bookDetails.php?id=<?= $book['bookId'] ?>'">
                                 <td><?= $i + 1 ?></td>
 
                                 <td>
