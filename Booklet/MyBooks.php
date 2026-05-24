@@ -134,7 +134,17 @@
         <?php loadNavBar(); ?>
 
         <div class="mybooks-page">
+<?php if(isset($_SESSION['success'])) { ?>
 
+    <p class="success-msg">
+        <?php
+            echo $_SESSION['success'];
+            unset($_SESSION['success']);
+        ?>
+    </p>
+
+<?php } ?>
+    
             <h1 class="page-title">My Books</h1>
 
             <a href="AddBook.php" class="mybooks-fixed-add-btn">+ Add Book</a>
