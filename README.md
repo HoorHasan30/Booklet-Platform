@@ -19,10 +19,8 @@ http://20.74.143.233/~u202301820/Booklet/Home.php
 - HTML
 - CSS
 - JavaScript
-- Chart.js  
-  `https://cdn.jsdelivr.net/npm/chart.js`
-- PHPMailer  
-  Installed from: `https://sourceforge.net/projects/phpmailer/`
+- Chart.js "https://cdn.jsdelivr.net/npm/chart.js"
+- PHPMailer (Installed from: "https://sourceforge.net/projects/phpmailer/")
 
 ---
 
