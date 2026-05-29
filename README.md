@@ -4,16 +4,13 @@
 
 **Booklet Platform** is a database-driven book review web application developed for the **Database Programming 2** course. The system allows visitors to browse books and reviews, creators to add and manage books, and administrators to manage users, books, reviews, comments, and analytical reports.
 
----
 
 ## Application URL
 
 http://20.74.143.233/~u202301820/Booklet/Home.php
 
----
 
 ## Technologies Used
-
 - PHP
 - MySQL
 - HTML
@@ -22,7 +19,6 @@ http://20.74.143.233/~u202301820/Booklet/Home.php
 - Chart.js "https://cdn.jsdelivr.net/npm/chart.js"
 - PHPMailer (Installed from: "https://sourceforge.net/projects/phpmailer/")
 
----
 
 ## User Roles
 The system supports three main user roles:
@@ -59,7 +55,6 @@ Admins can manage the full platform.
 - Generate book and creator reports
 - Export reports as PDF
 
----
 
 ## Main Features
 
@@ -84,7 +79,6 @@ Admins can manage users, books, reviews, and comments, including removing inappr
 ### 7. Reporting System
 Admins can generate reports such as most popular books and content created by specific users. Reports include charts and can be printed or saved as PDF.
 
----
 
 ## Advanced Features
 
@@ -104,7 +98,6 @@ The platform includes a modern and user-friendly interface with:
 - Validation alerts
 - Dynamic star rating display
 
----
 
 ## Testing Accounts
 
@@ -116,16 +109,9 @@ The platform includes a modern and user-friendly interface with:
 | Creator | zahraa@test.com | Z123456@ |
 | Creator | walaa@test.com | W123456@ |
 
----
 
 ## Course Information
 **Course:** Database Programming 2  
 **Project Topic:** Book Review Platform  
 **Project Name:** Booklet Platform   
 **Academic Year:** 2025/2026  
-
----
-
-## License
-
-This project was created for educational purposes only.
